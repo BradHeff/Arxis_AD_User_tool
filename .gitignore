@@ -1,0 +1,9 @@
+# scrap
+/.vscode
+/__pycache__
+/App
+/Settings/Settings-debug.ini
+/Settings/Settings.ini
+/Settings/Config.ini
+/scrap
+*.spec
