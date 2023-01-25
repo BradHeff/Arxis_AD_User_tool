@@ -10,8 +10,8 @@ import base64
 
 
 DEBUG = False
-Version = "v1.0.4.1.1"
-key = b'\xbd\xd5\x0f\xe5C\x87\xc6\xd23\x8c\x82\xe0&5\x87s/Y\x19\xb1\xe5\xad^\x07\x88\xe0|\xb0G\xa4\xe4\xb4'
+Version = "v1.0.4.1.5"
+key = b'\xb3\xf9s\xef\xf9%\xf8\x97\x0f\xc3\xcdB\x07\x84\x91dx\x98\xcbS1\xf1=\xb4\x1d\xf1\x04\xd8\xea\xff\xec('
 settings_file = "Settings.dat"
 
 if not DEBUG:
@@ -436,17 +436,20 @@ def remove_groups(self):
         self.after(1000, self.resetProgress)
 
 def listGroups(self, ou):
-    pythoncom.CoInitialize()
-    pyad.set_defaults(ldap_server=base64.b64decode(self.server).decode("UTF-8"),
-                      username=base64.b64decode(self.username).decode("UTF-8"),
-                      password=base64.b64decode(self.password).decode("UTF-8"))
-    q = adsearch.ADQuery()
-    q.execute_query(attributes=["cn", "distinguishedName", "sAMAccountName"],where_clause="objectClass = 'Group'",base_dn=ou)
-    groups = {}
-    for x in q.get_results():
-        # print(x)
-        groups[x['sAMAccountName']] = {'name':x['cn'], 'ou':x['distinguishedName']}
-    return(groups)
+    try:
+        pythoncom.CoInitialize()
+        pyad.set_defaults(ldap_server=base64.b64decode(self.server).decode("UTF-8"),
+                        username=base64.b64decode(self.username).decode("UTF-8"),
+                        password=base64.b64decode(self.password).decode("UTF-8"))
+        q = adsearch.ADQuery()
+        q.execute_query(attributes=["cn", "distinguishedName", "sAMAccountName"],where_clause="objectClass = 'Group'",base_dn=ou)
+        groups = {}
+        for x in q.get_results():
+            # print(x)
+            groups[x['sAMAccountName']] = {'name':x['cn'], 'ou':x['distinguishedName']}
+        return(groups)
+    except:
+        pass
 
 def listUsers(self, ou):
     pythoncom.CoInitialize()

@@ -1,6 +1,6 @@
 @ECHO off
 
-python updateSetings.py
+python updateSettings.py
 python update_version.py %3
 python preBuild.py
 
