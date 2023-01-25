@@ -9,9 +9,9 @@ import pythoncom
 import base64
 
 
-DEBUG = True
-Version = "v1.0.3.0.6"
-key = b'\xf7\xcfn\xa9*T\x85g\x0fQ\r\x94\xe3F\x8d\x9e\xebS\x83\xae\xe4L\x19a\x1b\xa3AlA\x1b%\x99'
+DEBUG = False
+Version = "v1.0.4.1.1"
+key = b'\xbd\xd5\x0f\xe5C\x87\xc6\xd23\x8c\x82\xe0&5\x87s/Y\x19\xb1\xe5\xad^\x07\x88\xe0|\xb0G\xa4\xe4\xb4'
 settings_file = "Settings.dat"
 
 if not DEBUG:
@@ -365,8 +365,14 @@ def createUser(self, data):
         self.status['text'] = ''.join(["Adding ", data['first']," ",data['last'], " to groups"])
         for gp in data['groups']:
             print(gp)
-            newgroup = pyad.adgroup.ADGroup.from_cn(gp)            
-            newuser.add_to_group(newgroup)
+            if gp.split(",").__len__() > 1:
+                ngp = gp.split(",").strip()
+                for item in ngp:
+                    newgroup = pyad.adgroup.ADGroup.from_cn(item)
+                    newuser.add_to_group(newgroup)
+            else:
+                newgroup = pyad.adgroup.ADGroup.from_cn(gp)            
+                newuser.add_to_group(newgroup)
         self.progress['value'] = 80
         self.status['text'] = ''.join(["Creating ", data['first']," ",data['last'], " home directory"])
         createHomeDir(data['login'], data['homeDirectory'], base64.b64decode(self.domainName).decode("UTF-8").strip())

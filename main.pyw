@@ -73,7 +73,7 @@ class ADUnlocker(tk.Tk):
         if self.error:
             self.messageBox("ERROR!!","company settings is incomplete")
         
-        self.options.set("DComputers")
+        self.options.set("Horizon")
         self.comboSelect("")
         
         if not f.DEBUG:
@@ -90,13 +90,14 @@ class ADUnlocker(tk.Tk):
         p = self.lbl_frame2.grid_slaves()
         cont = True
         for y in p:
-            if self.add_groups.get() in y['text']:
+            if self.add_groups.get() == y['text']:
                 cont = False
         if cont:
             if self.checkCount > 3:
                 self.checkCount = 0
                 self.checkRow += 1
             self.chkBtns[self.add_groups.get()] = tk.IntVar(self.lbl_frame2, 1)
+            print([x for x in self.chkBtns])
             rbtn = Checkbutton(self.lbl_frame2, text=self.add_groups.get(), variable=self.chkBtns[self.add_groups.get()], onvalue=1, offvalue=0)
             rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10)
             self.checkCount+=1
@@ -202,7 +203,7 @@ class ADUnlocker(tk.Tk):
 
     def getCheck(self):
         grp = []
-        for x in self.groups:
+        for x in self.chkBtns:
             if self.chkBtns.get(x).get() == 1:
                 grp.append(x)
         return grp
@@ -750,7 +751,7 @@ class ADUnlocker(tk.Tk):
         center_y = int(int(posY) + (self.H/2) - 25)
 
         message = tk.Label(ap, text=txt, wraplength=250, justify=tk.CENTER)
-        btn = tk.Button(ap, text="OK", width=10, command=ap.quit)
+        btn = tk.Button(ap, text="OK", width=10, command=ap.destroy)
         ap.title(title)
         ap.geometry(f'300x100+{center_x}+{center_y}')
         ap.attributes("-fullscreen", False)

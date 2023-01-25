@@ -30,12 +30,12 @@ class PreBuild():
             line = self.lines[pos]
             self.old = line.split("=")[1].strip()
             f.close()
-        # with open(paths + "\\main.pyw", "r") as e:
-        #     self.lines2 = e.readlines()
-        #     pos = self._getPosition(self.lines2, "DComputers")
-        #     line = self.lines2[pos]
-        #     self.old2 = "DComputers"
-        #     e.close()
+        with open(paths + "\\main.pyw", "r") as e:
+            self.lines2 = e.readlines()
+            pos = self._getPosition(self.lines2, "DComputers")
+            line = self.lines2[pos]
+            self.old2 = "DComputers"
+            e.close()
 
     def writeLines(self):
         with open(paths + "\\Functions.py", "w") as w:
@@ -45,13 +45,13 @@ class PreBuild():
 
             w.writelines(self.lines)
             w.close()
-        # with open(paths + "\\main.pyw", "w") as e:
-        #     pos = self._getPosition(self.lines2, "DComputers")
+        with open(paths + "\\main.pyw", "w") as e:
+            pos = self._getPosition(self.lines2, "DComputers")
 
-        #     self.lines2[pos] = self.lines2[pos].replace(self.old2, self.new2)
+            self.lines2[pos] = self.lines2[pos].replace(self.old2, self.new2)
 
-        #     e.writelines(self.lines2)
-        #     e.close()
+            e.writelines(self.lines2)
+            e.close()
 
 if __name__ == "__main__":
     PreBuild()
