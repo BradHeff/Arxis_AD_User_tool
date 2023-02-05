@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from Functions import Version, setTheme, base64
+from Functions import Version, setTheme, base64, loadConfig, saveConfig
 # import sv_ttk
 from icon import image
 
@@ -26,23 +26,23 @@ def baseGUI(self):
     Window(self)
     Icon(self)
     
-    # menubar = tk.Menu(self, activebackground='white', activeforeground='black')
-    # self.file = tk.Menu(menubar, tearoff=0)
-    # self.file.add_checkbutton(label="Auto Load", variable=self.load, command=self.setLoad)
-    # self.file.add_command(label="Load", command=lambda: loadConfig(self, True), state=tk.DISABLED)
-    # self.file.add_command(label="Save", command=lambda: saveConfig(self))
-    # # self.file.add_separator()
+    menubar = tk.Menu(self, activebackground='white', activeforeground='black')
+    self.file = tk.Menu(menubar, tearoff=0)
+    self.file.add_checkbutton(label="Auto Load", variable=self.load, command=self.setLoad)
+    self.file.add_command(label="Load", command=lambda: loadConfig(self, True), state=tk.DISABLED)
+    self.file.add_command(label="Save", command=lambda: saveConfig(self))
+    # self.file.add_separator()
     # # self.file.add_command(label="Import", command=self.importConfig, state=tk.DISABLED)
     # self.file.add_separator()
-    # self.file.add_command(label="Exit", command=self.quit)
+    self.file.add_command(label="Exit", command=self.quit)
     # # self.theme = tk.Menu(menubar, tearoff=0)
     # # self.theme.add_command(label="Light", command=lambda: setTheme(self, "light"))
     # # self.theme.add_command(label="Dark", command=lambda: setTheme(self, "dark"))
     
     
-    # menubar.add_cascade(label="File", menu=self.file)
+    menubar.add_cascade(label="File", menu=self.file)
     # # menubar.add_cascade(label="Theme", menu=self.theme)
-    # self.config(menu=menubar)
+    self.config(menu=menubar)
 
     self.tabControl = ttk.Notebook(self)
   

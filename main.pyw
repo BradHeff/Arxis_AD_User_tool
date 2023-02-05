@@ -73,7 +73,7 @@ class ADUnlocker(tk.Tk):
         if self.error:
             self.messageBox("ERROR!!","company settings is incomplete")
         
-        self.options.set("Horizon")
+        self.options.set("DComputers")
         self.comboSelect("")
         
         if not f.DEBUG:

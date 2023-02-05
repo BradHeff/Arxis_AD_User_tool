@@ -9,9 +9,9 @@ import pythoncom
 import base64
 
 
-DEBUG = False
+DEBUG = True
 Version = "v1.0.4.1.5"
-key = b'\xb3\xf9s\xef\xf9%\xf8\x97\x0f\xc3\xcdB\x07\x84\x91dx\x98\xcbS1\xf1=\xb4\x1d\xf1\x04\xd8\xea\xff\xec('
+key = b'\x06\x11!K\x1a\xb6\x8c\xdfj\xc0\xe0q\xb4\x83n\xe3\xa40M\xba\xe85\xfa\xb3\xdb_:ri\xb7\xb8\xf3'
 settings_file = "Settings.dat"
 
 if not DEBUG:
@@ -39,6 +39,42 @@ def checkSettings(self):
         return True
     else:
         return False
+
+def saveConfig(self):
+    self.parser = cCrypt.ConfigParserCrypt()
+    self.parser['Config'] = {}
+    self.parser['Config']['AutoLoad'] = ''.join(["'",str(self.load.get()),"'"])
+    if not "Select" in self.options.get():
+        self.parser['Config']['Company'] = ''.join(["'",self.options.get(),"'"])
+
+        if not self.var.get() == "1":
+            self.parser['newuser'] = {}
+            data = getNewUser(self)
+            self.parser['newuser']['domain'] = ''.join(["'", data['domain'], "'"])
+            self.parser['newuser']['password'] = ''.join(["'", data['password'], "'"])
+            self.parser['newuser']['format'] = ''.join(["'", data['format'], "'"])
+            self.parser['newuser']['pos'] = ''.join(["'", data['pos'], "'"])
+            self.parser['newuser']['hdrive'] = ''.join(["'", data['hdrive'], "'"])
+            self.parser['newuser']['hpath'] = ''.join(["'", data['hpath'], "'"])
+            self.parser['newuser']['desc'] = ''.join(["'", data['desc'], "'"])
+            self.parser['newuser']['title'] = ''.join(["'", data['title'], "'"])
+
+    with open(settings_dir + "\Config.ini", "w") as w:
+        self.parser.write(w)
+
+def loadConfig(self, check=False):
+    self.parser = cCrypt.ConfigParserCrypt()
+    self.parser.read(settings_dir + "\Config.ini")
+    if self.parser.has_section('Config'):
+        if self.parser.has_option('Config', 'AutoLoad'):
+            self.load.set(eval(self.parser.get('Config', 'AutoLoad').replace("\'", "")))
+        if self.parser.has_option('Config', 'company'):
+            self.comp = self.parser.get('Config', 'company').replace("\'", "")            
+            if self.load.get() or check:
+                self.options.set(self.comp)
+                if not "Select" in self.comp:
+                    self.comboSelect(None)
+                    self.loadConfig = True
 
 def getSettings(self):
     parser = cCrypt.ConfigParserCrypt()
@@ -364,15 +400,8 @@ def createUser(self, data):
         self.progress['value'] = 50
         self.status['text'] = ''.join(["Adding ", data['first']," ",data['last'], " to groups"])
         for gp in data['groups']:
-            print(gp)
-            if gp.split(",").__len__() > 1:
-                ngp = gp.split(",").strip()
-                for item in ngp:
-                    newgroup = pyad.adgroup.ADGroup.from_cn(item)
-                    newuser.add_to_group(newgroup)
-            else:
-                newgroup = pyad.adgroup.ADGroup.from_cn(gp)            
-                newuser.add_to_group(newgroup)
+            newgroup = pyad.adgroup.ADGroup.from_cn(gp)            
+            newuser.add_to_group(newgroup)
         self.progress['value'] = 80
         self.status['text'] = ''.join(["Creating ", data['first']," ",data['last'], " home directory"])
         createHomeDir(data['login'], data['homeDirectory'], base64.b64decode(self.domainName).decode("UTF-8").strip())
