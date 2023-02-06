@@ -55,7 +55,7 @@ class ADUnlocker(tk.Tk):
 
         self.load = tk.BooleanVar(self, False)
         self.comp = "Select Company"
-
+        
         currentDateTime = datetime.datetime.now()
         date = currentDateTime.date()
         self.date = date.strftime("%Y")
@@ -73,8 +73,11 @@ class ADUnlocker(tk.Tk):
         if self.error:
             self.messageBox("ERROR!!","company settings is incomplete")
         
-        self.options.set("DComputers")
+        self.options.set("Horizon")
         self.comboSelect("")
+        if f.path.isfile(f.settings_dir + "Config.ini"):
+            print(f.settings_dir + "Config.ini")
+            # self.file.entryconfigure(0, state=tk.NORMAL)
         
         if not f.DEBUG:
             self.combobox['state'] = tk.DISABLED

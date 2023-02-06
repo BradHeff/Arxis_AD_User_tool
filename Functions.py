@@ -41,40 +41,55 @@ def checkSettings(self):
         return False
 
 def saveConfig(self):
-    self.parser = cCrypt.ConfigParserCrypt()
-    self.parser['Config'] = {}
-    self.parser['Config']['AutoLoad'] = ''.join(["'",str(self.load.get()),"'"])
+    parser = cCrypt.ConfigParserCrypt()
+    parser['config'] = {}
     if not "Select" in self.options.get():
-        self.parser['Config']['Company'] = ''.join(["'",self.options.get(),"'"])
+        parser['config']['company'] = self.options.get()
 
         if not self.var.get() == "1":
-            self.parser['newuser'] = {}
-            data = getNewUser(self)
-            self.parser['newuser']['domain'] = ''.join(["'", data['domain'], "'"])
-            self.parser['newuser']['password'] = ''.join(["'", data['password'], "'"])
-            self.parser['newuser']['format'] = ''.join(["'", data['format'], "'"])
-            self.parser['newuser']['pos'] = ''.join(["'", data['pos'], "'"])
-            self.parser['newuser']['hdrive'] = ''.join(["'", data['hdrive'], "'"])
-            self.parser['newuser']['hpath'] = ''.join(["'", data['hpath'], "'"])
-            self.parser['newuser']['desc'] = ''.join(["'", data['desc'], "'"])
-            self.parser['newuser']['title'] = ''.join(["'", data['title'], "'"])
+            parser['newuser'] = {}
+            data = getnewuser(self)
+            parser['newuser']['domain'] = data['domain']
+            parser['newuser']['campus'] = data['campus']
+            parser['newuser']['password'] = data['password']
+            parser['newuser']['format'] = data['format']
+            parser['newuser']['pos'] = data['pos']
+            parser['newuser']['hdrive'] = data['hdrive']
+            parser['newuser']['hpath'] = data['hpath']
+            parser['newuser']['desc'] = data['desc']
+            parser['newuser']['title'] = data['title']
 
-    with open(settings_dir + "\Config.ini", "w") as w:
-        self.parser.write(w)
+    with open(settings_dir + "Config.ini", "w") as w:
+        parser.write(w)
 
-def loadConfig(self, check=False):
-    self.parser = cCrypt.ConfigParserCrypt()
-    self.parser.read(settings_dir + "\Config.ini")
-    if self.parser.has_section('Config'):
-        if self.parser.has_option('Config', 'AutoLoad'):
-            self.load.set(eval(self.parser.get('Config', 'AutoLoad').replace("\'", "")))
-        if self.parser.has_option('Config', 'company'):
-            self.comp = self.parser.get('Config', 'company').replace("\'", "")            
-            if self.load.get() or check:
-                self.options.set(self.comp)
-                if not "Select" in self.comp:
-                    self.comboSelect(None)
-                    self.loadConfig = True
+def loadConfig(self):
+    parser = cCrypt.ConfigParserCrypt()
+    parser.read(settings_dir + "Config.ini")
+    if parser.has_section('config'):
+        print("Found")
+        if parser.has_option('config', 'company'):
+            print(parser.get('config', 'company'))
+            self.comp = parser.get('config', 'company')
+            self.options.set(self.comp)
+            if not "Select" in self.comp:
+                print("No Select")
+                if parser.has_section('newuser'):
+                    self.campH.set(int(parser.get('newuser', 'campus')))
+                    self.comboLoad()
+                    self.var.set(parser.get('newuser', 'pos'))
+                    self.posSelect()
+                    self.samFormat.set(parser.get('newuser', 'format'))                    
+                    self.primary_domain.set(parser.get('newuser', 'domain'))                    
+                    self.hdrive.set(parser.get('newuser', 'hdrive'))
+                    self.paths.set(parser.get('newuser', 'hpath'))
+                    self.desc.delete(0, 'end')
+                    self.dpass.delete(0, 'end')
+                    self.jobTitleEnt.delete(0, 'end')
+                    self.dpass.insert(0,parser.get('newuser', 'password'))
+                    self.desc.insert(0,parser.get('newuser', 'desc'))
+                    self.jobTitleEnt.insert(0,parser.get('newuser', 'title'))
+                    
+                
 
 def getSettings(self):
     parser = cCrypt.ConfigParserCrypt()
@@ -214,10 +229,11 @@ def getConfig(self, section):
             self.state = False
             widgetStatus(self, NORMAL)
 
-def getNewUser(self):
+def getnewuser(self):
     data = dict()
     data['format'] = self.samFormat.get()
-    data['pos'] = self.var.get()        
+    data['pos'] = self.var.get()
+    data['campus'] = str(self.campH.get())
     data['domain'] = self.primary_domain.get()
     data['password'] = self.dpass.get()
     data['hdrive'] = self.hdrive.get()
