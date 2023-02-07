@@ -9,7 +9,7 @@ import pythoncom
 import base64
 
 
-DEBUG = False
+DEBUG = True
 Version = "v1.0.4.1.7"
 key = b'\x9e \xa0\x0e\xffj\xaf\xa1ZQl\x16A\x8e\xb3\xc3\x8d\xa3\xe58\xf2\xba\xc1\xaf}\xb2\xcc\x94\xaf\t\x18S'
 settings_file = "Settings.dat"
@@ -44,6 +44,7 @@ def saveConfig(self):
     parser = cCrypt.ConfigParserCrypt()
     parser['config'] = {}
     if not "Select" in self.options.get():
+        parser['config']['autoload'] = str(self.load.get())
         parser['config']['company'] = self.options.get()
 
         if not self.var.get() == "1":
@@ -62,32 +63,32 @@ def saveConfig(self):
     with open(settings_dir + "Config.ini", "w") as w:
         parser.write(w)
 
-def loadConfig(self):
+def loadConfig(self, check=False):
     parser = cCrypt.ConfigParserCrypt()
     parser.read(settings_dir + "Config.ini")
     if parser.has_section('config'):
-        print("Found")
+        if parser.has_option('config', 'autoload'):
+            self.load.set(eval(parser.get('config', 'autoload')))
         if parser.has_option('config', 'company'):
-            print(parser.get('config', 'company'))
             self.comp = parser.get('config', 'company')
-            self.options.set(self.comp)
-            if not "Select" in self.comp:
-                print("No Select")
-                if parser.has_section('newuser'):
-                    self.campH.set(int(parser.get('newuser', 'campus')))
-                    self.comboLoad()
-                    self.var.set(parser.get('newuser', 'pos'))
-                    self.posSelect()
-                    self.samFormat.set(parser.get('newuser', 'format'))                    
-                    self.primary_domain.set(parser.get('newuser', 'domain'))                    
-                    self.hdrive.set(parser.get('newuser', 'hdrive'))
-                    self.paths.set(parser.get('newuser', 'hpath'))
-                    self.desc.delete(0, 'end')
-                    self.dpass.delete(0, 'end')
-                    self.jobTitleEnt.delete(0, 'end')
-                    self.dpass.insert(0,parser.get('newuser', 'password'))
-                    self.desc.insert(0,parser.get('newuser', 'desc'))
-                    self.jobTitleEnt.insert(0,parser.get('newuser', 'title'))
+            if parser.get('config', 'autoload') == "True" or check == True:
+                self.options.set(self.comp)
+                if not "Select" in self.comp:
+                    if parser.has_section('newuser'):
+                        self.campH.set(int(parser.get('newuser', 'campus')))
+                        self.comboLoad()
+                        self.var.set(parser.get('newuser', 'pos'))
+                        self.posSelect()
+                        self.samFormat.set(parser.get('newuser', 'format'))                    
+                        self.primary_domain.set(parser.get('newuser', 'domain'))                    
+                        self.hdrive.set(parser.get('newuser', 'hdrive'))
+                        self.paths.set(parser.get('newuser', 'hpath'))
+                        self.desc.delete(0, 'end')
+                        self.dpass.delete(0, 'end')
+                        self.jobTitleEnt.delete(0, 'end')
+                        self.dpass.insert(0,parser.get('newuser', 'password'))
+                        self.desc.insert(0,parser.get('newuser', 'desc'))
+                        self.jobTitleEnt.insert(0,parser.get('newuser', 'title'))
                     
                 
 
