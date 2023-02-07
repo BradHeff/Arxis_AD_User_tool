@@ -28,8 +28,8 @@ def baseGUI(self):
     
     menubar = tk.Menu(self, activebackground='white', activeforeground='black')
     self.file = tk.Menu(menubar, tearoff=0)
-    # self.file.add_checkbutton(label="Auto Load", variable=self.load, command=self.setLoad)
-    self.file.add_command(label="Load", command=lambda: loadConfig(self))
+    self.file.add_checkbutton(label="Auto Load", variable=self.load, command=self.setLoad)
+    self.file.add_command(label="Load", command=lambda: loadConfig(self, True))
     self.file.add_command(label="Save", command=lambda: saveConfig(self))
     self.file.add_separator()
     # # self.file.add_command(label="Import", command=self.importConfig, state=tk.DISABLED)

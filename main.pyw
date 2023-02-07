@@ -73,17 +73,24 @@ class ADUnlocker(tk.Tk):
         if self.error:
             self.messageBox("ERROR!!","company settings is incomplete")
         
-        self.options.set("Horizon")
+        self.options.set("DComputers")
         self.comboSelect("")
         if f.path.isfile(f.settings_dir + "Config.ini"):
-            print(f.settings_dir + "Config.ini")
-            # self.file.entryconfigure(0, state=tk.NORMAL)
+            f.loadConfig(self)
         
         if not f.DEBUG:
             self.combobox['state'] = tk.DISABLED
         
         
-
+    def setLoad(self):
+        if f.path.isfile(f.settings_dir + "Config.ini"):
+            parser = f.cCrypt.ConfigParserCrypt()
+            parser.read(f.settings_dir + "Config.ini")
+            parser.set('config','autoload',str(self.load.get()))
+            with open(f.settings_dir + "Config.ini", "w+") as w:
+                parser.write(w)
+        else:
+            f.saveConfig(self)
 
     def addToGroups(self):
         if "Select" in self.add_groups.get():
