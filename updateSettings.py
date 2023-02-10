@@ -85,7 +85,7 @@ class MakeConf():
         conf_file['DComputers']['expiredous'] = str(base64.b64encode(bytes('{"Expired_Users":"OU=Expired_Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local"}','UTF-8')).decode("UTF-8"))
         conf_file['DComputers']['groupsou'] = str(base64.b64encode(bytes('OU=Groups,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local','UTF-8')).decode("UTF-8"))
         conf_file['DComputers']['domains'] = str(base64.b64encode(bytes('{"Primary":["doohancomputers.com.au","heffsfabrications.com.au","ashheffernan.org"],"Secondary":"heffserver.onmicrosoft.com"}','UTF-8')).decode("UTF-8"))
-        conf_file['DComputers']['homepaths'] = str(base64.b64encode(bytes('\\\\DCM-DC01\\Profiles','UTF-8')).decode("UTF-8"))
+        conf_file['DComputers']['homepaths'] = str(base64.b64encode(bytes('\\\\DCM-FS01\\Profiles','UTF-8')).decode("UTF-8"))
         conf_file['DComputers']['campus'] = str(base64.b64encode(bytes('balaklava','UTF-8')).decode("UTF-8"))
         conf_file.add_section('Settings')
         conf_file['Settings']['company'] = str(base64.b64encode(bytes('Horizon,DComputers','UTF-8')).decode("UTF-8"))
