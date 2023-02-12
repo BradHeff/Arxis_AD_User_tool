@@ -11,7 +11,7 @@ import base64
 
 DEBUG = True
 Version = "v1.0.4.1.7"
-key = b'h\xca\x15\x03\xb5\xa1@\x91h\x1cw\x1a:\xac\xd3\x8cU/\xf1\x9d\xe2.\xb6\xa2\xac+IC\xa5?\xd1\xa4'
+key = b'\xe3\xc5\x0e\xdcm\x81\xef\x9c3\xd4\xbe\xe7\xc5\xfbC\x8e\xf30\x93\xcb@\xcf\xc2\x8d\r\x0cW\t\xff\xb8>B'
 settings_file = "Settings.dat"
 
 if not DEBUG:
@@ -46,6 +46,7 @@ def saveConfig(self):
     if not "Select" in self.options.get():
         parser['config']['autoload'] = str(self.load.get())
         parser['config']['company'] = self.options.get()
+        parser['config']['tab'] = str(self.tabControl.index(self.tabControl.select()))
 
         if not self.var.get() == "1":
             parser['newuser'] = {}
@@ -68,29 +69,27 @@ def loadConfig(self, check=False):
     parser.read(settings_dir + "Config.ini")
     if parser.has_section('config'):
         if parser.has_option('config', 'autoload'):
-            self.load.set(eval(parser.get('config', 'autoload')))
-        if parser.has_option('config', 'company'):
-            self.comp = parser.get('config', 'company')
-            if parser.get('config', 'autoload') == "True" or check == True:
-                self.options.set(self.comp)
-                if not "Select" in self.comp:
-                    if parser.has_section('newuser'):
-                        self.campH.set(int(parser.get('newuser', 'campus')))
-                        self.comboLoad()
-                        self.var.set(parser.get('newuser', 'pos'))
-                        self.posSelect()
-                        self.samFormat.set(parser.get('newuser', 'format'))                    
-                        self.primary_domain.set(parser.get('newuser', 'domain'))                    
-                        self.hdrive.set(parser.get('newuser', 'hdrive'))
-                        self.paths.set(parser.get('newuser', 'hpath'))
-                        self.desc.delete(0, 'end')
-                        self.dpass.delete(0, 'end')
-                        self.jobTitleEnt.delete(0, 'end')
-                        self.dpass.insert(0,parser.get('newuser', 'password'))
-                        self.desc.insert(0,parser.get('newuser', 'desc'))
-                        self.jobTitleEnt.insert(0,parser.get('newuser', 'title'))
-                    
-                
+            self.load.set(eval(parser.get('config', 'autoload')))        
+    if eval(parser.get('config', 'autoload')) or check == True:
+        if parser.has_option('config', 'tab'):
+            self.tabControl.select(int(parser.get('config', 'tab')))
+        if parser.has_section('newuser'):
+            self.campH.set(int(parser.get('newuser', 'campus')))
+            self.var.set(parser.get('newuser', 'pos'))
+            self.posSelect()
+            self.samFormat.set(parser.get('newuser', 'format'))
+            self.primary_domain.set(parser.get('newuser', 'domain'))
+            self.hdrive.set(parser.get('newuser', 'hdrive'))
+            self.paths.set(parser.get('newuser', 'hpath'))
+            self.desc.delete(0, 'end')
+            self.dpass.delete(0, 'end')
+            self.jobTitleEnt.delete(0, 'end')
+            self.dpass.insert(0,parser.get('newuser', 'password'))
+            self.desc.insert(0,parser.get('newuser', 'desc'))
+            self.jobTitleEnt.insert(0,parser.get('newuser', 'title'))
+            self.loaded = True
+            # self.comboLoad()
+            
 
 def getSettings(self):
     parser = cCrypt.ConfigParserCrypt()
@@ -240,7 +239,7 @@ def getnewuser(self):
     data['hdrive'] = self.hdrive.get()
     data['hpath'] = self.paths.get()
     data['desc'] = self.desc.get()
-    data['title'] = self.jobTitleEnt.get()
+    data['title'] = self.jobTitleEnt.get()    
     return data
 
 def widgetStatus(self, status):

@@ -46,7 +46,7 @@ class ADUnlocker(tk.Tk):
         self.compFail = False
         self.servs = False
         self.isRunning = False
-        self.loadConfig = False
+        self.loaded = False
         self.isExit = False
         self.data_file = False
 
@@ -75,8 +75,7 @@ class ADUnlocker(tk.Tk):
         
         self.options.set("DComputers")
         self.comboSelect("")
-        if f.path.isfile(f.settings_dir + "Config.ini"):
-            f.loadConfig(self)
+        
         
         if not f.DEBUG:
             self.combobox['state'] = tk.DISABLED
@@ -531,7 +530,9 @@ class ADUnlocker(tk.Tk):
                 except:
                     pass            
             self.progress['value'] = 0
-            self.status['text'] = "Idle..."            
+            self.status['text'] = "Idle..."
+            if f.path.isfile(f.settings_dir + "Config.ini") and not self.loaded:
+                f.loadConfig(self)
         else:
             if self.state and self.servs:
                 f.widgetStatusFailed(self, False)
