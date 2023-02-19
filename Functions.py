@@ -1,5 +1,5 @@
 import json, sys
-from tkinter import NORMAL,DISABLED
+from ttkbootstrap import NORMAL,DISABLED
 from pyad import adsearch, aduser, adgroup, pyad, adcontainer
 from os import path, mkdir, removedirs, walk, listdir
 import win32security
@@ -9,9 +9,9 @@ import pythoncom
 import base64
 
 
-DEBUG = True
-Version = "v1.0.4.1.8"
-key = b'm\xc2\xbf\xfblPM\t\xe7\xee=j\x87F\xf59\xfe\xe0\xdb6GU\x80\x12\xb1\xa6\xcc\x85Bz4\xda'
+DEBUG = False
+Version = "v1.0.4.1.9"
+key = b'\xcf\x94\xd8\xdc\xbf\x8a\xb2\x90\xa2JQsA\xac$u\x0b\xed{,\xb5?\xbe\xb2\xa41DJ\x0bgc\x99'
 settings_file = "Settings.dat"
 
 if not DEBUG:
@@ -21,12 +21,6 @@ else:
 
 settings_dir = ''.join([exe_dir, '\\Settings\\'])
 # data_dir = ''.join([exe_dir, '\\Data\\'])
-
-def setTheme(self, theme):
-    if self.call("ttk::style", "theme", "use") == "azure-dark" and not theme == "dark":
-        self.call("set_theme", "light")
-    elif self.call("ttk::style", "theme", "use") == "azure-light" and not theme == "light":
-        self.call("set_theme", "dark")
 
 def Switch(string,lists):
     if string.lower() in lists:

@@ -5,7 +5,7 @@ from ttkbootstrap.constants import *
 import threading
 import tkinter as tk
 from tkinter import Radiobutton, Checkbutton
-import splash
+# import splash
 import Functions as f
 import Gui
 
@@ -75,7 +75,7 @@ class ADUnlocker(ttk.Window):
         if self.error:
             self.messageBox("ERROR!!","company settings is incomplete")
         
-        self.options.set("DComputers")
+        self.options.set("Horizon")
         self.comboSelect("")
         
         # Gui.print_icon("open_lock.png")
@@ -109,8 +109,8 @@ class ADUnlocker(ttk.Window):
                 self.checkRow += 1
             self.chkBtns[self.add_groups.get()] = ttk.IntVar(self.lbl_frame2, 1)
             print([x for x in self.chkBtns])
-            rbtn = Checkbutton(self.lbl_frame2, text=self.add_groups.get(), variable=self.chkBtns[self.add_groups.get()], onvalue=1, offvalue=0)
-            rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10)
+            rbtn = ttk.Checkbutton(self.lbl_frame2, text=self.add_groups.get(), variable=self.chkBtns[self.add_groups.get()], onvalue=1, offvalue=0)
+            rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
             self.checkCount+=1
         else:
             self.messageBox('ERROR!!!', 'That group already exists!')
@@ -244,8 +244,8 @@ class ADUnlocker(ttk.Window):
         self.checkRow = 0
         for x in self.groups:
             self.chkBtns[x] = ttk.IntVar(self.lbl_frame2, 1)
-            rbtn = Checkbutton(self.lbl_frame2, text=x, variable=self.chkBtns[x], onvalue=1, offvalue=0)
-            rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10)
+            rbtn = ttk.Checkbutton(self.lbl_frame2, text=x, variable=self.chkBtns[x], onvalue=1, offvalue=0)
+            rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
             self.checkCount+=1
             if self.checkCount > 3:
                 self.checkCount = 0
@@ -331,16 +331,16 @@ class ADUnlocker(ttk.Window):
         for j in self.positions:
             for y in self.positions[j]:
                 if not "Student" == y:                    
-                    rbtn1 = Radiobutton(self.lbl_frame8, text=y, variable=self.chkValue, command=self.movePosSelect, value=y)
-                    rbtn1.grid(row=row, column=count, padx=10)
+                    rbtn1 = ttk.Radiobutton(self.lbl_frame8, text=y, variable=self.chkValue, command=self.movePosSelect, value=y)
+                    rbtn1.grid(row=row, column=count, padx=10, pady=10)
                     rbtn1.selection_clear()
                     count += 1
                     if count > 4:
                         count = 0
                         row += 1
                 else:
-                    rbtn2 = Radiobutton(self.lbl_frame8, text=y, variable=self.chkValue, command=self.movePosSelect, value=y)
-                    rbtn2.grid(row=row, column=count, padx=10)
+                    rbtn2 = ttk.Radiobutton(self.lbl_frame8, text=y, variable=self.chkValue, command=self.movePosSelect, value=y)
+                    rbtn2.grid(row=row, column=count, padx=10, pady=10)
                     rbtn2.selection_clear()
                     count2 += 1
                     if count2 > 4:
@@ -356,7 +356,13 @@ class ADUnlocker(ttk.Window):
 
     def clear_campus(self):
         list = self.lbl_frameC.pack_slaves()
+        listF = self.lbl_frameF.pack_slaves()
+        listG = self.lbl_frameG.pack_slaves()
         for l in list:
+            l.destroy()
+        for l in listF:
+            l.destroy()
+        for l in listG:
             l.destroy()
 
     def clear_pos(self):
@@ -403,10 +409,16 @@ class ADUnlocker(ttk.Window):
                 counter = 1
                 for x in f.base64.b64decode(self.campus).decode("UTF-8").split(","):
                     balak = ttk.Radiobutton(self.lbl_frameC, text=x, variable=self.campH, value=counter, command=lambda:self.comboSelect("camp"))
+                    balak_move = ttk.Radiobutton(self.lbl_frameF, text=x, variable=self.campH, value=counter, command=lambda:self.comboSelect("camp"))
+                    balak_edit = ttk.Radiobutton(self.lbl_frameG, text=x, variable=self.campH, value=counter, command=lambda:self.comboSelect("camp"))
                     if counter == 1:
-                        balak.pack(side="left",fill=ttk.BOTH, expand=True)
+                        balak.pack(side='left', fill='y', expand=True, padx=10, pady=10)
+                        balak_move.pack(side='left', fill='y', expand=True, padx=10, pady=10)
+                        balak_edit.pack(side='left', fill='y', expand=True, padx=10, pady=10)
                     else:
-                        balak.pack(side="right",fill=ttk.BOTH, expand=True)
+                        balak.pack(side='right', fill='y', expand=True, padx=10, pady=10)
+                        balak_move.pack(side='right', fill='y', expand=True, padx=10, pady=10)
+                        balak_edit.pack(side='right', fill='y', expand=True, padx=10, pady=10)
                     counter-=1
 
         t = threading.Thread(target=self.comboLoad)
@@ -448,28 +460,28 @@ class ADUnlocker(ttk.Window):
                             self.progress['maximum'] = float(self.positions.__len__())
                             self.progress['value'] = prog                            
                             if not x == "Students":
-                                rbtn = Radiobutton(self.lbl_frame, text=y, variable=self.var, command=self.posSelect, value=y)
-                                rbtn.grid(row=row, column=count, padx=10)
+                                rbtn = ttk.Radiobutton(self.lbl_frame, text=y, variable=self.var, command=self.posSelect, value=y)
+                                rbtn.grid(row=row, column=count, padx=10, pady=10)
                                 rbtn.selection_clear()
-                                rbtn3 = Radiobutton(self.lbl_frame6, text=y, variable=self.var2, command=self.moveSelect, value=y)
-                                rbtn3.grid(row=row, column=count, padx=10)
+                                rbtn3 = ttk.Radiobutton(self.lbl_frame6, text=y, variable=self.var2, command=self.moveSelect, value=y)
+                                rbtn3.grid(row=row, column=count, padx=10, pady=10)
                                 rbtn3.selection_clear()
-                                rbtn5 = Radiobutton(self.lbl_frame9, text=y, variable=self.var3, command=self.updateSelect, value=y)
-                                rbtn5.grid(row=row, column=count, padx=10)
+                                rbtn5 = ttk.Radiobutton(self.lbl_frame9, text=y, variable=self.var3, command=self.updateSelect, value=y)
+                                rbtn5.grid(row=row, column=count, padx=10, pady=10)
                                 rbtn5.selection_clear()
                                 count+=1
                                 if count > 3:
                                     count = 0
                                     row += 1
                             else:
-                                rbtn2 = Radiobutton(self.lbl_frame4, text=y, variable=self.var, command=self.posSelect, value=y)
-                                rbtn2.grid(row=row2, column=count2, padx=10)
+                                rbtn2 = ttk.Radiobutton(self.lbl_frame4, text=y, variable=self.var, command=self.posSelect, value=y)
+                                rbtn2.grid(row=row2, column=count2, padx=10, pady=10)
                                 rbtn2.selection_clear()
-                                rbtn4 = Radiobutton(self.lbl_frame7, text=y, variable=self.var2, command=self.moveSelect, value=y)
-                                rbtn4.grid(row=row2, column=count2, padx=10)
+                                rbtn4 = ttk.Radiobutton(self.lbl_frame7, text=y, variable=self.var2, command=self.moveSelect, value=y)
+                                rbtn4.grid(row=row2, column=count2, padx=10, pady=10)
                                 rbtn4.selection_clear()
-                                rbtn6 = Radiobutton(self.lbl_frame10, text=y, variable=self.var3, command=self.updateSelect, value=y)
-                                rbtn6.grid(row=row2, column=count2, padx=10)
+                                rbtn6 = ttk.Radiobutton(self.lbl_frame10, text=y, variable=self.var3, command=self.updateSelect, value=y)
+                                rbtn6.grid(row=row2, column=count2, padx=10, pady=10)
                                 rbtn6.selection_clear()
                                 count2+=1
                                 if count2 > 6:
@@ -488,8 +500,8 @@ class ADUnlocker(ttk.Window):
                     self.exOU = ttk.StringVar(None,"1")
                     for i in self.expiredOUs:
                         self.progress['value'] = prog
-                        rbtn3 = Radiobutton(self.lbl_frame5, text=i, variable=self.exOU, command=self.expSelect, value=i)
-                        rbtn3.grid(row=row3, column=count3, padx=10)
+                        rbtn3 = ttk.Radiobutton(self.lbl_frame5, text=i, variable=self.exOU, command=self.expSelect, value=i)
+                        rbtn3.grid(row=row3, column=count3, padx=10, pady=10)
                         rbtn3.selection_clear()
                         count3+=1
                         if count3 > 3:
@@ -755,7 +767,7 @@ class ADUnlocker(ttk.Window):
         self.progress["value"] = 0
 
     def messageBox(self, title, txt):
-        ap = tk.Tk()
+        ap = ttk.Window()
         geo = self.winfo_geometry()
         posX = geo.split("+")[1]
         posY = geo.split("+")[2]
@@ -763,8 +775,8 @@ class ADUnlocker(ttk.Window):
         center_x = int(int(posX) + (self.W/2) - 100)
         center_y = int(int(posY) + (self.H/2) - 25)
 
-        message = tk.Label(ap, text=txt, wraplength=250, justify=tk.CENTER)
-        btn = tk.Button(ap, text="OK", width=10, command=ap.destroy)
+        message = ttk.Label(ap, text=txt, wraplength=250, justify=tk.CENTER)
+        btn = ttk.Button(ap, text="OK", width=10, command=ap.destroy)
         ap.title(title)
         ap.geometry(f'300x100+{center_x}+{center_y}')
         ap.attributes("-fullscreen", False)
@@ -772,7 +784,7 @@ class ADUnlocker(ttk.Window):
         ap.attributes("-topmost", True)
         
         message.pack(fill='both',expand=True, pady=5)
-        btn.pack(anchor=tk.CENTER, padx=10, pady=5)
+        btn.pack(anchor=ttk.CENTER, padx=10, pady=5)
         
         ap.mainloop()
 
