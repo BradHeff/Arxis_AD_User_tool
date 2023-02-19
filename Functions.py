@@ -10,8 +10,8 @@ import base64
 
 
 DEBUG = False
-Version = "v1.0.4.1.9"
-key = b'\xcf\x94\xd8\xdc\xbf\x8a\xb2\x90\xa2JQsA\xac$u\x0b\xed{,\xb5?\xbe\xb2\xa41DJ\x0bgc\x99'
+Version = "v1.0.4.2.1"
+key = b"\xcdAJ\xb5~'\xde\x00lN$6\xc7FgJ\xb1-/\x88's+63\xbe\x9bZ?P\xa4\xd0"
 settings_file = "Settings.dat"
 
 if not DEBUG:
