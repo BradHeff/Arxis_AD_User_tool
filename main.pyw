@@ -73,10 +73,10 @@ class ADUnlocker(tk.Tk):
         if self.error:
             self.messageBox("ERROR!!","company settings is incomplete")
         
-        self.options.set("Horizon")
+        self.options.set("DComputers")
         self.comboSelect("")
         
-        
+        # Gui.print_icon("open_lock.png")
         if not f.DEBUG:
             self.combobox['state'] = tk.DISABLED
         
@@ -192,11 +192,11 @@ class ADUnlocker(tk.Tk):
         except:
             pass
         try:
-            self.lname_entry.insert(0, self.updateList[self.selItem3[0]]['fname'])
+            self.lname_entry.insert(0, self.updateList[self.selItem3[0]]['lname'])
         except:
             pass
         try:
-            self.fname_entry.insert(0, self.updateList[self.selItem3[0]]['lname'])
+            self.fname_entry.insert(0, self.updateList[self.selItem3[0]]['fname'])
         except:
             pass
         try:

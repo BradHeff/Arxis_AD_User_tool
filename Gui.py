@@ -1,9 +1,52 @@
 import tkinter as tk
 from tkinter import ttk
 from Functions import Version, setTheme, base64, loadConfig, saveConfig
-# import sv_ttk
+import tempfile
 from icon import image
+from lock import LOCK
 
+_, ICON_PATH = tempfile.mkstemp()
+
+def get_icons():
+    with open(ICON_PATH, 'wb') as icon_file:
+        icon_file.write(LOCK)
+
+def print_icon(file):
+    with open(file, "rb") as image:
+        a = image.read()
+    data = (repr(a))
+
+    data = data[2:]  #trim out the b'
+    data = data[:-1]  #trim out the last '
+
+    dataList = data.split('\\x')  #split by hex unit
+    dataList = dataList[1:] #remove the blank  value at the beginning
+
+    totalLen = len(dataList)
+
+    i = 0
+    hexline = ''
+    lenCount = 0
+    groupCount = 0
+    for hex in dataList:
+        if(lenCount == totalLen-1):
+            hexline += '\\x' + hex
+            with open("lock.py", "a+") as f:
+                f.write('b\'' + hexline + '\'\n')
+                f.close()
+            # print('b\'' + hexline + '\'')
+        if(i == 16):  #change number of grouping here       
+            # print('b\'' + hexline + '\'')
+            with open("lock.py", "a+") as f:
+                f.write('b\'' + hexline + '\'\n')
+                f.close()
+            i=0
+            hexline = ''
+            groupCount += 1
+
+        hexline += '\\x' + hex
+        i+=1         
+        lenCount += 1
 
 def Window(self):
     self.W,self.H = 665,785
@@ -41,8 +84,18 @@ def baseGUI(self):
     
     menubar.add_cascade(label="File", menu=self.file)
     self.config(menu=menubar)
+    
+    get_icons()
+    lock = tk.PhotoImage(file=ICON_PATH)
+    
+    style = ttk.Style(self)
+    style.theme_create( "MyStyle", parent="classic", settings={
+        "TNotebook": {"configure": {"tabmargins": [2, 5, 2, 0] } },
+        "TNotebook.Tab": {"configure": {"padding": [5, 70],"width": 8},}})
 
-    self.tabControl = ttk.Notebook(self)
+    style.theme_use("MyStyle")
+    style.configure('lefttab.TNotebook', tabposition='wn')
+    self.tabControl = ttk.Notebook(self, style='lefttab.TNotebook')
   
     tab1 = ttk.Frame(self.tabControl)    
     self.tab2 = ttk.Frame(self.tabControl)
@@ -71,10 +124,10 @@ def baseGUI(self):
     self.columnconfigure(0, weight=0, pad=70)
     self.rowconfigure(0, weight=1)
 
-    self.tabControl.add(tab1, text ='Locked Users')
+    self.tabControl.add(tab1, text ='Locked Users', image=lock, compound="top")
     self.tabControl.add(self.tab2, text ='New Users')
     # self.tabControl.add(tab3, text ='Disabled User')
-    # self.tabControl.add(tab4, text ='Move User')
+    self.tabControl.add(tab4, text ='Move User')
     self.tabControl.add(tab5, text ='Edit User')
     self.tabControl.bind('<<NotebookTabChanged>>',self.alterButton)
     self.tabControl.grid(column=0, row=0, columnspan=4, sticky='nsew')
