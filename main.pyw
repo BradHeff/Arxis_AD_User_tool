@@ -1,5 +1,7 @@
 import datetime
 # from Importer import convertCSV, updateSettings, getTitleWindow
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 import threading
 import tkinter as tk
 from tkinter import Radiobutton, Checkbutton
@@ -7,9 +9,9 @@ import splash
 import Functions as f
 import Gui
 
-class ADUnlocker(tk.Tk):
+class ADUnlocker(ttk.Window):
     def __init__(self):
-        super(ADUnlocker, self).__init__()
+        super(ADUnlocker, self).__init__(themename="yeti")
         # global root
         
         # root.destroy()
@@ -53,7 +55,7 @@ class ADUnlocker(tk.Tk):
         self.checkCount = 0
         self.checkRow = 0
 
-        self.load = tk.BooleanVar(self, False)
+        self.load = ttk.BooleanVar(self, False)
         self.comp = "Select Company"
         
         currentDateTime = datetime.datetime.now()
@@ -64,7 +66,7 @@ class ADUnlocker(tk.Tk):
         
         self.error = f.checkSettings(self)
         
-        Gui.baseGUI(self)
+        Gui.baseGUI(self, ttk)
         
         self.title(''.join(["Horizon AD User Tool v", f.Version[4:f.Version.__len__()]]))
         
@@ -78,7 +80,7 @@ class ADUnlocker(tk.Tk):
         
         # Gui.print_icon("open_lock.png")
         if not f.DEBUG:
-            self.combobox['state'] = tk.DISABLED
+            self.combobox['state'] = ttk.DISABLED
         
         
     def setLoad(self):
@@ -105,7 +107,7 @@ class ADUnlocker(tk.Tk):
             if self.checkCount > 3:
                 self.checkCount = 0
                 self.checkRow += 1
-            self.chkBtns[self.add_groups.get()] = tk.IntVar(self.lbl_frame2, 1)
+            self.chkBtns[self.add_groups.get()] = ttk.IntVar(self.lbl_frame2, 1)
             print([x for x in self.chkBtns])
             rbtn = Checkbutton(self.lbl_frame2, text=self.add_groups.get(), variable=self.chkBtns[self.add_groups.get()], onvalue=1, offvalue=0)
             rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10)
@@ -241,7 +243,7 @@ class ADUnlocker(tk.Tk):
         self.checkCount = 0
         self.checkRow = 0
         for x in self.groups:
-            self.chkBtns[x] = tk.IntVar(self.lbl_frame2, 1)
+            self.chkBtns[x] = ttk.IntVar(self.lbl_frame2, 1)
             rbtn = Checkbutton(self.lbl_frame2, text=x, variable=self.chkBtns[x], onvalue=1, offvalue=0)
             rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10)
             self.checkCount+=1
@@ -325,7 +327,7 @@ class ADUnlocker(tk.Tk):
         list = self.lbl_frame8.grid_slaves()
         for l in list:
             l.destroy()
-        self.chkValue = tk.StringVar(self.lbl_frame8, "1")
+        self.chkValue = ttk.StringVar(self.lbl_frame8, "1")
         for j in self.positions:
             for y in self.positions[j]:
                 if not "Student" == y:                    
@@ -400,11 +402,11 @@ class ADUnlocker(tk.Tk):
             if not f.base64.b64decode(self.campus).decode("UTF-8").split(",")[0].__len__() <= 0:
                 counter = 1
                 for x in f.base64.b64decode(self.campus).decode("UTF-8").split(","):
-                    balak = tk.Radiobutton(self.lbl_frameC, text=x, variable=self.campH, value=counter, command=lambda:self.comboSelect("camp"))
+                    balak = ttk.Radiobutton(self.lbl_frameC, text=x, variable=self.campH, value=counter, command=lambda:self.comboSelect("camp"))
                     if counter == 1:
-                        balak.pack(side="left",fill=tk.BOTH, expand=True)
+                        balak.pack(side="left",fill=ttk.BOTH, expand=True)
                     else:
-                        balak.pack(side="right",fill=tk.BOTH, expand=True)
+                        balak.pack(side="right",fill=ttk.BOTH, expand=True)
                     counter-=1
 
         t = threading.Thread(target=self.comboLoad)
@@ -437,9 +439,9 @@ class ADUnlocker(tk.Tk):
                     row = 0
                     count2 = 0
                     row2 = 0
-                    self.var = tk.StringVar(None,"1")
-                    self.var2 = tk.StringVar(None,"1")
-                    self.var3 = tk.StringVar(None,"1")
+                    self.var = ttk.StringVar(None,"1")
+                    self.var2 = ttk.StringVar(None,"1")
+                    self.var3 = ttk.StringVar(None,"1")
                     for x in self.positions:
                         for y in self.positions[x]:
                             prog = 1
@@ -483,7 +485,7 @@ class ADUnlocker(tk.Tk):
                     prog = 1
                     count3 = 0
                     row3 = 0
-                    self.exOU = tk.StringVar(None,"1")
+                    self.exOU = ttk.StringVar(None,"1")
                     for i in self.expiredOUs:
                         self.progress['value'] = prog
                         rbtn3 = Radiobutton(self.lbl_frame5, text=i, variable=self.exOU, command=self.expSelect, value=i)
@@ -549,7 +551,7 @@ class ADUnlocker(tk.Tk):
         if self.passBox.get().__len__() < 8:
             self.messageBox("ERROR!!","Password Too Short!")
             return
-        f.widgetStatus(self, tk.DISABLED)
+        f.widgetStatus(self, ttk.DISABLED)
         newPass = self.passBox.get()
         t = threading.Thread(target=f.resetPassword, args=[self,self.selItem[2], newPass])
         t.daemon = True
@@ -563,7 +565,7 @@ class ADUnlocker(tk.Tk):
             self.messageBox("ERROR!!","You must select a user!")
             return
         self.status['text'] = "Moving " + str(self.selItem2[1]) + "..."
-        f.widgetStatus(self, tk.DISABLED)
+        f.widgetStatus(self, ttk.DISABLED)
         self.progress['max'] = 100
         self.progress['value'] = 30
         t = threading.Thread(target=f.moveUser, args=[self, self.selItem2[2], self.movePosOU])
@@ -574,7 +576,7 @@ class ADUnlocker(tk.Tk):
         if "Select" in self.options.get():
             self.messageBox("ERROR!!","You must select a company!")
             return
-        f.widgetStatus(self, tk.DISABLED)
+        f.widgetStatus(self, ttk.DISABLED)
         self.tree.delete(*self.tree.get_children())
         t = threading.Thread(target=self.loads, args=[])
         t.daemon = True
@@ -586,7 +588,7 @@ class ADUnlocker(tk.Tk):
             self.status['text'] = "Searching locked users ..."
             locked = f.listLocked(self)
             if locked.__len__() <= 0:
-                f.widgetStatus(self, tk.NORMAL)
+                f.widgetStatus(self, ttk.NORMAL)
                 self.status['text'] = "Idle..."
                 self.messageBox("SUCCESS!!","No Locked Users!")
                 return
@@ -596,7 +598,7 @@ class ADUnlocker(tk.Tk):
         except:
             self.messageBox("Error", "An error occurred, Check settings")
 
-        f.widgetStatus(self, tk.NORMAL)
+        f.widgetStatus(self, ttk.NORMAL)
         self.status['text'] = "Idle..."
 
     def unlockUsers(self):
@@ -608,7 +610,7 @@ class ADUnlocker(tk.Tk):
             self.messageBox("ERROR!!","Must select a user!")
             return
         
-        f.widgetStatus(self, tk.DISABLED)
+        f.widgetStatus(self, ttk.DISABLED)
                 
         f.unlockUser(self,self.selItem[2])
         selected_item = self.tree.selection()[0]
@@ -617,10 +619,10 @@ class ADUnlocker(tk.Tk):
         self.messageBox("SUCCESS!!","Unlock Complete!")
 
     def unlockAll(self):
-        f.widgetStatus(self, tk.DISABLED)
+        f.widgetStatus(self, ttk.DISABLED)
         if self.tabControl.index(self.tabControl.select()) == 0:
             if self.tree.get_children() == ():
-                f.widgetStatus(self, tk.NORMAL)
+                f.widgetStatus(self, ttk.NORMAL)
                 self.messageBox("ERROR!!","List cannot be empty!")
                 return
             for line in self.tree.get_children():
@@ -633,7 +635,7 @@ class ADUnlocker(tk.Tk):
             t.daemon = True
             t.start()
         elif self.tabControl.index(self.tabControl.select()) == 1:
-            f.widgetStatus(self, tk.DISABLED)
+            f.widgetStatus(self, ttk.DISABLED)
             if not self.compFail:
                 data = dict()
                 if self.fname.get().__len__() >= 2 and self.lname.get().__len__() >= 2:
@@ -666,17 +668,17 @@ class ADUnlocker(tk.Tk):
                             t.daemon = True
                             t.start()
                         else:
-                            f.widgetStatus(self, tk.NORMAL)
+                            f.widgetStatus(self, ttk.NORMAL)
                             self.status['text'] = "Idle..."
                             self.messageBox("ERROR!!","You must select domain\nHomeDrive and HomePath")
                     else:
-                        f.widgetStatus(self, tk.NORMAL)
+                        f.widgetStatus(self, ttk.NORMAL)
                         self.messageBox("ERROR!!","Must enter Password\nor password 8 characters min")
                 else:
-                    f.widgetStatus(self, tk.NORMAL)
+                    f.widgetStatus(self, ttk.NORMAL)
                     self.messageBox("ERROR!!","First and Lastname must\nbe filled!")
             else:
-                f.widgetStatus(self, tk.NORMAL)
+                f.widgetStatus(self, ttk.NORMAL)
                 self.messageBox("ERROR!!","Your Settings are incomplete\nfor this TAB!")
         # elif self.tabControl.index(self.tabControl.select()) == 2:
         #     if not self.compFail:
@@ -709,7 +711,7 @@ class ADUnlocker(tk.Tk):
                         return
 
                     data = dict()
-                    f.widgetStatus(self, tk.DISABLED)
+                    f.widgetStatus(self, ttk.DISABLED)
                     self.progress['value'] = 10
                     self.status['text'] = "Gathering Information..."
                     
@@ -743,10 +745,10 @@ class ADUnlocker(tk.Tk):
                     t.daemon = True
                     t.start()
                 else:
-                    f.widgetStatus(self, tk.NORMAL)
+                    f.widgetStatus(self, ttk.NORMAL)
                     self.messageBox("ERROR!!","Password must be 8 characters long")    
             else:
-                f.widgetStatus(self, tk.NORMAL)
+                f.widgetStatus(self, ttk.NORMAL)
                 self.messageBox("ERROR!!","Your Settings are incomplete\nfor this TAB!")
 
     def resetProgress(self):
