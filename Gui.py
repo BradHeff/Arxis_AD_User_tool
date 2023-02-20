@@ -285,7 +285,7 @@ def Tab2(self, tab2, ttk):
     self.jobTitleEnt = ttk.Entry(self.lbl_frame3, width=43)
     self.jobTitleEnt.grid(sticky='en', column=3, row=1, padx=10, pady=10)
     
-    self.campH = ttk.IntVar(None, 1)
+    self.campH = ttk.StringVar(self.lbl_frameC, "balaklava")
     
     # clare = tk.Radiobutton(self.lbl_frameC, text="Clare", variable=self.campH, value=0, command=lambda:self.comboSelect(""))
     # balak.pack(side="left", fill=ttk.BOTH, expand=True)

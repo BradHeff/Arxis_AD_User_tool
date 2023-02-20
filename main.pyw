@@ -75,7 +75,7 @@ class ADUnlocker(ttk.Window):
         if self.error:
             self.messageBox("ERROR!!","company settings is incomplete")
         
-        self.options.set("Horizon")
+        self.options.set("DComputers")
         self.comboSelect("")
         
         # Gui.print_icon("open_lock.png")
@@ -408,9 +408,10 @@ class ADUnlocker(ttk.Window):
             if not f.base64.b64decode(self.campus).decode("UTF-8").split(",")[0].__len__() <= 0:
                 counter = 1
                 for x in f.base64.b64decode(self.campus).decode("UTF-8").split(","):
-                    balak = ttk.Radiobutton(self.lbl_frameC, text=x, variable=self.campH, value=counter, command=lambda:self.comboSelect("camp"))
-                    balak_move = ttk.Radiobutton(self.lbl_frameF, text=x, variable=self.campH, value=counter, command=lambda:self.comboSelect("camp"))
-                    balak_edit = ttk.Radiobutton(self.lbl_frameG, text=x, variable=self.campH, value=counter, command=lambda:self.comboSelect("camp"))
+                    print(x)
+                    balak = ttk.Radiobutton(self.lbl_frameC, text=x, variable=self.campH, value=x, command=lambda:self.comboSelect("camp"))
+                    balak_move = ttk.Radiobutton(self.lbl_frameF, text=x, variable=self.campH, value=x, command=lambda:self.comboSelect("camp"))
+                    balak_edit = ttk.Radiobutton(self.lbl_frameG, text=x, variable=self.campH, value=x, command=lambda:self.comboSelect("camp"))
                     if counter == 1:
                         balak.pack(side='left', fill='y', expand=True, padx=10, pady=10)
                         balak_move.pack(side='left', fill='y', expand=True, padx=10, pady=10)

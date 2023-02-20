@@ -9,7 +9,7 @@ import pythoncom
 import base64
 
 
-DEBUG = False
+DEBUG = True
 Version = "v1.0.4.2.1"
 key = b"\xcdAJ\xb5~'\xde\x00lN$6\xc7FgJ\xb1-/\x88's+63\xbe\x9bZ?P\xa4\xd0"
 settings_file = "Settings.dat"
