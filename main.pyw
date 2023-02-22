@@ -66,7 +66,7 @@ class ADUnlocker(ttk.Window):
         
         self.error = f.checkSettings(self)
         
-        Gui.baseGUI(self, ttk)
+        Gui.baseGUI(self)
         
         self.title(''.join(["Horizon AD User Tool v", f.Version[4:f.Version.__len__()]]))
         
@@ -75,7 +75,7 @@ class ADUnlocker(ttk.Window):
         if self.error:
             self.messageBox("ERROR!!","company settings is incomplete")
         
-        self.options.set("DComputers")
+        self.options.set("Horizon")
         self.comboSelect("")
         
         # Gui.print_icon("open_lock.png")
@@ -108,7 +108,7 @@ class ADUnlocker(ttk.Window):
                 self.checkCount = 0
                 self.checkRow += 1
             self.chkBtns[self.add_groups.get()] = ttk.IntVar(self.lbl_frame2, 1)
-            print([x for x in self.chkBtns])
+            # print([x for x in self.chkBtns])
             rbtn = ttk.Checkbutton(self.lbl_frame2, text=self.add_groups.get(), variable=self.chkBtns[self.add_groups.get()], onvalue=1, offvalue=0)
             rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
             self.checkCount+=1
@@ -221,12 +221,12 @@ class ADUnlocker(ttk.Window):
 
     def posSelect(self):
         self.clear_group()
-        if ("Year" in self.var.get() or "Found" in self.var.get()) and self.campH.get() == 0:
+        if ("Year" in self.var.get() or "Found" in self.var.get()) and "clare" in self.campH.get():
             self.posOU = self.positionsOU[self.var.get()+"-Clare"]
         else:
             self.posOU = self.positionsOU[self.var.get()]
         self.groups = self.groupPos[self.var.get()]
-        if self.campH.get() == 0:
+        if "clare" in self.campH.get():
             descDate = ''.join([self.date, " Clare"])
         else:
             descDate = self.date
@@ -258,7 +258,10 @@ class ADUnlocker(ttk.Window):
                 pass
 
     def movePosSelect(self):
-        self.movePosOU = self.positionsOU[self.chkValue.get()]
+        if ("Year" in self.var2.get() or "Found" in self.var2.get()) and "clare" in self.campH.get():
+            self.movePosOU = self.positionsOU[self.chkValue.get()+"-Clare"]
+        else:
+            self.movePosOU = self.positionsOU[self.chkValue.get()]
 
     def updateSelect(self):
         self.entDomain['state'] = 'normal'
@@ -275,13 +278,17 @@ class ADUnlocker(ttk.Window):
 
     def editOption(self):
         f.pythoncom.CoInitialize()
-        self.tree3.delete(*self.tree3.get_children())
-        self.var2.set(None)
-        list = self.lbl_frame8.grid_slaves()
-        for l in list:
-            l.destroy()
+        # print(self.campH.get())
+        # self.tree3.delete(*self.tree3.get_children())
+        # self.var2.set(None)
+        # list = self.lbl_frame8.grid_slaves()
+        # for l in list:
+        #     l.destroy()
         self.status['text'] = "Loading Users ...."
-        self.updateList = f.listUsers2(self, self.positionsOU[self.var3.get()])
+        if ("Year" in self.var3.get() or "Found" in self.var3.get()) and "clare" in self.campH.get():
+            self.updateList = f.listUsers2(self, self.positionsOU[self.var3.get()+"-Clare"])
+        else:
+            self.updateList = f.listUsers2(self, self.positionsOU[self.var3.get()])
         self.tree4.delete(*self.tree4.get_children())
         self.progress['maximum'] = self.updateList.__len__()
         count = 0
@@ -297,57 +304,57 @@ class ADUnlocker(ttk.Window):
         t.daemon = True
         t.start()
 
-    def moveOption(self):
-        f.pythoncom.CoInitialize()
-        self.tree4.delete(*self.tree4.get_children())
-        self.var3.set(None)
-        self.entDomain['state'] = 'normal'
-        self.entDesc.delete(0, 'end')
-        self.entJobTitle.delete(0, 'end')
-        self.entSamname.delete(0, 'end')
-        self.entDomain.delete(0, 'end')
-        self.lname_entry.delete(0, 'end')
-        self.fname_entry.delete(0, 'end')
-        self.entDomain['state'] = 'readonly'
-        self.status['text'] = "Loading Users ...."
+    # def moveOption(self):
+    #     f.pythoncom.CoInitialize()
+    #     self.tree4.delete(*self.tree4.get_children())
+    #     self.var3.set(None)
+    #     self.entDomain['state'] = 'normal'
+    #     self.entDesc.delete(0, 'end')
+    #     self.entJobTitle.delete(0, 'end')
+    #     self.entSamname.delete(0, 'end')
+    #     self.entDomain.delete(0, 'end')
+    #     self.lname_entry.delete(0, 'end')
+    #     self.fname_entry.delete(0, 'end')
+    #     self.entDomain['state'] = 'readonly'
+    #     self.status['text'] = "Loading Users ...."
         
-        usersList = f.listUsers(self, self.positionsOU[self.var2.get()])
-        self.progress['maximum'] = float(usersList.__len__())
-        progCount = 1
-        self.tree3.delete(*self.tree3.get_children())
-        for i in usersList:
-            self.progress['value'] = progCount
-            self.tree3.insert('', 'end', values=(i, usersList[i]['name'], usersList[i]['ou']))
-            progCount+=1
-        count = 0
-        row = 0
-        count2 = 0
-        row2 = 0
+    #     usersList = f.listUsers(self, self.positionsOU[self.var2.get()])
+    #     self.progress['maximum'] = float(usersList.__len__())
+    #     progCount = 1
+    #     self.tree3.delete(*self.tree3.get_children())
+    #     for i in usersList:
+    #         self.progress['value'] = progCount
+    #         self.tree3.insert('', 'end', values=(i, usersList[i]['name'], usersList[i]['ou']))
+    #         progCount+=1
+    #     count = 0
+    #     row = 0
+    #     count2 = 0
+    #     row2 = 0
         
-        list = self.lbl_frame8.grid_slaves()
-        for l in list:
-            l.destroy()
-        self.chkValue = ttk.StringVar(self.lbl_frame8, "1")
-        for j in self.positions:
-            for y in self.positions[j]:
-                if not "Student" == y:                    
-                    rbtn1 = ttk.Radiobutton(self.lbl_frame8, text=y, variable=self.chkValue, command=self.movePosSelect, value=y)
-                    rbtn1.grid(row=row, column=count, padx=10, pady=10)
-                    rbtn1.selection_clear()
-                    count += 1
-                    if count > 4:
-                        count = 0
-                        row += 1
-                else:
-                    rbtn2 = ttk.Radiobutton(self.lbl_frame8, text=y, variable=self.chkValue, command=self.movePosSelect, value=y)
-                    rbtn2.grid(row=row, column=count, padx=10, pady=10)
-                    rbtn2.selection_clear()
-                    count2 += 1
-                    if count2 > 4:
-                        count2 = 0
-                        row2 += 1
-        self.status['text'] = "Idle..."
-        self.progress['value'] = 0
+    #     list = self.lbl_frame8.grid_slaves()
+    #     for l in list:
+    #         l.destroy()
+    #     self.chkValue = ttk.StringVar(self.lbl_frame8, "1")
+    #     for j in self.positions:
+    #         for y in self.positions[j]:
+    #             if not "Student" == y:                    
+    #                 rbtn1 = ttk.Radiobutton(self.lbl_frame8, text=y, variable=self.chkValue, command=self.movePosSelect, value=y)
+    #                 rbtn1.grid(row=row, column=count, padx=10, pady=10)
+    #                 rbtn1.selection_clear()
+    #                 count += 1
+    #                 if count > 4:
+    #                     count = 0
+    #                     row += 1
+    #             else:
+    #                 rbtn2 = ttk.Radiobutton(self.lbl_frame8, text=y, variable=self.chkValue, command=self.movePosSelect, value=y)
+    #                 rbtn2.grid(row=row, column=count, padx=10, pady=10)
+    #                 rbtn2.selection_clear()
+    #                 count2 += 1
+    #                 if count2 > 4:
+    #                     count2 = 0
+    #                     row2 += 1
+    #     self.status['text'] = "Idle..."
+    #     self.progress['value'] = 0
 
     def clear_group(self):
         list = self.lbl_frame2.grid_slaves()
@@ -356,12 +363,12 @@ class ADUnlocker(ttk.Window):
 
     def clear_campus(self):
         list = self.lbl_frameC.pack_slaves()
-        listF = self.lbl_frameF.pack_slaves()
+        # listF = self.lbl_frameF.pack_slaves()
         listG = self.lbl_frameG.pack_slaves()
         for l in list:
             l.destroy()
-        for l in listF:
-            l.destroy()
+        # for l in listF:
+        #     l.destroy()
         for l in listG:
             l.destroy()
 
@@ -373,21 +380,21 @@ class ADUnlocker(ttk.Window):
         for l in list:
             l.destroy()
 
-    def clear_exp(self):
-        list = self.lbl_frame5.grid_slaves()
-        for l in list:
-            l.destroy()
+    # def clear_exp(self):
+    #     list = self.lbl_frame5.grid_slaves()
+    #     for l in list:
+    #         l.destroy()
     
-    def clear_move(self):
-        list = self.lbl_frame6.grid_slaves()
-        for l in list:
-            l.destroy()
-        list = self.lbl_frame7.grid_slaves()
-        for l in list:
-            l.destroy()
-        list = self.lbl_frame8.grid_slaves()
-        for l in list:
-            l.destroy()
+    # def clear_move(self):
+    #     list = self.lbl_frame6.grid_slaves()
+    #     for l in list:
+    #         l.destroy()
+    #     list = self.lbl_frame7.grid_slaves()
+    #     for l in list:
+    #         l.destroy()
+    #     list = self.lbl_frame8.grid_slaves()
+    #     for l in list:
+    #         l.destroy()
 
     def clear_edit(self):
         list = self.lbl_frame9.grid_slaves()
@@ -408,17 +415,17 @@ class ADUnlocker(ttk.Window):
             if not f.base64.b64decode(self.campus).decode("UTF-8").split(",")[0].__len__() <= 0:
                 counter = 1
                 for x in f.base64.b64decode(self.campus).decode("UTF-8").split(","):
-                    print(x)
+                    # print(x)
                     balak = ttk.Radiobutton(self.lbl_frameC, text=x, variable=self.campH, value=x, command=lambda:self.comboSelect("camp"))
-                    balak_move = ttk.Radiobutton(self.lbl_frameF, text=x, variable=self.campH, value=x, command=lambda:self.comboSelect("camp"))
+                    # balak_move = ttk.Radiobutton(self.lbl_frameF, text=x, variable=self.campH, value=x, command=lambda:self.comboSelect("camp"))
                     balak_edit = ttk.Radiobutton(self.lbl_frameG, text=x, variable=self.campH, value=x, command=lambda:self.comboSelect("camp"))
                     if counter == 1:
                         balak.pack(side='left', fill='y', expand=True, padx=10, pady=10)
-                        balak_move.pack(side='left', fill='y', expand=True, padx=10, pady=10)
+                        # balak_move.pack(side='left', fill='y', expand=True, padx=10, pady=10)
                         balak_edit.pack(side='left', fill='y', expand=True, padx=10, pady=10)
                     else:
                         balak.pack(side='right', fill='y', expand=True, padx=10, pady=10)
-                        balak_move.pack(side='right', fill='y', expand=True, padx=10, pady=10)
+                        # balak_move.pack(side='right', fill='y', expand=True, padx=10, pady=10)
                         balak_edit.pack(side='right', fill='y', expand=True, padx=10, pady=10)
                     counter-=1
 
@@ -428,17 +435,17 @@ class ADUnlocker(ttk.Window):
         # t.join()
 
     def comboLoad(self):
-        print(self.positions)
+        # print(self.positions)
         f.pythoncom.CoInitialize()
         self.status['text'] = "Loading..."
         self.clear_pos()        
         self.clear_group()
-        self.clear_exp()
-        self.clear_move()
+        # self.clear_exp()
+        # self.clear_move()
         self.clear_edit()
         self.tree4.delete(*self.tree4.get_children())
-        self.tree3.delete(*self.tree3.get_children())
-        self.tree2.delete(*self.tree2.get_children())
+        # self.tree3.delete(*self.tree3.get_children())
+        # self.tree2.delete(*self.tree2.get_children())
         self.tree.delete(*self.tree.get_children())
         self.desc.delete(0, 'end')
         self.dpass.delete(0, 'end')
@@ -464,9 +471,9 @@ class ADUnlocker(ttk.Window):
                                 rbtn = ttk.Radiobutton(self.lbl_frame, text=y, variable=self.var, command=self.posSelect, value=y)
                                 rbtn.grid(row=row, column=count, padx=10, pady=10)
                                 rbtn.selection_clear()
-                                rbtn3 = ttk.Radiobutton(self.lbl_frame6, text=y, variable=self.var2, command=self.moveSelect, value=y)
-                                rbtn3.grid(row=row, column=count, padx=10, pady=10)
-                                rbtn3.selection_clear()
+                                # rbtn3 = ttk.Radiobutton(self.lbl_frame6, text=y, variable=self.var2, command=self.moveSelect, value=y)
+                                # rbtn3.grid(row=row, column=count, padx=10, pady=10)
+                                # rbtn3.selection_clear()
                                 rbtn5 = ttk.Radiobutton(self.lbl_frame9, text=y, variable=self.var3, command=self.updateSelect, value=y)
                                 rbtn5.grid(row=row, column=count, padx=10, pady=10)
                                 rbtn5.selection_clear()
@@ -478,9 +485,9 @@ class ADUnlocker(ttk.Window):
                                 rbtn2 = ttk.Radiobutton(self.lbl_frame4, text=y, variable=self.var, command=self.posSelect, value=y)
                                 rbtn2.grid(row=row2, column=count2, padx=10, pady=10)
                                 rbtn2.selection_clear()
-                                rbtn4 = ttk.Radiobutton(self.lbl_frame7, text=y, variable=self.var2, command=self.moveSelect, value=y)
-                                rbtn4.grid(row=row2, column=count2, padx=10, pady=10)
-                                rbtn4.selection_clear()
+                                # rbtn4 = ttk.Radiobutton(self.lbl_frame7, text=y, variable=self.var2, command=self.moveSelect, value=y)
+                                # rbtn4.grid(row=row2, column=count2, padx=10, pady=10)
+                                # rbtn4.selection_clear()
                                 rbtn6 = ttk.Radiobutton(self.lbl_frame10, text=y, variable=self.var3, command=self.updateSelect, value=y)
                                 rbtn6.grid(row=row2, column=count2, padx=10, pady=10)
                                 rbtn6.selection_clear()
@@ -492,25 +499,25 @@ class ADUnlocker(ttk.Window):
                 except Exception as e:
                     print(e)
             
-            if not self.expiredOUs.__len__() <= 0:
-                try:
-                    self.progress['maximum'] = float(self.expiredOUs.__len__())
-                    prog = 1
-                    count3 = 0
-                    row3 = 0
-                    self.exOU = ttk.StringVar(None,"1")
-                    for i in self.expiredOUs:
-                        self.progress['value'] = prog
-                        rbtn3 = ttk.Radiobutton(self.lbl_frame5, text=i, variable=self.exOU, command=self.expSelect, value=i)
-                        rbtn3.grid(row=row3, column=count3, padx=10, pady=10)
-                        rbtn3.selection_clear()
-                        count3+=1
-                        if count3 > 3:
-                            count3 = 0
-                            row3 += 1
-                        prog+=1
-                except:
-                    pass
+            # if not self.expiredOUs.__len__() <= 0:
+            #     try:
+            #         self.progress['maximum'] = float(self.expiredOUs.__len__())
+            #         prog = 1
+            #         count3 = 0
+            #         row3 = 0
+            #         self.exOU = ttk.StringVar(None,"1")
+            #         for i in self.expiredOUs:
+            #             self.progress['value'] = prog
+            #             rbtn3 = ttk.Radiobutton(self.lbl_frame5, text=i, variable=self.exOU, command=self.expSelect, value=i)
+            #             rbtn3.grid(row=row3, column=count3, padx=10, pady=10)
+            #             rbtn3.selection_clear()
+            #             count3+=1
+            #             if count3 > 3:
+            #                 count3 = 0
+            #                 row3 += 1
+            #             prog+=1
+            #     except:
+            #         pass
             if not self.domains['Primary'].__len__() <= 0:
                 try:
                     self.progress['value'] = 60

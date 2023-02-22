@@ -9,9 +9,9 @@ import pythoncom
 import base64
 
 
-DEBUG = True
-Version = "v1.0.4.2.1"
-key = b"\xcdAJ\xb5~'\xde\x00lN$6\xc7FgJ\xb1-/\x88's+63\xbe\x9bZ?P\xa4\xd0"
+DEBUG = False
+Version = "v1.0.4.2.8"
+key = b'\xad\xfaG%a\xbb])\xa6\x0c\x91\x19V\r\x0f\x8b\x1c\x03\x0c\x0f(\xf6#\xa2*\xee\xc0g\x94\xd1L\\'
 settings_file = "Settings.dat"
 
 if not DEBUG:
@@ -68,7 +68,7 @@ def loadConfig(self, check=False):
         if parser.has_option('config', 'tab'):
             self.tabControl.select(int(parser.get('config', 'tab')))
         if parser.has_section('newuser'):
-            self.campH.set(int(parser.get('newuser', 'campus')))
+            self.campH.set(parser.get('newuser', 'campus'))
             self.var.set(parser.get('newuser', 'pos'))
             self.posSelect()
             self.samFormat.set(parser.get('newuser', 'format'))
@@ -246,7 +246,7 @@ def widgetStatus(self, status):
     self.btn_search['state']=status
     self.btn_userUnlock['state']=status
     self.btn_reset['state']=status
-    self.move_btn['state']=status
+    # self.move_btn['state']=status
     self.addGroup['state']=status
 
 def widgetStatusFailed(self, state):
@@ -255,7 +255,7 @@ def widgetStatusFailed(self, state):
         self.btn_search['state']=DISABLED
         self.btn_userUnlock['state']=DISABLED
         self.btn_reset['state']=DISABLED
-        self.move_btn['state']=DISABLED
+        # self.move_btn['state']=DISABLED
         self.addGroup['state']=DISABLED
     else:
         self.btn_unlockAll['state']=NORMAL
@@ -535,21 +535,21 @@ def removeHomedrive(paths):
 
 #=============================================
 
-def moveUser(self, bOU, aOU):
-    pythoncom.CoInitialize()
-    pyad.set_defaults(ldap_server=base64.b64decode(self.server).decode("UTF-8"),
-                      username=base64.b64decode(self.username).decode("UTF-8"),
-                      password=base64.b64decode(self.password).decode("UTF-8"),
-                      ssl=True)
-    u = aduser.ADUser.from_dn(bOU)
-    newOrg = adcontainer.ADContainer.from_dn(aOU)
-    self.progress['value'] = 60
-    aduser.ADUser.move(u,newOrg)
-    selected_item = self.tree3.selection()[0]
-    self.tree3.delete(selected_item)
-    self.progress['value'] = 100
-    self.selItem2 = []
-    self.status['text'] = "Idle..."
-    self.messageBox("SUCCESS!!","Move Complete!")
-    widgetStatus(self, NORMAL)
-    self.progress['value'] = 0
+# def moveUser(self, bOU, aOU):
+#     pythoncom.CoInitialize()
+#     pyad.set_defaults(ldap_server=base64.b64decode(self.server).decode("UTF-8"),
+#                       username=base64.b64decode(self.username).decode("UTF-8"),
+#                       password=base64.b64decode(self.password).decode("UTF-8"),
+#                       ssl=True)
+#     u = aduser.ADUser.from_dn(bOU)
+#     newOrg = adcontainer.ADContainer.from_dn(aOU)
+#     self.progress['value'] = 60
+#     aduser.ADUser.move(u,newOrg)
+#     selected_item = self.tree3.selection()[0]
+#     self.tree3.delete(selected_item)
+#     self.progress['value'] = 100
+#     self.selItem2 = []
+#     self.status['text'] = "Idle..."
+#     self.messageBox("SUCCESS!!","Move Complete!")
+#     widgetStatus(self, NORMAL)
+#     self.progress['value'] = 0
