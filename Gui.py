@@ -137,12 +137,12 @@ def Tab1(self, tab1):
     lbl_title.grid(sticky='n', columnspan=4, padx=10, pady=5)
     
     self.tree = ttk.Treeview(tab1, column=("c1", "c2", "c3"), show='headings')
-    scrollbars = ttk.Scrollbar(tab1)
+    scrollbars = ttk.Scrollbar(tab1, orient=ttk.VERTICAL)
     scrollbars.config(command=self.tree.yview)
     scrollbars.grid(sticky=ttk.NSEW,row=1, column=4)
-    scrollbar2s = ttk.Scrollbar(tab1)
-    scrollbar2s.config(command=self.tree.xview, orient=ttk.HORIZONTAL)
-    scrollbar2s.grid(sticky="sew", row=2, columnspan=4)
+    scrollbar2s = ttk.Scrollbar(tab1, orient=ttk.HORIZONTAL)
+    scrollbar2s.config(command=self.tree.xview)
+    scrollbar2s.grid(sticky=ttk.EW, row=2, columnspan=4)
 
     self.tree.config(yscrollcommand=scrollbars.set, xscrollcommand=scrollbar2s.set)
     self.tree.column("# 1", anchor=ttk.CENTER)
@@ -152,7 +152,7 @@ def Tab1(self, tab1):
     self.tree.column("# 3", anchor=ttk.CENTER)
     self.tree.heading("# 3", text="OU")
     self.tree.bind('<ButtonRelease-1>', self.selectItem)
-    self.tree.grid(sticky="nsew", row=1, columnspan=4, padx=10)
+    self.tree.grid(sticky=ttk.NSEW, row=1, columnspan=4, padx=10)
 
     self.btn_search = ttk.Button(tab1, text="Load", width=20, command=self.loadUsers)
     self.btn_search.grid(sticky='e', row=3, column=3, padx=10, pady=10)

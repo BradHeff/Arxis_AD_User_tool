@@ -73,7 +73,7 @@ class MakeConf():
         conf_file['Horizon']['campus'] = str(base64.b64encode(bytes('balaklava,clare','UTF-8')).decode("UTF-8"))
         
         conf_file.add_section('DComputers')
-        conf_file['DComputers']['server'] = str(base64.b64encode(bytes('DCM-DC02.DCOMPUTERS.local','UTF-8')).decode("UTF-8"))
+        conf_file['DComputers']['server'] = str(base64.b64encode(bytes('DCM-DC01.DCOMPUTERS.local','UTF-8')).decode("UTF-8"))
         conf_file['DComputers']['server_user'] = str(base64.b64encode(bytes('administrator','UTF-8')).decode("UTF-8"))
         conf_file['DComputers']['server_pass'] = str(base64.b64encode(bytes('Heffserver2022!','UTF-8')).decode("UTF-8"))
         conf_file['DComputers']['userou'] = str(base64.b64encode(bytes('OU=Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local','UTF-8')).decode("UTF-8"))
