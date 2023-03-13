@@ -1,15 +1,15 @@
-import tkinter as tk
-from tkinter import ttk
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 from icon import splashbg
 import time
 import threading
 
-class Splash(tk.Tk):
+class Splash(ttk.Window):
     """docstring for Splash."""
     def __init__(self):
         super(Splash, self).__init__()
-        global photo
-        self.W,self.H = 500,250
+        global photo, root
+        self.W,self.H = 505,250
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         center_x = int(screen_width/2 - self.W / 2)
@@ -20,12 +20,12 @@ class Splash(tk.Tk):
         self.attributes("-topmost", True)
         self.overrideredirect(True)
 
-        photo = tk.PhotoImage(data=splashbg)
-        tk.Label(self, image=photo).place(x=0,y=0)
+        photo = ttk.PhotoImage(data=splashbg)
+        ttk.Label(self, image=photo).place(x=0,y=0)
         
         self.count = 1
         
-        self.prog = ttk.Progressbar(self, length=498, maximum=100)
+        self.prog = ttk.Progressbar(self, length=500, maximum=100)
         self.prog.place(x=2,y=240)
         
         t = threading.Thread(target=self.runProg)
@@ -38,8 +38,3 @@ class Splash(tk.Tk):
             self.count+=10
             self.prog['value'] = self.count            
             time.sleep(0.7)
-
-        
-if __name__ == '__main__':
-    root = Splash()
-    root.mainloop()

@@ -4,17 +4,15 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 import threading
 import tkinter as tk
-from tkinter import Radiobutton, Checkbutton
-# import splash
+# from tkinter import Radiobutton, Checkbutton
+import splash
 import Functions as f
 import Gui
 
 class ADUnlocker(ttk.Window):
     def __init__(self):
         super(ADUnlocker, self).__init__(themename="yeti")
-        # global root
-        
-        # root.destroy()
+        global root
                 
         self.data = dict()
         self.domains = dict()
@@ -73,15 +71,16 @@ class ADUnlocker(ttk.Window):
         # self.mainloop()
         
         if self.error:
+            root.destroy()
             self.messageBox("ERROR!!","company settings is incomplete")
         
-        self.options.set("Horizon")
+        self.options.set("DComputers")
         self.comboSelect("")
         
         # Gui.print_icon("open_lock.png")
         if not f.DEBUG:
             self.combobox['state'] = ttk.DISABLED
-        
+        root.destroy()
         
     def setLoad(self):
         if f.path.isfile(f.settings_dir + "Config.ini"):
@@ -799,9 +798,6 @@ class ADUnlocker(ttk.Window):
 
 if __name__ == '__main__':
     global root
-    # root = splash.Splash()
-    root = ADUnlocker()
-    # root.after(6700, ADUnlocker)
+    root = splash.Splash()
+    root.after(6700, ADUnlocker)
     root.mainloop()
-    
-        

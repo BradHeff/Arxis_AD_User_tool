@@ -26,7 +26,7 @@ def Icon(self):
 def baseGUI(self):
     
     Window(self)
-    Icon(self)
+    # Icon(self)
     
     menubar = ttk.Menu(self)
     self.file = ttk.Menu(menubar, tearoff=0)
