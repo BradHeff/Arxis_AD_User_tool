@@ -74,13 +74,22 @@ class ADUnlocker(ttk.Window):
             root.destroy()
             self.messageBox("ERROR!!","company settings is incomplete")
         
-        self.options.set("DComputers")
+        self.options.set("Horizon")
         self.comboSelect("")
         
         # Gui.print_icon("open_lock.png")
         if not f.DEBUG:
             self.combobox['state'] = ttk.DISABLED
-        root.destroy()
+        
+        self.hide()
+        subFrame = splash.Splash(self)
+        
+    def hide(self):    
+        self.withdraw()
+        
+    def show(self):        
+        self.update()
+        self.deiconify()
         
     def setLoad(self):
         if f.path.isfile(f.settings_dir + "Config.ini"):
@@ -798,6 +807,5 @@ class ADUnlocker(ttk.Window):
 
 if __name__ == '__main__':
     global root
-    root = splash.Splash()
-    root.after(6700, ADUnlocker)
+    root = ADUnlocker()
     root.mainloop()
