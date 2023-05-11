@@ -16,7 +16,6 @@ class PreBuild():
         self.readLines()
         self.writeLines()
 
-
     def _getPosition(self, file, text):
         nlist = [x for x in file if text in x]
         # print(paths + "\\Functions.py")
@@ -32,9 +31,10 @@ class PreBuild():
             f.close()
         with open(paths + "\\main.pyw", "r") as e:
             self.lines2 = e.readlines()
-            pos = self._getPosition(self.lines2, "DComputers")
-            line = self.lines2[pos]
-            self.old2 = "DComputers"
+            if "DComputers" in self.lines2:
+                pos = self._getPosition(self.lines2, "DComputers")
+                line = self.lines2[pos]
+                self.old2 = "DComputers"
             e.close()
 
     def writeLines(self):
@@ -45,13 +45,16 @@ class PreBuild():
 
             w.writelines(self.lines)
             w.close()
-        with open(paths + "\\main.pyw", "w") as e:
-            pos = self._getPosition(self.lines2, "DComputers")
+        if "DComputers" in self.lines2:
+            with open(paths + "\\main.pyw", "w") as e:
+                pos = self._getPosition(self.lines2, "DComputers")
 
-            self.lines2[pos] = self.lines2[pos].replace(self.old2, self.new2)
+                self.lines2[pos] = self.lines2[pos].replace(self.old2,
+                                                            self.new2)
 
-            e.writelines(self.lines2)
-            e.close()
+                e.writelines(self.lines2)
+                e.close()
+
 
 if __name__ == "__main__":
     PreBuild()
