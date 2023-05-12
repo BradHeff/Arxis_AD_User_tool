@@ -6,9 +6,6 @@ import ttkbootstrap as ttk
 from Functions import clear_console
 from icon import splashbg
 
-# from PIL import Image, ImageTk
-# from ttkbootstrap.constants import *
-
 
 class Splash(ttk.Toplevel):
     """docstring for Splash."""
@@ -17,7 +14,6 @@ class Splash(ttk.Toplevel):
         super().__init__()
         global photo, root
         self.original_frame = original
-        # ttk.Toplevel.__init__(self)
 
         self.W, self.H = 504, 250
         screen_width = self.winfo_screenwidth()
@@ -34,26 +30,23 @@ class Splash(ttk.Toplevel):
         canvas = ttk.Canvas(
             self,
             bg="grey15",
-            width=self.W - 2,
-            height=self.H - 2,
+            width=self.W - 4,
+            height=self.H - 4,
             highlightthickness=0,
         )
         canvas.pack()
-        # convert image to PhotoImage for `tkinter` to understand
         photo = ttk.PhotoImage(data=splashbg)
-        # put the image on canvas because canvas supports transparent bg
-        canvas.create_image(1, 1, image=photo, anchor="nw")
-
-        # ttk.Label(self, image=photo).place(x=0,y=0)
+        canvas.create_image(1, 1.5, image=photo, anchor="nw")
 
         self.count = 1
 
-        self.prog = ttk.Progressbar(self, length=501, maximum=100)
-        self.prog.place(x=1, y=240)
+        self.prog = ttk.Progressbar(self, length=500.5, maximum=100)
+        self.prog.place(x=1.5, y=240)
         print(self.ConsoleWelcome())
-        t = threading.Thread(target=self.runProg)
-        t.daemon = True
-        t.start()
+        self.prog["value"] = 100
+        # t = threading.Thread(target=self.runProg)
+        # t.daemon = True
+        # t.start()
 
     def ConsoleWelcome(self):
         clear_console()

@@ -1,26 +1,23 @@
 import datetime
 import threading
 import tkinter as tk
+from signal import SIGINT, signal
 
 # from Importer import convertCSV, updateSettings, getTitleWindow
 import ttkbootstrap as ttk
 
 import Functions as f
 import Gui
-
-# from tkinter import Radiobutton, Checkbutton
 import splash
-
-# from ttkbootstrap import themes
-
-
-# from ttkbootstrap.constants import *
 
 
 class ADUnlocker(ttk.Window):
     def __init__(self):
         super(ADUnlocker, self).__init__(themename="heffelhoffui")
         global root
+        self.after(500, self.check)
+        self.bind_all("<Control-c>", self.handler)
+        signal(SIGINT, lambda x, y: print("terminal ^C") or self.handler(None))
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.data = dict()
         self.domains = dict()
@@ -993,6 +990,15 @@ class ADUnlocker(ttk.Window):
         btn.pack(anchor=ttk.CENTER, padx=10, pady=5)
 
         ap.mainloop()
+
+    def handler(self, signum, frame):
+        msg = "Ctrl-c was pressed. Exiting now... "
+        print(msg, end="", flush=True)
+        print("")
+        self.destroy()
+
+    def check(self):
+        self.after(500, self.check)  #  time in ms.
 
 
 if __name__ == "__main__":
