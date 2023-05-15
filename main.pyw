@@ -17,7 +17,7 @@ class ADUnlocker(ttk.Window):
         global root
         self.after(500, self.check)
         self.bind_all("<Control-c>", self.handler)
-        signal(SIGINT, lambda x, y: print("terminal ^C") or self.handler(None))
+        signal(SIGINT, lambda x, y: print("") or self.handler())
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.data = dict()
         self.domains = dict()
@@ -478,6 +478,7 @@ class ADUnlocker(ttk.Window):
         self.tree2.delete(*self.tree2.get_children())
 
     def comboSelect(self, widget):
+        print(self.winfo_width())
         if "camp" not in str(widget):
             f.getConfig(self, self.options.get())
             self.clear_campus()
@@ -991,7 +992,7 @@ class ADUnlocker(ttk.Window):
 
         ap.mainloop()
 
-    def handler(self, signum, frame):
+    def handler(self):
         msg = "Ctrl-c was pressed. Exiting now... "
         print(msg, end="", flush=True)
         print("")

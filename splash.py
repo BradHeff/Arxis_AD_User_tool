@@ -15,12 +15,12 @@ class Splash(ttk.Toplevel):
         global photo, root
         self.original_frame = original
 
-        self.W, self.H = 504, 250
+        W, H = 504, 250
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-        center_x = int(screen_width / 2 - self.W / 2)
-        center_y = int(screen_height / 2 - self.H / 2)
-        self.geometry(f"{self.W}x{self.H}+{center_x}+{center_y}")
+        center_x = int(screen_width / 2 - W / 2)
+        center_y = int(screen_height / 2 - H / 2)
+        self.geometry(f"{W}x{H}+{center_x}+{center_y}")
         self.attributes("-fullscreen", False)
         self.attributes("-toolwindow", True)
         self.attributes("-topmost", True)
@@ -30,8 +30,8 @@ class Splash(ttk.Toplevel):
         canvas = ttk.Canvas(
             self,
             bg="grey15",
-            width=self.W - 4,
-            height=self.H - 4,
+            width=W - 4,
+            height=H - 4,
             highlightthickness=0,
         )
         canvas.pack()
@@ -43,10 +43,10 @@ class Splash(ttk.Toplevel):
         self.prog = ttk.Progressbar(self, length=500.5, maximum=100)
         self.prog.place(x=1.5, y=240)
         print(self.ConsoleWelcome())
-        self.prog["value"] = 100
-        # t = threading.Thread(target=self.runProg)
-        # t.daemon = True
-        # t.start()
+        # self.prog["value"] = 100
+        t = threading.Thread(target=self.runProg)
+        t.daemon = True
+        t.start()
 
     def ConsoleWelcome(self):
         clear_console()
