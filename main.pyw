@@ -1,9 +1,8 @@
 import datetime
 import threading
-import tkinter as tk
 from signal import SIGINT, signal
 
-# from Importer import convertCSV, updateSettings, getTitleWindow
+import tkthread
 import ttkbootstrap as ttk
 
 import Functions as f
@@ -149,17 +148,21 @@ class ADUnlocker(ttk.Window):
                 if not self.compFail:
                     if self.domains["Primary"].__len__() <= 0:
                         f.widgetStatusFailed(self, True)
+
                         self.messageBox("ERROR!!", "Domains Settings is not complete!")
                         return
                     if self.groupPos.__len__() <= 0:
                         f.widgetStatusFailed(self, True)
+
                         self.messageBox("ERROR!!", "Group Settings is not complete!")
                         return
                     if self.positions.__len__() <= 0:
                         f.widgetStatusFailed(self, True)
+
                         self.messageBox(
                             "ERROR!!", "Positions Settings is not complete!"
                         )
+
                         return
                 else:
                     if self.state:
@@ -693,9 +696,11 @@ class ADUnlocker(ttk.Window):
         else:
             if self.state and self.servs:
                 f.widgetStatusFailed(self, False)
+
                 self.messageBox("ERROR!!", "Some settings are incomplete")
             else:
                 f.widgetStatusFailed(self, True)
+
                 self.messageBox("ERROR!!", "Server settings are incomplete")
 
     def resetPass(self):
@@ -783,6 +788,7 @@ class ADUnlocker(ttk.Window):
         if self.tabControl.index(self.tabControl.select()) == 0:
             if self.tree.get_children() == ():
                 f.widgetStatus(self, ttk.NORMAL)
+
                 self.messageBox("ERROR!!", "List cannot be empty!")
                 return
             for line in self.tree.get_children():
@@ -853,47 +859,51 @@ class ADUnlocker(ttk.Window):
                         else:
                             f.widgetStatus(self, ttk.NORMAL)
                             self.status["text"] = "Idle..."
+
                             self.messageBox(
                                 "ERROR!!",
                                 "You must select domain\n\
-                                                HomeDrive and HomePath",
+                                            HomeDrive and HomePath",
                             )
                     else:
                         f.widgetStatus(self, ttk.NORMAL)
+
                         self.messageBox(
                             "ERROR!!",
                             "Must enter Password\n\
-                            or password 8 characters min",
+                        or password 8 characters min",
                         )
                 else:
                     f.widgetStatus(self, ttk.NORMAL)
+
                     self.messageBox(
                         "ERROR!!",
                         "First and Lastname must\n\
-                        be filled!",
+                    be filled!",
                     )
             else:
                 f.widgetStatus(self, ttk.NORMAL)
+
                 self.messageBox(
                     "ERROR!!",
                     "Your Settings are incomplete\n\
-                    for this TAB!",
+                for this TAB!",
                 )
         # elif self.tabControl.index(self.tabControl.select()) == 2:
         #     if not self.compFail:
         #         if not self.expiredOU == None:
-        #             f.widgetStatus(self, tk.DISABLED)
+        #             f.widgetStatus(self, ttk.DISABLED)
         #             t = threading.Thread(target=f.remove_groups, args=[self])
         #             t.start()
         #         else:
-        #             f.widgetStatus(self, tk.NORMAL)
+        #             f.widgetStatus(self, ttk.NORMAL)
         #             self.messageBox("ERROR!!", "You must select an OU!")
         #     else:
-        #         f.widgetStatus(self, tk.NORMAL)
+        #         f.widgetStatus(self, ttk.NORMAL)
         #         self.messageBox("ERROR!!", "Your Settings are\
         #           incomplete\nfor this TAB!")
         # elif self.tabControl.index(self.tabControl.select()) == 3:
-        #     f.widgetStatus(self, tk.NORMAL)
+        #     f.widgetStatus(self, ttk.NORMAL)
         #     self.messageBox("MAINTENANCE!!", "This Option is still\
         #       being\ndeveloped.")
         elif self.tabControl.index(self.tabControl.select()) == 2:
@@ -914,7 +924,7 @@ class ADUnlocker(ttk.Window):
                         self.messageBox(
                             "ERROR!!",
                             "First Name\
-                            cannot be empty!",
+                        cannot be empty!",
                         )
                         return
 
@@ -954,52 +964,63 @@ class ADUnlocker(ttk.Window):
                     t.start()
                 else:
                     f.widgetStatus(self, ttk.NORMAL)
+
                     self.messageBox(
                         "ERROR!!",
                         "Password must be 8\
-                        characters long",
+                    characters long",
                     )
             else:
                 f.widgetStatus(self, ttk.NORMAL)
+
                 self.messageBox(
                     "ERROR!!",
                     "Your Settings are incomplete\n\
-                    for this TAB!",
+                for this TAB!",
                 )
 
     def resetProgress(self):
         self.progress["value"] = 0
 
-    def messageBox(self, title, txt):
-        ap = ttk.Window()
-        geo = self.winfo_geometry()
-        posX = geo.split("+")[1]
-        posY = geo.split("+")[2]
-
-        center_x = int(int(posX) + (self.W / 2) - 100)
-        center_y = int(int(posY) + (self.H / 2) - 25)
-
-        message = ttk.Label(ap, text=txt, wraplength=250, justify=tk.CENTER)
-        btn = ttk.Button(ap, text="OK", width=10, command=ap.destroy)
-        ap.title(title)
-        ap.geometry(f"300x100+{center_x}+{center_y}")
-        ap.attributes("-fullscreen", False)
-        ap.attributes("-toolwindow", True)
-        ap.attributes("-topmost", True)
-
-        message.pack(fill="both", expand=True, pady=5)
-        btn.pack(anchor=ttk.CENTER, padx=10, pady=5)
-
-        ap.mainloop()
-
     def handler(self):
         msg = "Ctrl-c was pressed. Exiting now... "
-        print(msg, end="", flush=True)
+        print(msg)
         print("")
         self.destroy()
 
     def check(self):
         self.after(500, self.check)  #  time in ms.
+
+    def messageBox(self, title, message):
+        mbox = MessageBox(self, title, message)
+        mbox.mainloop()
+
+
+class MessageBox(ttk.Window):
+    """docstring for MessageBox."""
+
+    def __init__(self, parent, title, text):
+        super(MessageBox, self).__init__(themename="heffelhoffui")
+        self.parent = parent
+        self.title = title
+        self.text = text
+        geo = self.winfo_geometry()
+        posX = geo.split("+")[1]
+        posY = geo.split("+")[2]
+        W, H = 300, 100
+        center_x = int(int(posX) + (self.W / 2) - 100)
+        center_y = int(int(posY) + (self.H / 2) - 25)
+
+        message = ttk.Label(ap, text=text, wraplength=250, justify=ttk.CENTER)
+        btn = ttk.Button(ap, text="OK", width=10, command=self.destroy)
+        self.title(title)
+        self.geometry(f"{W}x{H}+{center_x}+{center_y}")
+        self.attributes("-fullscreen", False)
+        self.attributes("-toolwindow", True)
+        self.attributes("-topmost", True)
+
+        message.pack(fill="both", expand=True, pady=5)
+        btn.pack(anchor=ttk.CENTER, padx=10, pady=5)
 
 
 if __name__ == "__main__":
