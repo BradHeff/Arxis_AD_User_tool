@@ -2,6 +2,7 @@ import datetime
 import threading
 from signal import SIGINT, signal
 
+import tkthread as tkt
 import ttkbootstrap as ttk
 
 import Functions as f
@@ -12,10 +13,9 @@ import splash
 class ADUnlocker(ttk.Window):
     def __init__(self):
         super(ADUnlocker, self).__init__(themename="heffelhoffui")
-        global root
-        self.after(500, self.check)
         self.bind_all("<Control-c>", self.handler)
         signal(SIGINT, lambda x, y: print("") or self.handler())
+        self.after(500, self.check)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.data = dict()
         self.domains = dict()
@@ -75,7 +75,9 @@ class ADUnlocker(ttk.Window):
 
         if self.error:
             root.destroy()
-            self.messageBox("ERROR!!", "company settings is incomplete")
+            tkt.call_nosync(
+                self.messageBox, "ERROR!!", "company settings is incomplete"
+            )
 
         self.options.set("DComputers")
         self.comboSelect("")
@@ -134,7 +136,7 @@ class ADUnlocker(ttk.Window):
             rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
             self.checkCount += 1
         else:
-            self.messageBox("ERROR!!!", "That group already exists!")
+            tkt.call_nosync(self.messageBox, "ERROR!!!", "That group already exists!")
 
     def alterButton(self, widget):
         if self.tabControl.index(self.tabControl.select()) == 0:
@@ -148,18 +150,28 @@ class ADUnlocker(ttk.Window):
                     if self.domains["Primary"].__len__() <= 0:
                         f.widgetStatusFailed(self, True)
 
-                        self.messageBox("ERROR!!", "Domains Settings is not complete!")
+                        tkt.call_nosync(
+                            self.messageBox,
+                            "ERROR!!",
+                            "Domains Settings is not complete!",
+                        )
                         return
                     if self.groupPos.__len__() <= 0:
                         f.widgetStatusFailed(self, True)
 
-                        self.messageBox("ERROR!!", "Group Settings is not complete!")
+                        tkt.call_nosync(
+                            self.messageBox,
+                            "ERROR!!",
+                            "Group Settings is not complete!",
+                        )
                         return
                     if self.positions.__len__() <= 0:
                         f.widgetStatusFailed(self, True)
 
-                        self.messageBox(
-                            "ERROR!!", "Positions Settings is not complete!"
+                        tkt.call_nosync(
+                            self.messageBox,
+                            "ERROR!!",
+                            "Positions Settings is not complete!",
                         )
 
                         return
@@ -696,18 +708,22 @@ class ADUnlocker(ttk.Window):
             if self.state and self.servs:
                 f.widgetStatusFailed(self, False)
 
-                self.messageBox("ERROR!!", "Some settings are incomplete")
+                tkt.call_nosync(
+                    self.messageBox, "ERROR!!", "Some settings are incomplete"
+                )
             else:
                 f.widgetStatusFailed(self, True)
 
-                self.messageBox("ERROR!!", "Server settings are incomplete")
+                tkt.call_nosync(
+                    self.messageBox, "ERROR!!", "Server settings are incomplete"
+                )
 
     def resetPass(self):
         if self.selItem.__len__() <= 0:
-            self.messageBox("ERROR!!", "Must select a user!")
+            tkt.call_nosync(self.messageBox, "ERROR!!", "Must select a user!")
             return
         if self.passBox.get().__len__() < 8:
-            self.messageBox("ERROR!!", "Password Too Short!")
+            tkt.call_nosync(self.messageBox, "ERROR!!", "Password Too Short!")
             return
         f.widgetStatus(self, ttk.DISABLED)
         newPass = self.passBox.get()
@@ -719,10 +735,10 @@ class ADUnlocker(ttk.Window):
 
     def moveUser(self):
         if self.var2.get().__len__() <= 2 or self.movePosOU.__len__() <= 1:
-            self.messageBox("ERROR!!", "You must select a position!")
+            tkt.call_nosync(self.messageBox, "ERROR!!", "You must select a position!")
             return
         if self.selItem2.__len__() <= 0:
-            self.messageBox("ERROR!!", "You must select a user!")
+            tkt.call_nosync(self.messageBox, "ERROR!!", "You must select a user!")
             return
         self.status["text"] = "Moving " + str(self.selItem2[1]) + "..."
         f.widgetStatus(self, ttk.DISABLED)
@@ -736,7 +752,7 @@ class ADUnlocker(ttk.Window):
 
     def loadUsers(self):
         if "Select" in self.options.get():
-            self.messageBox("ERROR!!", "You must select a company!")
+            tkt.call_nosync(self.messageBox, "ERROR!!", "You must select a company!")
             return
         f.widgetStatus(self, ttk.DISABLED)
         self.tree.delete(*self.tree.get_children())
@@ -752,7 +768,7 @@ class ADUnlocker(ttk.Window):
             if locked.__len__() <= 0:
                 f.widgetStatus(self, ttk.NORMAL)
                 self.status["text"] = "Idle..."
-                self.messageBox("SUCCESS!!", "No Locked Users!")
+                tkt.call_nosync(self.messageBox, "SUCCESS!!", "No Locked Users!")
                 return
             self.status["text"] = "Populating list..."
             for x in locked:
@@ -760,18 +776,20 @@ class ADUnlocker(ttk.Window):
                     "", "end", values=(x, locked[x]["name"], locked[x]["ou"])
                 )
         except Exception as e:
-            self.messageBox("Error", "An error occurred, Check settings")
+            tkt.call_nosync(
+                self.messageBox, "Error", "An error occurred, Check settings"
+            )
 
         f.widgetStatus(self, ttk.NORMAL)
         self.status["text"] = "Idle..."
 
     def unlockUsers(self):
         if self.tree.get_children() == ():
-            self.messageBox("ERROR!!", "List cannot be empty!")
+            tkt.call_nosync(self.messageBox, "ERROR!!", "List cannot be empty!")
             return
 
         if self.selItem.__len__() <= 0:
-            self.messageBox("ERROR!!", "Must select a user!")
+            tkt.call_nosync(self.messageBox, "ERROR!!", "Must select a user!")
             return
 
         f.widgetStatus(self, ttk.DISABLED)
@@ -780,7 +798,7 @@ class ADUnlocker(ttk.Window):
         selected_item = self.tree.selection()[0]
         self.tree.delete(selected_item)
         self.selItem = []
-        self.messageBox("SUCCESS!!", "Unlock Complete!")
+        tkt.call_nosync(self.messageBox, "SUCCESS!!", "Unlock Complete!")
 
     def unlockAll(self):
         f.widgetStatus(self, ttk.DISABLED)
@@ -788,7 +806,7 @@ class ADUnlocker(ttk.Window):
             if self.tree.get_children() == ():
                 f.widgetStatus(self, ttk.NORMAL)
 
-                self.messageBox("ERROR!!", "List cannot be empty!")
+                tkt.call_nosync(self.messageBox, "ERROR!!", "List cannot be empty!")
                 return
             for line in self.tree.get_children():
                 self.data[self.tree.item(line)["values"][0]] = {
@@ -859,7 +877,8 @@ class ADUnlocker(ttk.Window):
                             f.widgetStatus(self, ttk.NORMAL)
                             self.status["text"] = "Idle..."
 
-                            self.messageBox(
+                            tkt.call_nosync(
+                                self.messageBox,
                                 "ERROR!!",
                                 "You must select domain\n\
                                             HomeDrive and HomePath",
@@ -867,7 +886,8 @@ class ADUnlocker(ttk.Window):
                     else:
                         f.widgetStatus(self, ttk.NORMAL)
 
-                        self.messageBox(
+                        tkt.call_nosync(
+                            self.messageBox,
                             "ERROR!!",
                             "Must enter Password\n\
                         or password 8 characters min",
@@ -875,7 +895,8 @@ class ADUnlocker(ttk.Window):
                 else:
                     f.widgetStatus(self, ttk.NORMAL)
 
-                    self.messageBox(
+                    tkt.call_nosync(
+                        self.messageBox,
                         "ERROR!!",
                         "First and Lastname must\n\
                     be filled!",
@@ -883,7 +904,8 @@ class ADUnlocker(ttk.Window):
             else:
                 f.widgetStatus(self, ttk.NORMAL)
 
-                self.messageBox(
+                tkt.call_nosync(
+                    self.messageBox,
                     "ERROR!!",
                     "Your Settings are incomplete\n\
                 for this TAB!",
@@ -896,14 +918,14 @@ class ADUnlocker(ttk.Window):
         #             t.start()
         #         else:
         #             f.widgetStatus(self, ttk.NORMAL)
-        #             self.messageBox("ERROR!!", "You must select an OU!")
+        #             tkt.call_nosync(self.messageBox,"ERROR!!", "You must select an OU!")
         #     else:
         #         f.widgetStatus(self, ttk.NORMAL)
-        #         self.messageBox("ERROR!!", "Your Settings are\
+        #         tkt.call_nosync(self.messageBox,"ERROR!!", "Your Settings are\
         #           incomplete\nfor this TAB!")
         # elif self.tabControl.index(self.tabControl.select()) == 3:
         #     f.widgetStatus(self, ttk.NORMAL)
-        #     self.messageBox("MAINTENANCE!!", "This Option is still\
+        #     tkt.call_nosync(self.messageBox,"MAINTENANCE!!", "This Option is still\
         #       being\ndeveloped.")
         elif self.tabControl.index(self.tabControl.select()) == 2:
             if not self.compFail:
@@ -912,15 +934,20 @@ class ADUnlocker(ttk.Window):
                     or self.entPass.get().__len__() == 0
                 ):
                     if self.tree4.get_children() == ():
-                        self.messageBox("ERROR!!", "Must select a position")
+                        tkt.call_nosync(
+                            self.messageBox, "ERROR!!", "Must select a position"
+                        )
                         return
 
                     if self.selItem3.__len__() <= 0:
-                        self.messageBox("ERROR!!", "Must select a user!")
+                        tkt.call_nosync(
+                            self.messageBox, "ERROR!!", "Must select a user!"
+                        )
                         return
 
                     if self.fname_entry.get().__len__() <= 1:
-                        self.messageBox(
+                        tkt.call_nosync(
+                            self.messageBox,
                             "ERROR!!",
                             "First Name\
                         cannot be empty!",
@@ -964,7 +991,8 @@ class ADUnlocker(ttk.Window):
                 else:
                     f.widgetStatus(self, ttk.NORMAL)
 
-                    self.messageBox(
+                    tkt.call_nosync(
+                        self.messageBox,
                         "ERROR!!",
                         "Password must be 8\
                     characters long",
@@ -972,7 +1000,8 @@ class ADUnlocker(ttk.Window):
             else:
                 f.widgetStatus(self, ttk.NORMAL)
 
-                self.messageBox(
+                tkt.call_nosync(
+                    self.messageBox,
                     "ERROR!!",
                     "Your Settings are incomplete\n\
                 for this TAB!",
@@ -990,39 +1019,45 @@ class ADUnlocker(ttk.Window):
     def check(self):
         self.after(500, self.check)  #  time in ms.
 
-    def messageBox(self, title, message):
-        mbox = MessageBox(self, title, message)
-        mbox.mainloop()
-
-
-class MessageBox(ttk.Window):
-    """docstring for MessageBox."""
-
-    def __init__(self, parent, title, text):
-        super(MessageBox, self).__init__(themename="heffelhoffui")
-        self.parent = parent
-        self.title = title
-        self.text = text
+    def messageBox(self, txttitle, message):
         geo = self.winfo_geometry()
         posX = geo.split("+")[1]
         posY = geo.split("+")[2]
         W, H = 300, 100
-        center_x = int(int(posX) + (self.W / 2) - 100)
-        center_y = int(int(posY) + (self.H / 2) - 25)
+        center_x = int(int(posX) + (self.W / 2) - (W / 2))
+        center_y = int(int(posY) + (self.H / 2) - (H / 2))
 
-        message = ttk.Label(ap, text=text, wraplength=250, justify=ttk.CENTER)
-        btn = ttk.Button(ap, text="OK", width=10, command=self.destroy)
-        self.title(title)
-        self.geometry(f"{W}x{H}+{center_x}+{center_y}")
-        self.attributes("-fullscreen", False)
-        self.attributes("-toolwindow", True)
-        self.attributes("-topmost", True)
+        mb = ttk.Window(themename="heffelhoffui", resizable=False)
+        mb.title(txttitle)
+        mb.geometry(f"{W}x{H}+{center_x}+{center_y}")
+        mb.attributes("-fullscreen", False)
+        mb.attributes("-toolwindow", True)
+        mb.attributes("-topmost", True)
 
-        message.pack(fill="both", expand=True, pady=5)
-        btn.pack(anchor=ttk.CENTER, padx=10, pady=5)
+        paddings = {pady: 10, padx: 10}
+
+        message = ttk.Label(mb, text=message, wraplength=250, justify=ttk.CENTER)
+        btn = ttk.Button(mb, text="OK", width=10, command=mb.destroy)
+
+        message.pack(side="top", fill="both", expand=True, **paddings)
+        btn.pack(side="bottom", **paddings)
+
+        mb.mainloop()
 
 
-if __name__ == "__main__":
-    global root
-    root = ADUnlocker()
-    root.mainloop()
+root = ADUnlocker()
+
+
+def thread_run(func):
+    threading.Thread(target=func).start()
+
+
+@thread_run
+def func():
+    @tkt.main(root)
+    @tkt.current(root)
+    def runthread():
+        root.update()
+
+
+root.mainloop()
