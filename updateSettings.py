@@ -1,4 +1,3 @@
-
 # import sys
 import base64
 from pathlib import Path
@@ -8,10 +7,10 @@ from configparser_crypt import ConfigParserCrypt
 exe_dir = str(Path(__file__).parents[0])
 
 settings_file = "Settings.dat"
-settings_dir = ''.join([exe_dir, '\\Settings\\'])
+settings_dir = "".join([exe_dir, "\\Settings\\"])
 
 
-class MakeConf():
+class MakeConf:
     def __init__(self):
         super(MakeConf, self).__init__()
         self.old = ""
@@ -40,8 +39,7 @@ class MakeConf():
         with open(exe_dir + "\\Functions.py", "w") as w:
             pos = self._getPosition(self.lines, "key = ")
 
-            self.lines[pos] = self.lines[pos].replace(
-                self.old, str(self.key))
+            self.lines[pos] = self.lines[pos].replace(self.old, str(self.key))
 
             w.writelines(self.lines)
             w.close()
@@ -51,20 +49,28 @@ class MakeConf():
         conf_file.generate_key()
         self.key = conf_file.aes_key
 
-        conf_file.add_section('Horizon')
-        conf_file['Horizon']['server'] = str(base64.b64encode(
-            bytes('HCS-DC01.HORIZON.local', 'UTF-8')).decode("UTF-8"))
-        conf_file['Horizon']['server_user'] = str(base64.b64encode(
-            bytes('pyservice', 'UTF-8')).decode("UTF-8"))
-        conf_file['Horizon']['server_pass'] = str(base64.b64encode(
-            bytes('Duffel1-Wound-Antelope', 'UTF-8')).decode("UTF-8"))
-        conf_file['Horizon']['userou'] = str(base64.b64encode(
-            bytes('OU=Users,OU=Horizon,DC=HORIZON,DC=local', 'UTF-8'))
-            .decode("UTF-8"))
-        conf_file['Horizon']['domainname'] = str(base64.b64encode(
-            bytes('HORIZON', 'UTF-8')).decode("UTF-8"))
-        conf_file['Horizon']['groups'] = str(base64.b64encode(
-            bytes('{"Executive":["SG_FS_Management", "SG_FS_HR",\
+        conf_file.add_section("Horizon")
+        conf_file["Horizon"]["server"] = str(
+            base64.b64encode(bytes("HCS-DC01.HORIZON.local", "UTF-8")).decode("UTF-8")
+        )
+        conf_file["Horizon"]["server_user"] = str(
+            base64.b64encode(bytes("pyservice", "UTF-8")).decode("UTF-8")
+        )
+        conf_file["Horizon"]["server_pass"] = str(
+            base64.b64encode(bytes("Duffel1-Wound-Antelope", "UTF-8")).decode("UTF-8")
+        )
+        conf_file["Horizon"]["userou"] = str(
+            base64.b64encode(
+                bytes("OU=Users,OU=Horizon,DC=HORIZON,DC=local", "UTF-8")
+            ).decode("UTF-8")
+        )
+        conf_file["Horizon"]["domainname"] = str(
+            base64.b64encode(bytes("HORIZON", "UTF-8")).decode("UTF-8")
+        )
+        conf_file["Horizon"]["groups"] = str(
+            base64.b64encode(
+                bytes(
+                    '{"Executive":["SG_FS_Management", "SG_FS_HR",\
                   "SG_FS_ExecDrive", "Local PC Administrators",\
                   "Office365-A1Plus-Faculty", "Office365-AzureAD-P2",\
                   "SG_FS_Adminfiles", "SG_WF_Staff", "Horizon Staff",\
@@ -137,18 +143,28 @@ class MakeConf():
                        "Office365-AzureAD-P2", "SG_Students",\
                        "SG_WF_Student"],"Year12":["SG_Year12",\
                        "Office365-A3-Student", "Office365-AzureAD-P2",\
-                       "SG_Students", "SG_WF_Student"]}', 'UTF-8'))
-            .decode("UTF-8"))
-        conf_file['Horizon']['positions'] = str(base64.b64encode(
-            bytes('{"Staff":["Executive","Managment","Admin",\
+                       "SG_Students", "SG_WF_Student"]}',
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
+        )
+        conf_file["Horizon"]["positions"] = str(
+            base64.b64encode(
+                bytes(
+                    '{"Staff":["Executive","Managment","Admin",\
                 "Admin Temp","Primary Teacher","Secondary Teacher",\
                 "Temporary Teacher","ESO","Grounds",\
                 "Counsellor"],\
                 "Students":["Foundation","Year1","Year2","Year3","Year4","Year5","Year6",\
                     "Year7","Year8","Year9","Year10","Year11","Year12"]}',
-                  'UTF-8')).decode("UTF-8"))
-        conf_file['Horizon']['positionsou'] = str(base64.b64encode(
-            bytes('{"Executive":"OU=Executive,OU=Staff,OU=Users,\
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
+        )
+        conf_file["Horizon"]["positionsou"] = str(
+            base64.b64encode(
+                bytes(
+                    '{"Executive":"OU=Executive,OU=Staff,OU=Users,\
                 OU=Horizon,DC=HORIZON,DC=local",\
                 "Managment":"OU=Managment,OU=Staff,OU=Users,OU=Horizon,\
                     DC=HORIZON,DC=local","Primary Teacher":\
@@ -210,9 +226,15 @@ class MakeConf():
                     OU=Horizon,DC=HORIZON,DC=local",\
                     "Year12-Clare":"OU=Year 12,\
                     OU=Students-Clare,OU=Users,OU=Horizon,\
-                    DC=HORIZON,DC=local"}', 'UTF-8')).decode("UTF-8"))
-        conf_file['Horizon']['title'] = str(base64.b64encode(
-            bytes('{"Executive":"Executive Team","Managment":\
+                    DC=HORIZON,DC=local"}',
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
+        )
+        conf_file["Horizon"]["title"] = str(
+            base64.b64encode(
+                bytes(
+                    '{"Executive":"Executive Team","Managment":\
                 "Management Team","Admin":"Administration","Admin Temp":\
                 "Temporary Administrator","Primary Teacher":"Primary Teacher",\
                 "Secondary Teacher":"Secondary Teacher","Temporary Teacher":\
@@ -224,41 +246,77 @@ class MakeConf():
                 "Year 6 Student","Year7":"Year 7 Student","Year8":\
                 "Year 8 Student","Year9":"Year 9 Student","Year10":\
                 "Year 10 Student","Year11":"Year 11 Student","Year12":\
-                "Year 12 Student"}', 'UTF-8')).decode("UTF-8"))
-        conf_file['Horizon']['expiredous'] = str(base64.b64encode(
-            bytes('{"Disabled":"OU=Disabled,OU=Users,OU=Horizon,DC=HORIZON,\
+                "Year 12 Student"}',
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
+        )
+        conf_file["Horizon"]["expiredous"] = str(
+            base64.b64encode(
+                bytes(
+                    '{"Disabled":"OU=Disabled,OU=Users,OU=Horizon,DC=HORIZON,\
                 DC=local","ExpiredStaff":"OU=ExpiredStaff,OU=Users,\
                 OU=Horizon,DC=HORIZON,DC=local","ExpiredStudents":\
                 "OU=ExpiredStudents,OU=Users,OU=Horizon,DC=HORIZON,\
-                DC=local"}', 'UTF-8')).decode("UTF-8"))
-        conf_file['Horizon']['groupsou'] = str(base64.b64encode(
-            bytes('OU=Groups,OU=Horizon,DC=HORIZON,DC=local', 'UTF-8'))
-            .decode("UTF-8"))
-        conf_file['Horizon']['domains'] = str(base64.b64encode(
-            bytes('{"Primary":["horizon.sa.edu.au"],"Secondary":\
-                "horizonsa.onmicrosoft.com"}', 'UTF-8')).decode("UTF-8"))
-        conf_file['Horizon']['homepaths'] = str(base64.b64encode(
-            bytes('\\\\HCS-FS01\\office_stuserver,\
+                DC=local"}',
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
+        )
+        conf_file["Horizon"]["groupsou"] = str(
+            base64.b64encode(
+                bytes("OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "UTF-8")
+            ).decode("UTF-8")
+        )
+        conf_file["Horizon"]["domains"] = str(
+            base64.b64encode(
+                bytes(
+                    '{"Primary":["horizon.sa.edu.au"],"Secondary":\
+                "horizonsa.onmicrosoft.com"}',
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
+        )
+        conf_file["Horizon"]["homepaths"] = str(
+            base64.b64encode(
+                bytes(
+                    "\\\\HCS-FS01\\office_stuserver,\
 \\\\HCS-FS01\\teachers_stuserver,\
-\\\\HCS-FS01\\students_stuserver',
-                  'UTF-8')).decode("UTF-8"))
-        conf_file['Horizon']['campus'] = str(base64.b64encode(
-            bytes('balaklava,clare', 'UTF-8')).decode("UTF-8"))
+\\\\HCS-FS01\\students_stuserver",
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
+        )
+        conf_file["Horizon"]["campus"] = str(
+            base64.b64encode(bytes("balaklava,clare", "UTF-8")).decode("UTF-8")
+        )
 
-        conf_file.add_section('DComputers')
-        conf_file['DComputers']['server'] = str(base64.b64encode(
-            bytes('DCM-DC01.DCOMPUTERS.local', 'UTF-8')).decode("UTF-8"))
-        conf_file['DComputers']['server_user'] = str(base64.b64encode(
-            bytes('administrator', 'UTF-8')).decode("UTF-8"))
-        conf_file['DComputers']['server_pass'] = str(base64.b64encode(
-            bytes('Heffserver2022!', 'UTF-8')).decode("UTF-8"))
-        conf_file['DComputers']['userou'] = str(base64.b64encode(
-            bytes('OU=Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local', 'UTF-8'))
-            .decode("UTF-8"))
-        conf_file['DComputers']['domainname'] = str(base64.b64encode(
-            bytes('DCOMPUTERS', 'UTF-8')).decode("UTF-8"))
-        conf_file['DComputers']['groups'] = str(base64.b64encode(
-            bytes('{"Admin":["Office365_ES5", "DC-Admin",\
+        conf_file.add_section("DComputers")
+        conf_file["DComputers"]["server"] = str(
+            base64.b64encode(bytes("DCM-DC01.DCOMPUTERS.local", "UTF-8")).decode(
+                "UTF-8"
+            )
+        )
+        conf_file["DComputers"]["server_user"] = str(
+            base64.b64encode(bytes("DComputers", "UTF-8")).decode("UTF-8")
+        )
+        conf_file["DComputers"]["server_pass"] = str(
+            base64.b64encode(bytes("Displease5-Grievous-Mushy", "UTF-8")).decode(
+                "UTF-8"
+            )
+        )
+        conf_file["DComputers"]["userou"] = str(
+            base64.b64encode(
+                bytes("OU=Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local", "UTF-8")
+            ).decode("UTF-8")
+        )
+        conf_file["DComputers"]["domainname"] = str(
+            base64.b64encode(bytes("DCOMPUTERS", "UTF-8")).decode("UTF-8")
+        )
+        conf_file["DComputers"]["groups"] = str(
+            base64.b64encode(
+                bytes(
+                    '{"Admin":["Office365_ES5", "DC-Admin",\
                 "Local-Administrator", "Remote Desktop Users", "SG_FS_Admin",\
                 "SG_FS_Course", "SG_FS_Backups", "SG_FS_Images",\
                 "Administrators"],"Member HF":["Office365_ES5", "DC-Member",\
@@ -267,42 +325,78 @@ class MakeConf():
                     "SG_FS_Images"],"Member AH":\
                 ["Office365_ES5", "DC-Member", "SG_FS_Backups", "SG_Backups",\
                     "Backups", "SG_FS_Images", "SG_WF_Staff"]}',
-                  'UTF-8')).decode("UTF-8"))
-        conf_file['DComputers']['positions'] = str(base64.b64encode(
-            bytes('{"Staff":["Member HF","Member DCM","Member AH","Admin"],\
-                "Students":[]}', 'UTF-8')).decode("UTF-8"))
-        conf_file['DComputers']['positionsou'] = str(base64.b64encode(
-            bytes('{"Member HF":"OU=Heffs Fabrications,OU=Members,OU=Users,\
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
+        )
+        conf_file["DComputers"]["positions"] = str(
+            base64.b64encode(
+                bytes(
+                    '{"Staff":["Member HF","Member DCM","Member AH","Admin"],\
+                "Students":[]}',
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
+        )
+        conf_file["DComputers"]["positionsou"] = str(
+            base64.b64encode(
+                bytes(
+                    '{"Member HF":"OU=Heffs Fabrications,OU=Members,OU=Users,\
                 OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local","Member DCM":\
                 "OU=Doohan Computers,OU=Members,OU=Users,OU=DCOMPUTERS,\
                 DC=DCOMPUTERS,DC=local","Member AH":"OU=Ash_Heffernan,\
                 OU=Members,OU=Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local",\
                 "Admin":"OU=Admins,OU=Users,OU=DCOMPUTERS,\
-                DC=DCOMPUTERS,DC=local"}', 'UTF-8')).decode("UTF-8"))
-        conf_file['DComputers']['title'] = str(base64.b64encode(
-            bytes('{"Member HF":"Welder","Member DCM":"Support Technicion",\
+                DC=DCOMPUTERS,DC=local"}',
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
+        )
+        conf_file["DComputers"]["title"] = str(
+            base64.b64encode(
+                bytes(
+                    '{"Member HF":"Welder","Member DCM":"Support Technicion",\
                 "Member AH":"Consultant","Admin":"Systems Engineer"}',
-                  'UTF-8')).decode("UTF-8"))
-        conf_file['DComputers']['expiredous'] = str(base64.b64encode(
-            bytes('{"Expired_Users":"OU=Expired_Users,OU=DCOMPUTERS,\
-                DC=DCOMPUTERS,DC=local"}', 'UTF-8')).decode("UTF-8"))
-        conf_file['DComputers']['groupsou'] = str(base64.b64encode(
-            bytes('OU=Groups,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local', 'UTF-8'))
-            .decode("UTF-8"))
-        conf_file['DComputers']['domains'] = str(base64.b64encode(
-            bytes('{"Primary":["doohancomputers.com.au",\
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
+        )
+        conf_file["DComputers"]["expiredous"] = str(
+            base64.b64encode(
+                bytes(
+                    '{"Expired_Users":"OU=Expired_Users,OU=DCOMPUTERS,\
+                DC=DCOMPUTERS,DC=local"}',
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
+        )
+        conf_file["DComputers"]["groupsou"] = str(
+            base64.b64encode(
+                bytes("OU=Groups,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local", "UTF-8")
+            ).decode("UTF-8")
+        )
+        conf_file["DComputers"]["domains"] = str(
+            base64.b64encode(
+                bytes(
+                    '{"Primary":["doohancomputers.com.au",\
                 "heffsfabrications.com.au","ashheffernan.org"],\
                 "Secondary":"heffserver.onmicrosoft.com"}',
-                  'UTF-8')).decode("UTF-8"))
-        conf_file['DComputers']['homepaths'] = str(base64.b64encode(
-            bytes('\\\\DCM-FS01\\Profiles', 'UTF-8')).decode("UTF-8"))
-        conf_file['DComputers']['campus'] = str(base64.b64encode(
-            bytes('balaklava', 'UTF-8')).decode("UTF-8"))
-        conf_file.add_section('Settings')
-        conf_file['Settings']['company'] = str(base64.b64encode(
-            bytes('Horizon,DComputers', 'UTF-8')).decode("UTF-8"))
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
+        )
+        conf_file["DComputers"]["homepaths"] = str(
+            base64.b64encode(bytes("\\\\DCM-FS01\\Profiles", "UTF-8")).decode("UTF-8")
+        )
+        conf_file["DComputers"]["campus"] = str(
+            base64.b64encode(bytes("balaklava", "UTF-8")).decode("UTF-8")
+        )
+        conf_file.add_section("Settings")
+        conf_file["Settings"]["company"] = str(
+            base64.b64encode(bytes("Horizon,DComputers", "UTF-8")).decode("UTF-8")
+        )
 
-        with open(settings_dir + settings_file, 'wb') as file_handle:
+        with open(settings_dir + settings_file, "wb") as file_handle:
             conf_file.write_encrypted(file_handle)
 
 

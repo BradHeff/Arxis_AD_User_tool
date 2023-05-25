@@ -2,7 +2,6 @@ import datetime
 import threading
 from signal import SIGINT, signal
 
-import tkthread
 import ttkbootstrap as ttk
 
 import Functions as f
@@ -78,7 +77,7 @@ class ADUnlocker(ttk.Window):
             root.destroy()
             self.messageBox("ERROR!!", "company settings is incomplete")
 
-        self.options.set("Horizon")
+        self.options.set("DComputers")
         self.comboSelect("")
 
         # Gui.print_icon("open_lock.png")
