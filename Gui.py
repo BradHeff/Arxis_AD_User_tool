@@ -8,7 +8,7 @@ from icon import EDIT, image
 
 
 def Window(self):
-    self.W, self.H = 1400, 655
+    self.W, self.H = 1200, 655
     screen_width = self.winfo_screenwidth()
     screen_height = self.winfo_screenheight()
     center_x = int(screen_width / 2 - self.W / 2)

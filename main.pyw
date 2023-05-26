@@ -79,7 +79,7 @@ class ADUnlocker(ttk.Window):
                 self.messageBox, "ERROR!!", "company settings is incomplete"
             )
 
-        self.options.set("DComputers")
+        self.options.set("Horizon")
         self.comboSelect("")
 
         # Gui.print_icon("open_lock.png")
