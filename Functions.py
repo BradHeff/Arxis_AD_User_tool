@@ -11,8 +11,8 @@ from pyad import adgroup, adsearch, aduser, pyad
 from ttkbootstrap import DISABLED, NORMAL
 
 DEBUG = True
-Version = "v1.0.4.3.1"
-key = b',\xb9\xe7\x93\x96?\x81\x01X\xb8i=B\xdd\xcdz\xf9\xe2\x92\xe7\x83\xd2O^\xc1\xf7\xef\xfdS\x90%\xd6'
+Version = "v1.0.4.3.2"
+key = b'"\x93\xa8F$mk\x99C\xcf\x97uE\xcbJ\xc8v\xe0\x173b\x16\xb0\xbc\xea\x02\x89~r\xf7\xac\xeb'
 settings_file = "Settings.dat"
 
 if not DEBUG:
@@ -286,9 +286,9 @@ def resetPassword(self, ou, newpass):
     selected_item = self.tree.selection()[0]
     try:
         pyad.set_defaults(
-            ldap_server=base64.b64decode(self.server).decode("UTF-8"),
-            username=base64.b64decode(self.username).decode("UTF-8"),
-            password=base64.b64decode(self.password).decode("UTF-8"),
+            ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
+            username=base64.b64decode(self.username).decode("UTF-8").strip(),
+            password=base64.b64decode(self.password).decode("UTF-8").strip(),
             ssl=True,
         )
         lockeduser = aduser.ADUser.from_dn(ou)
@@ -317,9 +317,9 @@ def resetPassword(self, ou, newpass):
 def unlockUser(self, ou, all=0):
     pythoncom.CoInitialize()
     pyad.set_defaults(
-        ldap_server=base64.b64decode(self.server).decode("UTF-8"),
-        username=base64.b64decode(self.username).decode("UTF-8"),
-        password=base64.b64decode(self.password).decode("UTF-8"),
+        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
+        username=base64.b64decode(self.username).decode("UTF-8").strip(),
+        password=base64.b64decode(self.password).decode("UTF-8").strip(),
         ssl=True,
     )
     lockeduser = aduser.ADUser.from_dn(ou)
@@ -349,9 +349,9 @@ def unlockAll(self, locked):
 def listLocked(self):
     pythoncom.CoInitialize()
     pyad.set_defaults(
-        ldap_server=base64.b64decode(self.server).decode("UTF-8"),
-        username=base64.b64decode(self.username).decode("UTF-8"),
-        password=base64.b64decode(self.password).decode("UTF-8"),
+        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
+        username=base64.b64decode(self.username).decode("UTF-8").strip(),
+        password=base64.b64decode(self.password).decode("UTF-8").strip(),
         ssl=True,
     )
 
@@ -381,9 +381,9 @@ def update_user(self, data):
     try:
         self.status["text"] = "".join(["Updating ", data["first"], " ", data["last"]])
         pyad.set_defaults(
-            ldap_server=base64.b64decode(self.server).decode("UTF-8"),
-            username=base64.b64decode(self.username).decode("UTF-8"),
-            password=base64.b64decode(self.password).decode("UTF-8"),
+            ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
+            username=base64.b64decode(self.username).decode("UTF-8").strip(),
+            password=base64.b64decode(self.password).decode("UTF-8").strip(),
             ssl=True,
         )
 
@@ -440,9 +440,9 @@ def createUser(self, data):
     try:
         self.status["text"] = "".join(["Creating ", data["first"], " ", data["last"]])
         pyad.set_defaults(
-            ldap_server=base64.b64decode(self.server).decode("UTF-8"),
-            username=base64.b64decode(self.username).decode("UTF-8"),
-            password=base64.b64decode(self.password).decode("UTF-8"),
+            ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
+            username=base64.b64decode(self.username).decode("UTF-8").strip(),
+            password=base64.b64decode(self.password).decode("UTF-8").strip(),
             ssl=True,
         )
 
@@ -567,39 +567,45 @@ def remove_groups(self):
 
 
 def listGroups(self, ou):
-    try:
-        pythoncom.CoInitialize()
-        pyad.set_defaults(
-            ldap_server=base64.b64decode(self.server).decode("UTF-8"),
-            username=base64.b64decode(self.username).decode("UTF-8"),
-            password=base64.b64decode(self.password).decode("UTF-8"),
-        )
-        q = adsearch.ADQuery()
-        q.execute_query(
-            attributes=["cn", "distinguishedName", "sAMAccountName"],
-            where_clause="objectClass = 'Group'",
-            base_dn=ou,
-        )
-        groups = {}
-        for x in q.get_results():
-            # print(x)
-            groups[x["sAMAccountName"]] = {
-                "name": x["cn"],
-                "ou": x["distinguishedName"],
-            }
-        return groups
-    except Exception as e:
-        print(e)
+    # try:
+    pythoncom.CoInitialize()
+    pyad.set_defaults(
+        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
+        username=base64.b64decode(self.username).decode("UTF-8").strip(),
+        password=base64.b64decode(self.password).decode("UTF-8").strip(), ssl=True, type='GC'
+    )
+    # print(base64.b64decode(self.server).decode("UTF-8"))
+    # print(base64.b64decode(self.username).decode("UTF-8"))
+    # print(base64.b64decode(self.password).decode("UTF-8"))
+    q = adsearch.ADQuery()
+    q.execute_query(
+        attributes=["cn", "distinguishedName", "sAMAccountName"],
+        where_clause="objectClass = 'Group'",
+        base_dn=ou,
+    )
+    groups = {}
+    for x in q.get_results():
+        # print(x)
+        groups[x["sAMAccountName"]] = {
+            "name": x["cn"],
+            "ou": x["distinguishedName"],
+        }
+    return groups
+    # except Exception as e:
+    #     print(e)
 
 
 def listUsers(self, ou):
     pythoncom.CoInitialize()
     pyad.set_defaults(
-        ldap_server=base64.b64decode(self.server).decode("UTF-8"),
-        username=base64.b64decode(self.username).decode("UTF-8"),
-        password=base64.b64decode(self.password).decode("UTF-8"),
-        ssl=True,
+        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
+        username=base64.b64decode(self.username).decode("UTF-8").strip(),
+        password=base64.b64decode(self.password).decode("UTF-8").strip(),
+        ssl=True, type='GC'
     )
+    print(base64.b64decode(self.server).decode("UTF-8"))
+    print(base64.b64decode(self.username).decode("UTF-8"))
+    print(base64.b64decode(self.password).decode("UTF-8"))
     q = adsearch.ADQuery()
     q.execute_query(
         attributes=[
@@ -624,11 +630,14 @@ def listUsers(self, ou):
 def listUsers2(self, ou):
     pythoncom.CoInitialize()
     pyad.set_defaults(
-        ldap_server=base64.b64decode(self.server).decode("UTF-8"),
-        username=base64.b64decode(self.username).decode("UTF-8"),
-        password=base64.b64decode(self.password).decode("UTF-8"),
-        ssl=True,
+        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
+        username=base64.b64decode(self.username).decode("UTF-8").strip(),
+        password=base64.b64decode(self.password).decode("UTF-8").strip(),
+        ssl=True, type='GC'
     )
+    print(base64.b64decode(self.server).decode("UTF-8"))
+    print(base64.b64decode(self.username).decode("UTF-8"))
+    print(base64.b64decode(self.password).decode("UTF-8"))
     q = adsearch.ADQuery()
     q.execute_query(
         attributes=[
@@ -665,10 +674,10 @@ def listUsers2(self, ou):
 def removeGroups(self, users, groupOU):
     pythoncom.CoInitialize()
     pyad.set_defaults(
-        ldap_server=base64.b64decode(self.server).decode("UTF-8"),
-        username=base64.b64decode(self.username).decode("UTF-8"),
-        password=base64.b64decode(self.password).decode("UTF-8"),
-        ssl=True,
+        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
+        username=base64.b64decode(self.username).decode("UTF-8").strip(),
+        password=base64.b64decode(self.password).decode("UTF-8").strip(),
+        ssl=True, type='GC'
     )
     u = aduser.ADUser.from_dn(users)
     g = adgroup.ADGroup.from_dn(groupOU)

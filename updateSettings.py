@@ -292,11 +292,7 @@ class MakeConf:
         )
 
         conf_file.add_section("DComputers")
-        conf_file["DComputers"]["server"] = str(
-            base64.b64encode(bytes("DCM-DC01.DCOMPUTERS.local", "UTF-8")).decode(
-                "UTF-8"
-            )
-        )
+        conf_file["DComputers"]["server"] = str(base64.b64encode(bytes("172.20.3.34", "UTF-8")).decode("UTF-8"))
         conf_file["DComputers"]["server_user"] = str(
             base64.b64encode(bytes("DComputers", "UTF-8")).decode("UTF-8")
         )
@@ -333,39 +329,26 @@ class MakeConf:
             base64.b64encode(
                 bytes(
                     '{"Staff":["Member HF","Member DCM","Member AH","Admin"],\
-                "Students":[]}',
-                    "UTF-8",
-                )
-            ).decode("UTF-8")
+"Students":[]}', "UTF-8",)).decode("UTF-8")
         )
         conf_file["DComputers"]["positionsou"] = str(
             base64.b64encode(
                 bytes(
-                    '{"Member HF":"OU=Heffs Fabrications,OU=Members,OU=Users,\
-                OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local","Member DCM":\
-                "OU=Doohan Computers,OU=Members,OU=Users,OU=DCOMPUTERS,\
-                DC=DCOMPUTERS,DC=local","Member AH":"OU=Ash_Heffernan,\
-                OU=Members,OU=Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local",\
-                "Admin":"OU=Admins,OU=Users,OU=DCOMPUTERS,\
-                DC=DCOMPUTERS,DC=local"}',
-                    "UTF-8",
-                )
-            ).decode("UTF-8")
+                    '{"Member HF":"OU=Heffs Fabrications,OU=Members,OU=Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local",\
+"Member DCM":"OU=Doohan Computers,OU=Members,OU=Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local",\
+"Member AH":"OU=Ash_Heffernan,OU=Members,OU=Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local",\
+"Admin":"OU=Admins,OU=Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local"}', "UTF-8",)).decode("UTF-8")
         )
         conf_file["DComputers"]["title"] = str(
             base64.b64encode(
                 bytes(
                     '{"Member HF":"Welder","Member DCM":"Support Technicion",\
-                "Member AH":"Consultant","Admin":"Systems Engineer"}',
-                    "UTF-8",
-                )
-            ).decode("UTF-8")
+"Member AH":"Consultant","Admin":"Systems Engineer"}', "UTF-8",)).decode("UTF-8")
         )
         conf_file["DComputers"]["expiredous"] = str(
             base64.b64encode(
                 bytes(
-                    '{"Expired_Users":"OU=Expired_Users,OU=DCOMPUTERS,\
-                DC=DCOMPUTERS,DC=local"}',
+                    '{"Expired_Users":"OU=Expired_Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local"}',
                     "UTF-8",
                 )
             ).decode("UTF-8")
@@ -389,7 +372,7 @@ class MakeConf:
             base64.b64encode(bytes("\\\\DCM-FS01\\Profiles", "UTF-8")).decode("UTF-8")
         )
         conf_file["DComputers"]["campus"] = str(
-            base64.b64encode(bytes("balaklava", "UTF-8")).decode("UTF-8")
+            base64.b64encode(bytes("balaklava,", "UTF-8")).decode("UTF-8")
         )
         conf_file.add_section("Settings")
         conf_file["Settings"]["company"] = str(

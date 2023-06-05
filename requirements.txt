@@ -3,4 +3,5 @@ ttkbootstrap
 pyad
 configparser_crypt
 pywin32
-pathlib
+tinyaes
+tkthread

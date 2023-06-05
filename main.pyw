@@ -495,6 +495,8 @@ class ADUnlocker(ttk.Window):
         print(self.winfo_width())
         if "camp" not in str(widget):
             f.getConfig(self, self.options.get())
+            print(self.compFail)
+            print(self.servs)
             self.clear_campus()
             if (
                 not f.base64.b64decode(self.campus)
