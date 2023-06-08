@@ -79,7 +79,7 @@ class ADUnlocker(ttk.Window):
                 self.messageBox, "ERROR!!", "company settings is incomplete"
             )
 
-        self.options.set("DComputers")
+        self.options.set("Horizon")
         self.comboSelect("")
 
         # Gui.print_icon("open_lock.png")
@@ -1029,7 +1029,7 @@ class ADUnlocker(ttk.Window):
         center_x = int(int(posX) + (self.W / 2) - (W / 2))
         center_y = int(int(posY) + (self.H / 2) - (H / 2))
 
-        mb = ttk.Window(themename="heffelhoffui", resizable=False)
+        mb = ttk.Window(themename="heffelhoffui", resizable={W, H})
         mb.title(txttitle)
         mb.geometry(f"{W}x{H}+{center_x}+{center_y}")
         mb.attributes("-fullscreen", False)
@@ -1038,13 +1038,11 @@ class ADUnlocker(ttk.Window):
 
         paddings = {pady: 10, padx: 10}
 
-        message = ttk.Label(mb, text=message, wraplength=250, justify=ttk.CENTER)
-        btn = ttk.Button(mb, text="OK", width=10, command=mb.destroy)
+        messages = ttk.Label(mb, text=message, wraplength=250, justify=ttk.CENTER)
+        btn = ttk.Button(mb, text="OK", width=20, command=mb.destroy)
 
-        message.pack(side="top", fill="both", expand=True, **paddings)
-        btn.pack(side="bottom", **paddings)
-
-        mb.mainloop()
+        messages.pack(side="top", fill="both", expand=True, **paddings)
+        btn.pack(side="bottom", expand=True, **paddings)
 
 
 root = ADUnlocker()
