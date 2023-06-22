@@ -1029,20 +1029,20 @@ class ADUnlocker(ttk.Window):
         center_x = int(int(posX) + (self.W / 2) - (W / 2))
         center_y = int(int(posY) + (self.H / 2) - (H / 2))
 
-        mb = ttk.Window(themename="heffelhoffui", resizable={W, H})
-        mb.title(txttitle)
+        mb = ttk.Toplevel(title=txttitle)
         mb.geometry(f"{W}x{H}+{center_x}+{center_y}")
-        mb.attributes("-fullscreen", False)
         mb.attributes("-toolwindow", True)
         mb.attributes("-topmost", True)
 
-        paddings = {pady: 10, padx: 10}
+        messages = ttk.Label(
+            mb, text=message, wraplength=250, justify=ttk.CENTER, style="color:black"
+        )
+        btn = ttk.Button(
+            mb, text="OK", width=20, command=mb.destroy, style="bgcolor: black"
+        )
 
-        messages = ttk.Label(mb, text=message, wraplength=250, justify=ttk.CENTER)
-        btn = ttk.Button(mb, text="OK", width=20, command=mb.destroy)
-
-        messages.pack(side="top", fill="both", expand=True, **paddings)
-        btn.pack(side="bottom", expand=True, **paddings)
+        messages.pack(side="top", fill="x", expand=True, padx=10, pady=10)
+        btn.pack(side="bottom", expand=True, padx=10, pady=10)
 
 
 root = ADUnlocker()
