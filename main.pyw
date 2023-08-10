@@ -17,6 +17,7 @@ class ADUnlocker(ttk.Window):
         signal(SIGINT, lambda x, y: print("") or self.handler())
         self.after(500, self.check)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
+        splash.Splash(self)
         self.data = dict()
         self.domains = dict()
         self.chkBtns = dict()
@@ -87,7 +88,7 @@ class ADUnlocker(ttk.Window):
             self.combobox["state"] = ttk.DISABLED
 
         self.hide()
-        splash.Splash(self)
+        splash.loadedMain = True
 
     def on_closing(self):
         print("Thanks for using Horizon AD User Tool!\n")

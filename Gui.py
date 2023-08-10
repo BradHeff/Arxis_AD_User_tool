@@ -8,13 +8,13 @@ from icon import EDIT, image
 
 
 def Window(self):
-    self.W, self.H = 1200, 655
+    self.W, self.H = 1480, 800
     screen_width = self.winfo_screenwidth()
     screen_height = self.winfo_screenheight()
     center_x = int(screen_width / 2 - self.W / 2)
     center_y = int(screen_height / 2 - self.H / 2)
     self.geometry(f"{self.W}x{self.H}+{center_x}+{center_y}")
-    self.resizable(0, 0)
+    # self.resizable(0, 0)
     self.attributes("-fullscreen", False)
 
 
