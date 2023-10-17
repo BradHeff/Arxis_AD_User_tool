@@ -6,6 +6,8 @@ import ttkbootstrap as ttk
 from Functions import clear_console
 from icon import splashbg
 
+loadedMain = False
+
 
 class Splash(ttk.Toplevel):
     """docstring for Splash."""
@@ -70,6 +72,9 @@ class Splash(ttk.Toplevel):
     def runProg(self):
         while self.count < 99:
             self.count += 10
+            if loadedMain is True:
+                self.count = 100
+
             self.prog["value"] = self.count
             time.sleep(0.7)
         self.onClose()
