@@ -1,7 +1,9 @@
-pillow
+pillow==9.5.0
 ttkbootstrap
-pyad
+# pyad
 configparser_crypt
 pywin32
 tinyaes
 tkthread
+git+https://github.com/psf/black
+git+https://github.com/BradHeff/pyad_Trinity
