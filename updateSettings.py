@@ -291,92 +291,97 @@ class MakeConf:
             base64.b64encode(bytes("balaklava,clare", "UTF-8")).decode("UTF-8")
         )
 
-        conf_file.add_section("DComputers")
-        conf_file["DComputers"]["server"] = str(base64.b64encode(bytes("172.20.3.34", "UTF-8")).decode("UTF-8"))
-        conf_file["DComputers"]["server_user"] = str(
-            base64.b64encode(bytes("DComputers", "UTF-8")).decode("UTF-8")
+        conf_file.add_section("TCLOUD")
+        conf_file["TCLOUD"]["server"] = str(
+            base64.b64encode(bytes("TCL-DC01.TCLOUD.local", "UTF-8")).decode("UTF-8")
         )
-        conf_file["DComputers"]["server_pass"] = str(
-            base64.b64encode(bytes("Displease5-Grievous-Mushy", "UTF-8")).decode(
-                "UTF-8"
-            )
+        conf_file["TCLOUD"]["server_user"] = str(
+            base64.b64encode(bytes("trinity", "UTF-8")).decode("UTF-8")
         )
-        conf_file["DComputers"]["userou"] = str(
+        conf_file["TCLOUD"]["server_pass"] = str(
+            base64.b64encode(bytes("frf45xWJ", "UTF-8")).decode("UTF-8")
+        )
+        conf_file["TCLOUD"]["userou"] = str(
             base64.b64encode(
-                bytes("OU=Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local", "UTF-8")
+                bytes("OU=Users,OU=TRINITY,DC=TCLOUD,DC=local", "UTF-8")
             ).decode("UTF-8")
         )
-        conf_file["DComputers"]["domainname"] = str(
-            base64.b64encode(bytes("DCOMPUTERS", "UTF-8")).decode("UTF-8")
+        conf_file["TCLOUD"]["domainname"] = str(
+            base64.b64encode(bytes("TCLOUD", "UTF-8")).decode("UTF-8")
         )
-        conf_file["DComputers"]["groups"] = str(
+        conf_file["TCLOUD"]["groups"] = str(
             base64.b64encode(
                 bytes(
-                    '{"Admin":["Office365_ES5", "DC-Admin",\
-                "Local-Administrator", "Remote Desktop Users", "SG_FS_Admin",\
-                "SG_FS_Course", "SG_FS_Backups", "SG_FS_Images",\
-                "Administrators"],"Member HF":["Office365_ES5", "DC-Member",\
-                "SG_FS_Backups", "SG_FS_Images"],"Member DCM":\
-                ["Office365_ES5", "DC-Member", "SG_FS_Backups",\
-                    "SG_FS_Images"],"Member AH":\
-                ["Office365_ES5", "DC-Member", "SG_FS_Backups", "SG_Backups",\
-                    "Backups", "SG_FS_Images", "SG_WF_Staff"]}',
+                    '{"Admin":["Office365", "SG_Admin",\
+                "Local_Administrator", "Remote Desktop Users",\
+                "SG_Clients", "SG_Backups", "SG_IT",\
+                "Administrators"],"Member HF":["Office365", "SG_Member",\
+                "SG_Backups"],"Member TCL":\
+                ["Office365", "SG_Member", "SG_Backups"]}',
                     "UTF-8",
                 )
             ).decode("UTF-8")
         )
-        conf_file["DComputers"]["positions"] = str(
+        conf_file["TCLOUD"]["positions"] = str(
             base64.b64encode(
                 bytes(
-                    '{"Staff":["Member HF","Member DCM","Member AH","Admin"],\
-"Students":[]}', "UTF-8",)).decode("UTF-8")
-        )
-        conf_file["DComputers"]["positionsou"] = str(
-            base64.b64encode(
-                bytes(
-                    '{"Member HF":"OU=Heffs Fabrications,OU=Members,OU=Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local",\
-"Member DCM":"OU=Doohan Computers,OU=Members,OU=Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local",\
-"Member AH":"OU=Ash_Heffernan,OU=Members,OU=Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local",\
-"Admin":"OU=Admins,OU=Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local"}', "UTF-8",)).decode("UTF-8")
-        )
-        conf_file["DComputers"]["title"] = str(
-            base64.b64encode(
-                bytes(
-                    '{"Member HF":"Welder","Member DCM":"Support Technicion",\
-"Member AH":"Consultant","Admin":"Systems Engineer"}', "UTF-8",)).decode("UTF-8")
-        )
-        conf_file["DComputers"]["expiredous"] = str(
-            base64.b64encode(
-                bytes(
-                    '{"Expired_Users":"OU=Expired_Users,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local"}',
+                    '{"Staff":["Member HF","Member TCL","Admin"],\
+"Students":[]}',
                     "UTF-8",
                 )
             ).decode("UTF-8")
         )
-        conf_file["DComputers"]["groupsou"] = str(
+        conf_file["TCLOUD"]["positionsou"] = str(
             base64.b64encode(
-                bytes("OU=Groups,OU=DCOMPUTERS,DC=DCOMPUTERS,DC=local", "UTF-8")
+                bytes(
+                    '{"Member HF":"OU=HeffsFabrications,OU=Users,OU=TRINITY,DC=TCLOUD,DC=local",\
+"Member TCL":"OU=TrinityCloud,OU=Users,OU=TRINITY,DC=TCLOUD,DC=local",\
+"Admin":"OU=IT Admins,OU=TRINITY,DC=TCLOUD,DC=local"}',
+                    "UTF-8",
+                )
             ).decode("UTF-8")
         )
-        conf_file["DComputers"]["domains"] = str(
+        conf_file["TCLOUD"]["title"] = str(
+            base64.b64encode(
+                bytes(
+                    '{"Member HF":"Welder","Member TCL":"Support Technicion",\
+"Admin":"Systems Engineer"}',
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
+        )
+        conf_file["TCLOUD"]["expiredous"] = str(
+            base64.b64encode(
+                bytes(
+                    '{"Expired_Users":"OU=Expired_Users,OU=TRINITY,DC=TCLOUD,DC=local"}',
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
+        )
+        conf_file["TCLOUD"]["groupsou"] = str(
+            base64.b64encode(
+                bytes("OU=Groups,OU=TRINITY,DC=TCLOUD,DC=local", "UTF-8")
+            ).decode("UTF-8")
+        )
+        conf_file["TCLOUD"]["domains"] = str(
             base64.b64encode(
                 bytes(
                     '{"Primary":["doohancomputers.com.au",\
-                "heffsfabrications.com.au","ashheffernan.org"],\
-                "Secondary":"heffserver.onmicrosoft.com"}',
+"heffsfabrications.com.au","trinitycloud.com.au",\
+"faithtechsolutions.net],"Secondary":"trinitycloudaus.onmicrosoft.com"}',
                     "UTF-8",
                 )
             ).decode("UTF-8")
         )
-        conf_file["DComputers"]["homepaths"] = str(
-            base64.b64encode(bytes("\\\\DCM-FS01\\Profiles", "UTF-8")).decode("UTF-8")
+        conf_file["TCLOUD"]["homepaths"] = str(
+            base64.b64encode(bytes("\\\\TCL-FS01\\Profiles", "UTF-8")).decode("UTF-8")
         )
-        conf_file["DComputers"]["campus"] = str(
+        conf_file["TCLOUD"]["campus"] = str(
             base64.b64encode(bytes("balaklava,", "UTF-8")).decode("UTF-8")
         )
         conf_file.add_section("Settings")
         conf_file["Settings"]["company"] = str(
-            base64.b64encode(bytes("Horizon,DComputers", "UTF-8")).decode("UTF-8")
+            base64.b64encode(bytes("Horizon,TCLOUD", "UTF-8")).decode("UTF-8")
         )
 
         with open(settings_dir + settings_file, "wb") as file_handle:

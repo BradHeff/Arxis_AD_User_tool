@@ -7,12 +7,12 @@ from pathlib import Path
 import configparser_crypt as cCrypt
 import pythoncom
 import win32security
-from pyad import adgroup, adsearch, aduser, pyad
+from pyad_Trinity import adgroup, adsearch, aduser, pyad_Trinity
 from ttkbootstrap import DISABLED, NORMAL
 
 DEBUG = True
 Version = "v1.0.4.3.2"
-key = b'\xd4^\xb7l\x9a\x07\xf5\x0bE\xec\x9c\x90X}RL;\x07XC{\x1cH=\xb3\xf8P\x93c2\xa9\xb9'
+key = b'\xdd\xa3\xe1\x92\x7fr\xdc\xc2\x87\xe7\xb0\x85\xca\xc2\xc5\x00\x96\x00\x02b\x04\rmi\x7fM\xc0;o<\x905'
 settings_file = "Settings.dat"
 
 if not DEBUG:
@@ -285,7 +285,7 @@ def resetPassword(self, ou, newpass):
     pythoncom.CoInitialize()
     selected_item = self.tree.selection()[0]
     try:
-        pyad.set_defaults(
+        pyad_Trinity.set_defaults(
             ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
             username=base64.b64decode(self.username).decode("UTF-8").strip(),
             password=base64.b64decode(self.password).decode("UTF-8").strip(),
@@ -301,7 +301,7 @@ def resetPassword(self, ou, newpass):
         self.selItem = []
         widgetStatus(self, NORMAL)
         self.messageBox("SUCCESS!!", "Password set and user unlocked!")
-    except pyad.aduser.win32Exception as e:
+    except pyad_Trinity.aduser.win32Exception as e:
         self.selItem = []
         widgetStatus(self, NORMAL)
         self.messageBox(
@@ -316,7 +316,7 @@ def resetPassword(self, ou, newpass):
 
 def unlockUser(self, ou, all=0):
     pythoncom.CoInitialize()
-    pyad.set_defaults(
+    pyad_Trinity.set_defaults(
         ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
         username=base64.b64decode(self.username).decode("UTF-8").strip(),
         password=base64.b64decode(self.password).decode("UTF-8").strip(),
@@ -348,7 +348,7 @@ def unlockAll(self, locked):
 
 def listLocked(self):
     pythoncom.CoInitialize()
-    pyad.set_defaults(
+    pyad_Trinity.set_defaults(
         ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
         username=base64.b64decode(self.username).decode("UTF-8").strip(),
         password=base64.b64decode(self.password).decode("UTF-8").strip(),
@@ -380,14 +380,14 @@ def update_user(self, data):
     pythoncom.CoInitialize()
     try:
         self.status["text"] = "".join(["Updating ", data["first"], " ", data["last"]])
-        pyad.set_defaults(
+        pyad_Trinity.set_defaults(
             ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
             username=base64.b64decode(self.username).decode("UTF-8").strip(),
             password=base64.b64decode(self.password).decode("UTF-8").strip(),
             ssl=True,
         )
 
-        Nou = pyad.aduser.ADUser.from_dn(data["ou"])
+        Nou = pyad_Trinity.aduser.ADUser.from_dn(data["ou"])
         self.progress["value"] = 60
 
         if data["proxy"].__len__() > 3:
@@ -420,7 +420,7 @@ def update_user(self, data):
         self.messageBox("SUCCESS!!", "User Updated!")
         self.progress["value"] = 0
         self.updateSelect()
-    except pyad.aduser.win32Exception as e:
+    except pyad_Trinity.aduser.win32Exception as e:
         self.status["text"] = "Idle..."
         widgetStatus(self, NORMAL)
         self.messageBox(
@@ -439,16 +439,16 @@ def createUser(self, data):
     pythoncom.CoInitialize()
     try:
         self.status["text"] = "".join(["Creating ", data["first"], " ", data["last"]])
-        pyad.set_defaults(
+        pyad_Trinity.set_defaults(
             ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
             username=base64.b64decode(self.username).decode("UTF-8").strip(),
             password=base64.b64decode(self.password).decode("UTF-8").strip(),
             ssl=True,
         )
 
-        Nou = pyad.adcontainer.ADContainer.from_dn(self.posOU)
+        Nou = pyad_Trinity.adcontainer.ADContainer.from_dn(self.posOU)
         self.progress["value"] = 30
-        pyad.aduser.ADUser.create(
+        pyad_Trinity.aduser.ADUser.create(
             name="".join([data["first"], " ", data["last"]]),
             container_object=Nou,
             enable=True,
@@ -472,7 +472,7 @@ def createUser(self, data):
                 "pwdLastSet": 0,
             },
         )
-        newuser = pyad.aduser.ADUser.from_cn(
+        newuser = pyad_Trinity.aduser.ADUser.from_cn(
             "".join([data["first"], " ", data["last"]])
         )
         newuser.set_password(data["password"])
@@ -484,7 +484,7 @@ def createUser(self, data):
             ["Adding ", data["first"], " ", data["last"], " to groups"]
         )
         for gp in data["groups"]:
-            newgroup = pyad.adgroup.ADGroup.from_cn(gp)
+            newgroup = pyad_Trinity.adgroup.ADGroup.from_cn(gp)
             newuser.add_to_group(newgroup)
         self.progress["value"] = 80
         self.status["text"] = "".join(
@@ -569,10 +569,12 @@ def remove_groups(self):
 def listGroups(self, ou):
     # try:
     pythoncom.CoInitialize()
-    pyad.set_defaults(
+    pyad_Trinity.set_defaults(
         ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
         username=base64.b64decode(self.username).decode("UTF-8").strip(),
-        password=base64.b64decode(self.password).decode("UTF-8").strip(), ssl=True, type='GC'
+        password=base64.b64decode(self.password).decode("UTF-8").strip(),
+        ssl=True,
+        type="GC",
     )
     # print(base64.b64decode(self.server).decode("UTF-8"))
     # print(base64.b64decode(self.username).decode("UTF-8"))
@@ -597,11 +599,12 @@ def listGroups(self, ou):
 
 def listUsers(self, ou):
     pythoncom.CoInitialize()
-    pyad.set_defaults(
+    pyad_Trinity.set_defaults(
         ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
         username=base64.b64decode(self.username).decode("UTF-8").strip(),
         password=base64.b64decode(self.password).decode("UTF-8").strip(),
-        ssl=True, type='GC'
+        ssl=True,
+        type="GC",
     )
     print(base64.b64decode(self.server).decode("UTF-8"))
     print(base64.b64decode(self.username).decode("UTF-8"))
@@ -629,11 +632,12 @@ def listUsers(self, ou):
 
 def listUsers2(self, ou):
     pythoncom.CoInitialize()
-    pyad.set_defaults(
+    pyad_Trinity.set_defaults(
         ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
         username=base64.b64decode(self.username).decode("UTF-8").strip(),
         password=base64.b64decode(self.password).decode("UTF-8").strip(),
-        ssl=True, type='GC'
+        ssl=True,
+        type="GC",
     )
     print(base64.b64decode(self.server).decode("UTF-8"))
     print(base64.b64decode(self.username).decode("UTF-8"))
@@ -673,11 +677,12 @@ def listUsers2(self, ou):
 
 def removeGroups(self, users, groupOU):
     pythoncom.CoInitialize()
-    pyad.set_defaults(
+    pyad_Trinity.set_defaults(
         ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
         username=base64.b64decode(self.username).decode("UTF-8").strip(),
         password=base64.b64decode(self.password).decode("UTF-8").strip(),
-        ssl=True, type='GC'
+        ssl=True,
+        type="GC",
     )
     u = aduser.ADUser.from_dn(users)
     g = adgroup.ADGroup.from_dn(groupOU)
@@ -697,7 +702,7 @@ def removeHomedrive(paths):
 
 # def moveUser(self, bOU, aOU):
 #     pythoncom.CoInitialize()
-#     pyad.set_defaults(ldap_server=base64.b64decode(self.server).decode("UTF-8"),
+#     pyad_Trinity.set_defaults(ldap_server=base64.b64decode(self.server).decode("UTF-8"),
 #                       username=base64.b64decode(self.username).decode("UTF-8"),
 #                       password=base64.b64decode(self.password).decode("UTF-8"),
 #                       ssl=True)
