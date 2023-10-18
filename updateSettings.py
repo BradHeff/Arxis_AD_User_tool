@@ -368,7 +368,7 @@ class MakeConf:
                 bytes(
                     '{"Primary":["doohancomputers.com.au",\
 "heffsfabrications.com.au","trinitycloud.com.au",\
-"faithtechsolutions.net],"Secondary":"trinitycloudaus.onmicrosoft.com"}',
+"faithtechsolutions.net"],"Secondary":"trinitycloudaus.onmicrosoft.com"}',
                     "UTF-8",
                 )
             ).decode("UTF-8")

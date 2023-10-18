@@ -12,7 +12,7 @@ from ttkbootstrap import DISABLED, NORMAL
 
 DEBUG = True
 Version = "v1.0.4.3.2"
-key = b'\x99\xd4\xb4\xa5W\xdf\xf5\xeb\x9bN\xb1\xfbA\xb8J\x86\xeb\xde\x1aC\x94a\xa7t\xaec\x0f\x12~\xd8\\\x9e'
+key = b"H\xb12\x0foJ\xb9X\x0e\xd0D\xd8\xb8\xf2\xc1\x15s\xaa\xee2g\x06\xd6\xf7\xe5\xe5>A\xd9\x8bRt"
 settings_file = "Settings.dat"
 
 if not DEBUG:
@@ -484,6 +484,7 @@ def createUser(self, data):
             ["Adding ", data["first"], " ", data["last"], " to groups"]
         )
         for gp in data["groups"]:
+            print(gp)
             newgroup = pyad_Trinity.adgroup.ADGroup.from_cn(gp)
             newuser.add_to_group(newgroup)
         self.progress["value"] = 80

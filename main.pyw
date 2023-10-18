@@ -80,7 +80,7 @@ class ADUnlocker(ttk.Window):
                 self.messageBox, "ERROR!!", "company settings is incomplete"
             )
 
-        self.options.set("TCLOUD")
+        self.options.set("Horizon")
         self.comboSelect("")
 
         # Gui.print_icon("open_lock.png")
@@ -845,7 +845,7 @@ class ADUnlocker(ttk.Window):
             case 1:
                 f.widgetStatus(self, ttk.DISABLED)
                 if self.fname.get().__len__() >= 2 and self.lname.get().__len__() >= 2:
-                    if not self.dpass.get().__len__() < 8:
+                    if self.dpass.get().__len__() < 8:
                         f.widgetStatus(self, ttk.NORMAL)
 
                         tkt.call_nosync(
@@ -858,7 +858,7 @@ class ADUnlocker(ttk.Window):
                     if (
                         "Select" in self.primary_domain.get()
                         or "Select" in self.hdrive.get()
-                        or self.homePath.get().__len__() > 0
+                        or self.homePath.get().__len__() <= 0
                     ):
                         f.widgetStatus(self, ttk.NORMAL)
                         self.status["text"] = "Idle..."
@@ -874,25 +874,26 @@ class ADUnlocker(ttk.Window):
                     self.status["text"] = "Rebuilding groups..."
                     groups = self.getCheck()
                     self.status["text"] = "Setting login name..."
-                    if "flast" in self.samFormat.get():
-                        samname = "".join(
-                            [
-                                self.fname.get().strip()[0:1],
-                                self.lname.get().strip(),
-                            ]
-                        )
-                    elif "firstlast" in self.samFormat.get():
-                        samname = "".join(
-                            [self.fname.get().strip(), self.lname.get().strip()]
-                        )
-                    else:
-                        samname = "".join(
-                            [
-                                self.fname.get().strip(),
-                                ".",
-                                self.lname.get().strip(),
-                            ]
-                        )
+                    match (self.samFormat.get()):
+                        case "flastname":
+                            samname = "".join(
+                                [
+                                    self.fname.get().strip()[0:1],
+                                    self.lname.get().strip(),
+                                ]
+                            )
+                        case "firstlastname":
+                            samname = "".join(
+                                [self.fname.get().strip(), self.lname.get().strip()]
+                            )
+                        case _:
+                            samname = "".join(
+                                [
+                                    self.fname.get().strip(),
+                                    ".",
+                                    self.lname.get().strip(),
+                                ]
+                            )
                     self.status["text"] = "Rebuilding data..."
                     data["login"] = samname.lower()
                     data["first"] = self.fname.get().strip().capitalize()
