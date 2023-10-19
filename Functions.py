@@ -437,76 +437,77 @@ def update_user(self, data):
 
 def createUser(self, data):
     pythoncom.CoInitialize()
-    try:
-        self.status["text"] = "".join(["Creating ", data["first"], " ", data["last"]])
-        pyad_Trinity.set_defaults(
-            ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
-            username=base64.b64decode(self.username).decode("UTF-8").strip(),
-            password=base64.b64decode(self.password).decode("UTF-8").strip(),
-            ssl=True,
-        )
+    # try:
+    self.status["text"] = "".join(["Creating ", data["first"], " ", data["last"]])
+    pyad_Trinity.set_defaults(
+        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
+        username=base64.b64decode(self.username).decode("UTF-8").strip(),
+        password=base64.b64decode(self.password).decode("UTF-8").strip(),
+        ssl=True,
+    )
 
-        Nou = pyad_Trinity.adcontainer.ADContainer.from_dn(self.posOU)
-        self.progress["value"] = 30
-        pyad_Trinity.aduser.ADUser.create(
-            name="".join([data["first"], " ", data["last"]]),
-            container_object=Nou,
-            enable=True,
-            optional_attributes={
-                "givenName": data["first"],
-                "sAMAccountName": data["login"],
-                "userPrincipalName": "".join([data["login"], "@", data["domain"]]),
-                "DisplayName": "".join([data["first"], " ", data["last"]]),
-                "sn": data["last"],
-                "mail": "".join([data["login"], "@", data["domain"]]),
-                "proxyAddresses": [
-                    "".join(["SMTP:", data["login"], "@", data["domain"]]),
-                    "".join(["smtp:", data["login"], "@", data["proxy"]]),
-                ],
-                "HomeDirectory": data["homeDirectory"],
-                "HomeDrive": data["homeDrive"],
-                "title": data["title"],
-                "description": data["description"],
-                "department": data["department"],
-                "company": data["company"],
-                "pwdLastSet": 0,
-            },
-        )
-        newuser = pyad_Trinity.aduser.ADUser.from_cn(
-            "".join([data["first"], " ", data["last"]])
-        )
-        newuser.set_password(data["password"])
-        newuser.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
-        newuser.set_user_account_control_setting("PASSWD_NOTREQD", False)
+    Nou = pyad_Trinity.adcontainer.ADContainer.from_dn(self.posOU)
+    self.progress["value"] = 30
+    pyad_Trinity.aduser.ADUser.create(
+        sAMAccountName=data["login"],
+        cn="".join([data["first"], " ", data["last"]]),
+        password=data["password"],
+        container_object=Nou,
+        enable=True,
+        optional_attributes={
+            "givenName": data["first"],
+            "userPrincipalName": "".join([data["login"], "@", data["domain"]]),
+            "DisplayName": "".join([data["first"], " ", data["last"]]),
+            "sn": data["last"],
+            "mail": "".join([data["login"], "@", data["domain"]]),
+            "proxyAddresses": [
+                "".join(["SMTP:", data["login"], "@", data["domain"]]),
+                "".join(["smtp:", data["login"], "@", data["proxy"]]),
+            ],
+            "HomeDirectory": data["homeDirectory"],
+            "HomeDrive": data["homeDrive"],
+            "title": data["title"],
+            "description": data["description"],
+            "department": data["department"],
+            "company": data["company"],
+            "pwdLastSet": 0,
+        },
+    )
+    newuser = pyad_Trinity.aduser.ADUser.from_cn(
+        "".join([data["first"], " ", data["last"]])
+    )
+    # newuser.set_password(data["password"])
+    newuser.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
+    newuser.set_user_account_control_setting("PASSWD_NOTREQD", False)
 
-        self.progress["value"] = 50
-        self.status["text"] = "".join(
-            ["Adding ", data["first"], " ", data["last"], " to groups"]
-        )
-        for gp in data["groups"]:
-            print(gp)
-            newgroup = pyad_Trinity.adgroup.ADGroup.from_cn(gp)
-            newuser.add_to_group(newgroup)
-        self.progress["value"] = 80
-        self.status["text"] = "".join(
-            ["Creating ", data["first"], " ", data["last"], " home directory"]
-        )
-        createHomeDir(
-            data["login"],
-            data["homeDirectory"],
-            base64.b64decode(self.domainName).decode("UTF-8").strip(),
-        )
-        self.progress["value"] = 100
-        widgetStatus(self, NORMAL)
-        self.status["text"] = "Idle..."
-        self.messageBox("SUCCESS!!", "User Created!")
-        self.progress["value"] = 0
-    except Exception as e:
-        self.status["text"] = "Idle..."
-        widgetStatus(self, NORMAL)
-        self.progress["value"] = 0
-        self.messageBox("ERROR!!", e)
-        # self.messageBox("ERROR!!","An error has occured!")
+    self.progress["value"] = 50
+    self.status["text"] = "".join(
+        ["Adding ", data["first"], " ", data["last"], " to groups"]
+    )
+    for gp in data["groups"]:
+        print(gp)
+        newgroup = pyad_Trinity.adgroup.ADGroup.from_cn(gp)
+        newuser.add_to_group(newgroup)
+    self.progress["value"] = 80
+    self.status["text"] = "".join(
+        ["Creating ", data["first"], " ", data["last"], " home directory"]
+    )
+    createHomeDir(
+        data["login"],
+        data["homeDirectory"],
+        base64.b64decode(self.domainName).decode("UTF-8").strip(),
+    )
+    self.progress["value"] = 100
+    widgetStatus(self, NORMAL)
+    self.status["text"] = "Idle..."
+    self.messageBox("SUCCESS!!", "User Created!")
+    self.progress["value"] = 0
+    # except Exception as e:
+    #     self.status["text"] = "Idle..."
+    #     widgetStatus(self, NORMAL)
+    #     self.progress["value"] = 0
+    #     self.messageBox("ERROR!!", e)
+    #     # self.messageBox("ERROR!!","An error has occured!")
 
 
 def createHomeDir(username, homeDir, domainName):
