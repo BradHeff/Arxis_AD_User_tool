@@ -11,8 +11,8 @@ from pyad_Trinity import adgroup, adsearch, aduser, pyad_Trinity
 from ttkbootstrap import DISABLED, NORMAL
 
 DEBUG = False
-Version = "v1.0.4.9"
-key = b'\x8f\xf2}\xcfEMVK2\x9a1\xfe\xea\x96\xf9\x9a 4\xbb\x8f\xdblj\xde(\xc1\xa6\xe6\xee6\xdd\xa9'
+Version = "v1.0.5.2"
+key = b'\xe1WO\xe7\xbe\x07Mt\x08\x94\x88\x01\xff*r\xd6\xa4\xf0\xc8kFvc\xa1\x93\xe0\x81\xa9\t\x00\xa2\x96'
 settings_file = "Settings.dat"
 
 if not DEBUG:

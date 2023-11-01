@@ -12,7 +12,7 @@ loadedMain = False
 class Splash(ttk.Toplevel):
     """docstring for Splash."""
 
-    def __init__(self, original, themename="heffelhoffui"):
+    def __init__(self, original, themename="trinitycloud"):
         super().__init__()
         global photo, root
         self.original_frame = original
@@ -53,7 +53,7 @@ class Splash(ttk.Toplevel):
     def ConsoleWelcome(self):
         clear_console()
         message = "====================================\n"
-        message += "======HORIZON CHRISTIAN SCHOOL======\n"
+        message += "    ======TRINITY CLOUD======\n"
         message += "====================================\n"
         message += "Author: Brad Heffernan\n"
         message += "-----------\n"
@@ -64,7 +64,6 @@ class Splash(ttk.Toplevel):
         message += "    pythoncom\n"
         message += "    win32security\n"
         message += "    pyad\n"
-        message += "    pathlib\n"
         message += "===================================="
 
         return message

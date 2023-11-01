@@ -12,7 +12,7 @@ import splash
 
 class ADUnlocker(ttk.Window):
     def __init__(self):
-        super(ADUnlocker, self).__init__(themename="heffelhoffui")
+        super(ADUnlocker, self).__init__(themename="trinitycloud")
         self.bind_all("<Control-c>", self.handler)
         signal(SIGINT, lambda x, y: print("") or self.handler())
         self.after(500, self.check)
@@ -69,7 +69,7 @@ class ADUnlocker(ttk.Window):
         Gui.baseGUI(self)
 
         self.title(
-            "".join(["Horizon AD User Tool v", f.Version[4 : f.Version.__len__()]])
+            "".join(["Trinity AD User Tool v", f.Version[4 : f.Version.__len__()]])
         )
 
         # self.mainloop()
@@ -91,7 +91,7 @@ class ADUnlocker(ttk.Window):
         splash.loadedMain = True
 
     def on_closing(self):
-        print("Thanks for using Horizon AD User Tool!\n")
+        print("Thanks for using Trinity AD User Tool!\n")
         root.destroy()
 
     def hide(self):

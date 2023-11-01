@@ -4,7 +4,7 @@ import ttkbootstrap as ttk
 from PIL import Image, ImageTk
 
 from Functions import Version, base64, loadConfig, saveConfig
-from icon import EDIT, image
+from icon import image
 
 
 def Window(self):
@@ -58,9 +58,9 @@ def baseGUI(self):
     # img_move = Image.open(b64_move, mode='r')
     # move = ImageTk.PhotoImage(image=img_move)
 
-    b64_edit = io.BytesIO(base64.b64decode(EDIT))
-    img_edit = Image.open(b64_edit, mode="r")
-    edit = ImageTk.PhotoImage(image=img_edit)
+    # b64_edit = io.BytesIO(base64.b64decode(EDIT))
+    # img_edit = Image.open(b64_edit, mode="r")
+    # edit = ImageTk.PhotoImage(image=img_edit)
 
     # b64_lock = io.BytesIO(base64.b64decode(LOCK))
     # img_lock = Image.open(b64_lock, mode='r')
@@ -96,7 +96,7 @@ def baseGUI(self):
     self.columnconfigure(0, weight=0, pad=70)
     self.rowconfigure(0, weight=1)
 
-    self.tabControl.add(tab1, text="Lock", image=edit, compound="top")
+    self.tabControl.add(tab1, text="Lock", compound="top")
     self.tabControl.add(self.tab2, text="New Users")
     # self.tabControl.add(tab3, text ='Disabled User')
     # self.tabControl.add(tab4, text ='Move User')
