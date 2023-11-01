@@ -10,9 +10,9 @@ import win32security
 from pyad_Trinity import adgroup, adsearch, aduser, pyad_Trinity
 from ttkbootstrap import DISABLED, NORMAL
 
-DEBUG = True
-Version = "v1.0.4.3.2"
-key = b"H\xb12\x0foJ\xb9X\x0e\xd0D\xd8\xb8\xf2\xc1\x15s\xaa\xee2g\x06\xd6\xf7\xe5\xe5>A\xd9\x8bRt"
+DEBUG = False
+Version = "v1.0.4.9"
+key = b'\x8f\xf2}\xcfEMVK2\x9a1\xfe\xea\x96\xf9\x9a 4\xbb\x8f\xdblj\xde(\xc1\xa6\xe6\xee6\xdd\xa9'
 settings_file = "Settings.dat"
 
 if not DEBUG:

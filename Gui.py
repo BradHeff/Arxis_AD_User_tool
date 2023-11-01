@@ -8,7 +8,7 @@ from icon import EDIT, image
 
 
 def Window(self):
-    self.W, self.H = 1480, 800
+    self.W, self.H = 1338, 750
     screen_width = self.winfo_screenwidth()
     screen_height = self.winfo_screenheight()
     center_x = int(screen_width / 2 - self.W / 2)
@@ -27,7 +27,7 @@ def Icon(self):
 
 def baseGUI(self):
     Window(self)
-    # Icon(self)
+    Icon(self)
 
     menubar = ttk.Menu(self)
     self.file = ttk.Menu(menubar, tearoff=0)
@@ -263,14 +263,14 @@ def Tab2(self, tab2):
     self.lbl_domains.grid(sticky="wn", column=0, row=0, padx=10, pady=5)
 
     self.primary_domain = ttk.StringVar(rframe, "Select Domain")
-    self.combo_domain = ttk.Combobox(rframe, textvariable=self.primary_domain, width=37)
+    self.combo_domain = ttk.Combobox(rframe, textvariable=self.primary_domain, width=27)
     self.combo_domain["state"] = "readonly"
     self.combo_domain.grid(sticky="ws", column=0, row=0, padx=10, pady=5)
 
     lbl_dpass = ttk.Label(rframe, text="Password:")
     lbl_dpass.grid(sticky="wn", column=1, row=0, padx=10, pady=5)
 
-    self.dpass = ttk.Entry(rframe, width=30)
+    self.dpass = ttk.Entry(rframe, width=40)
     self.dpass.grid(sticky="ws", column=1, row=0, padx=10, pady=5)
 
     self.lbl_frame3 = ttk.LabelFrame(rframe, text="Profile")
@@ -319,33 +319,33 @@ def Tab2(self, tab2):
     lbl_homePath.grid(sticky="wsn", column=2, row=0, padx=10, pady=10)
 
     self.paths = ttk.StringVar(self.lbl_frame3, "Select Homepath")
-    self.homePath = ttk.Combobox(self.lbl_frame3, textvariable=self.paths, width=40)
+    self.homePath = ttk.Combobox(self.lbl_frame3, textvariable=self.paths, width=20)
     self.homePath["state"] = "readonly"
     self.homePath.grid(sticky="en", column=3, row=0, padx=10, pady=10)
 
     lbl_desc = ttk.Label(self.lbl_frame3, text="Description:")
     lbl_desc.grid(sticky="wsn", column=0, row=1, padx=10, pady=10)
 
-    self.desc = ttk.Entry(self.lbl_frame3, width=18)
+    self.desc = ttk.Entry(self.lbl_frame3, width=20)
     self.desc.insert(0, self.date)
     self.desc.grid(sticky="es", column=1, row=1, padx=10, pady=10)
 
     lbl_dep = ttk.Label(self.lbl_frame3, text="Department:")
     lbl_dep.grid(sticky="wsn", column=0, row=2, padx=10, pady=10)
 
-    self.depEnt = ttk.Entry(self.lbl_frame3, width=18)
+    self.depEnt = ttk.Entry(self.lbl_frame3, width=20)
     self.depEnt.grid(sticky="es", column=1, row=2, padx=10, pady=10)
 
     lbl_jobTitle = ttk.Label(self.lbl_frame3, text="Job Title:")
     lbl_jobTitle.grid(sticky="wsn", column=2, row=1, padx=10, pady=10)
 
-    self.jobTitleEnt = ttk.Entry(self.lbl_frame3, width=43)
+    self.jobTitleEnt = ttk.Entry(self.lbl_frame3, width=20)
     self.jobTitleEnt.grid(sticky="en", column=3, row=1, padx=10, pady=10)
 
     lbl_orCampTitle = ttk.Label(self.lbl_frame3, text="Company:")
     lbl_orCampTitle.grid(sticky="wsn", column=2, row=2, padx=10, pady=10)
 
-    self.orgCompEnt = ttk.Entry(self.lbl_frame3, width=43)
+    self.orgCompEnt = ttk.Entry(self.lbl_frame3, width=20)
     self.orgCompEnt.grid(sticky="en", column=3, row=2, padx=10, pady=10)
 
     self.campH = ttk.StringVar(self.lbl_frameC, "balaklava")
@@ -441,7 +441,7 @@ def Tab5(self, tab5):
     rframe5.columnconfigure(0, weight=1)
 
     lframe5.grid(sticky="nsew", column=0, row=1, pady=10)
-    rframe5.grid(sticky="nsew", column=2, row=1, pady=10)
+    rframe5.grid(sticky="nsw", column=2, row=1, pady=10)
 
     self.lbl_frameG = ttk.Labelframe(lframe5, text="Campus")
     self.lbl_frameG.grid(sticky="new", columnspan=2, row=1, padx=10, pady=5)
@@ -462,14 +462,14 @@ def Tab5(self, tab5):
     self.tree4.bind("<ButtonRelease-1>", self.selectItem3)
     scrollbar = ttk.Scrollbar(rframe5)
     scrollbar.config(command=self.tree4.yview)
-    scrollbar.grid(sticky=ttk.NSEW, row=0, column=2)
+    scrollbar.grid(sticky=ttk.NS, row=0, column=2)
     scrollbar2 = ttk.Scrollbar(rframe5, orient=ttk.HORIZONTAL)
     scrollbar2.config(command=self.tree4.xview)
-    scrollbar2.grid(sticky=ttk.NSEW, row=1, columnspan=2)
-    self.tree4.grid(sticky=ttk.NSEW, row=0, columnspan=2, padx=10)
+    scrollbar2.grid(sticky=ttk.EW, row=1, columnspan=2)
+    self.tree4.grid(sticky=ttk.EW, row=0, columnspan=2, padx=10)
 
     lbl_frame11 = ttk.Labelframe(rframe5, text="Attributes")
-    lbl_frame11.grid(sticky="new", row=3, columnspan=2, padx=10, pady=5)
+    lbl_frame11.grid(sticky="new", row=3, columnspan=2, padx=5, pady=5)
 
     lbl_frame11.rowconfigure(0, weight=0, pad=20)
     lbl_frame11.rowconfigure(1, weight=0, pad=20)
@@ -484,36 +484,36 @@ def Tab5(self, tab5):
     lbldomain = ttk.Label(lbl_frame11, text="Domain")
     lbldomain.grid(sticky="nw", column=2, row=0, padx=10, pady=5)
 
-    self.fname_entry = ttk.Entry(lbl_frame11, width=28)
+    self.fname_entry = ttk.Entry(lbl_frame11, width=20)
     self.fname_entry.grid(sticky="sew", column=0, row=0, padx=10, pady=5)
 
-    self.lname_entry = ttk.Entry(lbl_frame11, width=28)
+    self.lname_entry = ttk.Entry(lbl_frame11, width=24)
     self.lname_entry.grid(sticky="sew", column=1, row=0, padx=10, pady=5)
 
-    self.entDomain = ttk.Entry(lbl_frame11, width=28)
+    self.entDomain = ttk.Entry(lbl_frame11, width=24)
     self.entDomain["state"] = "readonly"
     self.entDomain.grid(sticky="sew", column=2, row=0, padx=10, pady=5)
 
     lbllsname = ttk.Label(lbl_frame11, text="Login")
     lbllsname.grid(sticky="nw", column=0, row=1, padx=10, pady=5)
 
-    self.entSamname = ttk.Entry(lbl_frame11, width=28)
+    self.entSamname = ttk.Entry(lbl_frame11, width=20)
     self.entSamname.grid(sticky="sew", column=0, row=1, padx=10, pady=5)
 
     lbltitle = ttk.Label(lbl_frame11, text="Title")
     lbltitle.grid(sticky="nw", column=1, row=1, padx=10, pady=5)
 
-    self.entJobTitle = ttk.Entry(lbl_frame11, width=28)
+    self.entJobTitle = ttk.Entry(lbl_frame11, width=24)
     self.entJobTitle.grid(sticky="sew", column=1, row=1, padx=10, pady=5)
 
     lbllDesc = ttk.Label(lbl_frame11, text="Description")
     lbllDesc.grid(sticky="nw", column=2, row=1, padx=10, pady=5)
 
-    self.entDesc = ttk.Entry(lbl_frame11, width=28)
+    self.entDesc = ttk.Entry(lbl_frame11, width=24)
     self.entDesc.grid(sticky="sew", column=2, row=1, padx=10, pady=5)
 
     lbllPass = ttk.Label(lbl_frame11, text="Password")
     lbllPass.grid(sticky="nw", column=0, row=2, padx=10, pady=5)
 
-    self.entPass = ttk.Entry(lbl_frame11, width=28)
+    self.entPass = ttk.Entry(lbl_frame11, width=20)
     self.entPass.grid(sticky="sew", column=0, row=2, padx=10, pady=5)

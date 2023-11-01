@@ -122,7 +122,7 @@ class ADUnlocker(ttk.Window):
             if self.add_groups.get() == y["text"]:
                 cont = False
         if cont:
-            if self.checkCount > 3:
+            if self.checkCount > 2:
                 self.checkCount = 0
                 self.checkRow += 1
             self.chkBtns[self.add_groups.get()] = ttk.IntVar(self.lbl_frame2, 1)
@@ -313,7 +313,7 @@ class ADUnlocker(ttk.Window):
             )
             rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
             self.checkCount += 1
-            if self.checkCount > 3:
+            if self.checkCount > 2:
                 self.checkCount = 0
                 self.checkRow += 1
         if not self.jobTitle.__len__() <= 3:
