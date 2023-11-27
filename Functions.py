@@ -10,9 +10,9 @@ import win32security
 from pyad_Trinity import adgroup, adsearch, aduser, pyad_Trinity
 from ttkbootstrap import DISABLED, NORMAL
 
-DEBUG = True
-Version = "v1.0.5.2"
-key = b'\xe1WO\xe7\xbe\x07Mt\x08\x94\x88\x01\xff*r\xd6\xa4\xf0\xc8kFvc\xa1\x93\xe0\x81\xa9\t\x00\xa2\x96'
+DEBUG = False
+Version = "v1.0.6.3"
+key = b'!e\xb0\xd8\xfd\x7f\x16\xf9\x16n\xd0Z.\x8bQNL\xfaA\x82\x1f\xf5~\xc8z\xda\x04z\xe6&\x12\x86'
 settings_file = "Settings.dat"
 
 if not DEBUG:
@@ -262,7 +262,7 @@ def widgetStatus(self, status):
     self.btn_userUnlock["state"] = status
     self.btn_reset["state"] = status
     # self.move_btn['state']=status
-    self.addGroup["state"] = status
+    # self.addGroup["state"] = status
 
 
 def widgetStatusFailed(self, state):
@@ -272,13 +272,13 @@ def widgetStatusFailed(self, state):
         self.btn_userUnlock["state"] = DISABLED
         self.btn_reset["state"] = DISABLED
         # self.move_btn['state']=DISABLED
-        self.addGroup["state"] = DISABLED
+        # self.addGroup["state"] = DISABLED
     else:
         self.btn_unlockAll["state"] = NORMAL
         self.btn_search["state"] = NORMAL
         self.btn_userUnlock["state"] = NORMAL
         self.btn_reset["state"] = NORMAL
-        self.addGroup["state"] = NORMAL
+        # self.addGroup["state"] = NORMAL
 
 
 def resetPassword(self, ou, newpass):
@@ -485,7 +485,7 @@ def createUser(self, data):
         ["Adding ", data["first"], " ", data["last"], " to groups"]
     )
     for gp in data["groups"]:
-        print(gp)
+        # print(gp)
         newgroup = pyad_Trinity.adgroup.ADGroup.from_cn(gp)
         newuser.add_to_group(newgroup)
     self.progress["value"] = 80
@@ -608,9 +608,9 @@ def listUsers(self, ou):
         ssl=True,
         type="GC",
     )
-    print(base64.b64decode(self.server).decode("UTF-8"))
-    print(base64.b64decode(self.username).decode("UTF-8"))
-    print(base64.b64decode(self.password).decode("UTF-8"))
+    # print(base64.b64decode(self.server).decode("UTF-8"))
+    # print(base64.b64decode(self.username).decode("UTF-8"))
+    # print(base64.b64decode(self.password).decode("UTF-8"))
     q = adsearch.ADQuery()
     q.execute_query(
         attributes=[
@@ -641,9 +641,9 @@ def listUsers2(self, ou):
         ssl=True,
         type="GC",
     )
-    print(base64.b64decode(self.server).decode("UTF-8"))
-    print(base64.b64decode(self.username).decode("UTF-8"))
-    print(base64.b64decode(self.password).decode("UTF-8"))
+    # print(base64.b64decode(self.server).decode("UTF-8"))
+    # print(base64.b64decode(self.username).decode("UTF-8"))
+    # print(base64.b64decode(self.password).decode("UTF-8"))
     q = adsearch.ADQuery()
     q.execute_query(
         attributes=[

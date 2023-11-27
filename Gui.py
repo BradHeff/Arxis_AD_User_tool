@@ -4,22 +4,23 @@ import ttkbootstrap as ttk
 from PIL import Image, ImageTk
 
 from Functions import Version, base64, loadConfig, saveConfig
-from icon import image
+from icon import himage
 
 
 def Window(self):
-    self.W, self.H = 1338, 750
+    self.W, self.H = 1085, 630
     screen_width = self.winfo_screenwidth()
     screen_height = self.winfo_screenheight()
     center_x = int(screen_width / 2 - self.W / 2)
     center_y = int(screen_height / 2 - self.H / 2)
     self.geometry(f"{self.W}x{self.H}+{center_x}+{center_y}")
     # self.resizable(0, 0)
+    self.minsize(1080, 630)
     self.attributes("-fullscreen", False)
 
 
 def Icon(self):
-    b64_img = io.BytesIO(base64.b64decode(image))
+    b64_img = io.BytesIO(base64.b64decode(himage))
     img = Image.open(b64_img, mode="r")
     photo = ImageTk.PhotoImage(image=img)
     self.wm_iconphoto(False, photo)
@@ -189,16 +190,20 @@ def Tab2(self, tab2):
     lbl_title = ttk.Label(tab2, text="Active Directory New Users")
     lbl_title.grid(sticky="n", columnspan=4, padx=10, pady=5)
 
+    tab2.columnconfigure(0, weight=1)
+    tab2.columnconfigure(2, weight=1)
+
     lframe = ttk.Frame(tab2)
     rframe = ttk.Frame(tab2)
 
-    lframe.grid(sticky="nsw", column=0, row=1, pady=10)
-    rframe.grid(sticky="nse", column=2, row=1, pady=10)
+    lframe.grid(sticky="nsew", column=0, row=1, pady=10)
+    rframe.grid(sticky="nsw", column=2, row=1, pady=10, padx=5)
 
     # lframe.columnconfigure(0, weight=1)
     # lframe.columnconfigure(1, weight=1)
     # lframe.columnconfigure(0, weight=0)
     # lframe.columnconfigure(1, weight=0)
+
     lframe.rowconfigure(1, weight=0, pad=26)
     lframe.rowconfigure(6, weight=0, pad=26)
 
@@ -242,19 +247,19 @@ def Tab2(self, tab2):
     self.lbl_frame4 = ttk.LabelFrame(lframe, text="Students Position")
     self.lbl_frame4.grid(sticky="ew", columnspan=4, row=5, padx=10, pady=5)
 
-    lbl_groups = ttk.Label(lframe, text="Add Groups")
-    lbl_groups.grid(sticky="wn", column=0, row=6, padx=10, pady=5)
+    # lbl_groups = ttk.Label(lframe, text="Add Groups")
+    # lbl_groups.grid(sticky="wn", column=0, row=6, padx=10, pady=5)
 
-    self.add_groups = ttk.StringVar(lframe, "Select Group")
-    self.ex_groups = ttk.Combobox(lframe, textvariable=self.add_groups, width=35)
-    self.ex_groups["state"] = "readonly"
-    self.ex_groups.grid(sticky="ws", column=0, row=6, padx=10, pady=5)
+    # self.add_groups = ttk.StringVar(lframe, "Select Group")
+    # self.ex_groups = ttk.Combobox(lframe, textvariable=self.add_groups, width=35)
+    # self.ex_groups["state"] = "readonly"
+    # self.ex_groups.grid(sticky="ws", column=0, row=6, padx=10, pady=5)
 
-    self.addGroup = ttk.Button(
-        lframe, text="Add Group", width=20, command=self.addToGroups
-    )
-    self.addGroup["state"] = ttk.DISABLED
-    self.addGroup.grid(sticky="e", column=1, row=6, padx=10, pady=5)
+    # self.addGroup = ttk.Button(
+    #     lframe, text="Add Group", width=20, command=self.addToGroups
+    # )
+    # self.addGroup["state"] = ttk.DISABLED
+    # self.addGroup.grid(sticky="e", column=1, row=6, padx=10, pady=5)
 
     self.lbl_frame2 = ttk.LabelFrame(rframe, text="Groups")
     self.lbl_frame2.grid(sticky="ew", columnspan=4, row=7, padx=10, pady=5)
@@ -339,13 +344,13 @@ def Tab2(self, tab2):
     lbl_jobTitle = ttk.Label(self.lbl_frame3, text="Job Title:")
     lbl_jobTitle.grid(sticky="wsn", column=2, row=1, padx=10, pady=10)
 
-    self.jobTitleEnt = ttk.Entry(self.lbl_frame3, width=20)
+    self.jobTitleEnt = ttk.Entry(self.lbl_frame3, width=22)
     self.jobTitleEnt.grid(sticky="en", column=3, row=1, padx=10, pady=10)
 
     lbl_orCampTitle = ttk.Label(self.lbl_frame3, text="Company:")
     lbl_orCampTitle.grid(sticky="wsn", column=2, row=2, padx=10, pady=10)
 
-    self.orgCompEnt = ttk.Entry(self.lbl_frame3, width=20)
+    self.orgCompEnt = ttk.Entry(self.lbl_frame3, width=22)
     self.orgCompEnt.grid(sticky="en", column=3, row=2, padx=10, pady=10)
 
     self.campH = ttk.StringVar(self.lbl_frameC, "balaklava")
@@ -452,13 +457,11 @@ def Tab5(self, tab5):
     self.lbl_frame10 = ttk.Labelframe(lframe5, text="Student User OU's")
     self.lbl_frame10.grid(sticky="new", columnspan=2, row=3, padx=10, pady=5)
 
-    self.tree4 = ttk.Treeview(rframe5, column=("c1", "c2", "c3"), show="headings")
+    self.tree4 = ttk.Treeview(rframe5, column=("c1", "c2"), show="headings")
     self.tree4.column("# 1", anchor=ttk.CENTER)
     self.tree4.heading("# 1", text="USERNAME")
     self.tree4.column("# 2", anchor=ttk.CENTER)
     self.tree4.heading("# 2", text="DISPLAY NAME")
-    self.tree4.column("# 3", anchor=ttk.CENTER)
-    self.tree4.heading("# 3", text="OU")
     self.tree4.bind("<ButtonRelease-1>", self.selectItem3)
     scrollbar = ttk.Scrollbar(rframe5)
     scrollbar.config(command=self.tree4.yview)

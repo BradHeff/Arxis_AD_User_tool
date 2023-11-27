@@ -12,7 +12,7 @@ import splash
 
 class ADUnlocker(ttk.Window):
     def __init__(self):
-        super(ADUnlocker, self).__init__(themename="trinitycloud")
+        super(ADUnlocker, self).__init__(themename="heffelhoffui")
         self.bind_all("<Control-c>", self.handler)
         signal(SIGINT, lambda x, y: print("") or self.handler())
         self.after(500, self.check)
@@ -69,7 +69,7 @@ class ADUnlocker(ttk.Window):
         Gui.baseGUI(self)
 
         self.title(
-            "".join(["Trinity AD User Tool v", f.Version[4 : f.Version.__len__()]])
+            "".join(["Horizon AD User Tool v", f.Version[4 : f.Version.__len__()]])
         )
 
         # self.mainloop()
@@ -87,7 +87,7 @@ class ADUnlocker(ttk.Window):
         if not f.DEBUG:
             self.combobox["state"] = ttk.DISABLED
 
-        self.hide()
+        # self.hide()
         splash.loadedMain = True
 
     def on_closing(self):
@@ -111,33 +111,33 @@ class ADUnlocker(ttk.Window):
         else:
             f.saveConfig(self)
 
-    def addToGroups(self):
-        if "Select" in self.add_groups.get():
-            return
-        if self.var.get() == "1":
-            return
-        p = self.lbl_frame2.grid_slaves()
-        cont = True
-        for y in p:
-            if self.add_groups.get() == y["text"]:
-                cont = False
-        if cont:
-            if self.checkCount > 2:
-                self.checkCount = 0
-                self.checkRow += 1
-            self.chkBtns[self.add_groups.get()] = ttk.IntVar(self.lbl_frame2, 1)
-            # print([x for x in self.chkBtns])
-            rbtn = ttk.Checkbutton(
-                self.lbl_frame2,
-                text=self.add_groups.get(),
-                variable=self.chkBtns[self.add_groups.get()],
-                onvalue=1,
-                offvalue=0,
-            )
-            rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
-            self.checkCount += 1
-        else:
-            tkt.call_nosync(self.messageBox, "ERROR!!!", "That group already exists!")
+    # def addToGroups(self):
+    #     if "Select" in self.add_groups.get():
+    #         return
+    #     if self.var.get() == "1":
+    #         return
+    #     p = self.lbl_frame2.grid_slaves()
+    #     cont = True
+    #     for y in p:
+    #         if self.add_groups.get() == y["text"]:
+    #             cont = False
+    #     if cont:
+    #         if self.checkCount > 2:
+    #             self.checkCount = 0
+    #             self.checkRow += 1
+    #         self.chkBtns[self.add_groups.get()] = ttk.IntVar(self.lbl_frame2, 1)
+    #         # print([x for x in self.chkBtns])
+    #         rbtn = ttk.Checkbutton(
+    #             self.lbl_frame2,
+    #             text=self.add_groups.get(),
+    #             variable=self.chkBtns[self.add_groups.get()],
+    #             onvalue=1,
+    #             offvalue=0,
+    #         )
+    #         rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
+    #         self.checkCount += 1
+    #     else:
+    #         tkt.call_nosync(self.messageBox, "ERROR!!!", "That group already exists!")
 
     def alterButton(self, widget):
         if self.tabControl.index(self.tabControl.select()) == 0:
@@ -259,10 +259,10 @@ class ADUnlocker(ttk.Window):
         self.entDomain["state"] = "readonly"
 
     def getCheck(self):
+        # print(self.var.get())
         grp = []
-        for x in self.chkBtns:
-            if self.chkBtns.get(x).get() == 1:
-                grp.append(x)
+        for x in self.groups:
+            grp.append(x)
         return grp
 
     def posSelect(self):
@@ -501,11 +501,11 @@ class ADUnlocker(ttk.Window):
         self.tree2.delete(*self.tree2.get_children())
 
     def comboSelect(self, widget):
-        print(self.winfo_width())
+        # print(self.winfo_width())
         if "camp" not in str(widget):
             f.getConfig(self, self.options.get())
-            print(self.compFail)
-            print(self.servs)
+            # print(self.compFail)
+            # print(self.servs)
             self.clear_campus()
             if (
                 not f.base64.b64decode(self.campus)
@@ -549,7 +549,7 @@ class ADUnlocker(ttk.Window):
         t.start()
         # t.join()
 
-    def comboLoad(self):
+    def comboLoad(self):  # noqa
         # print(self.positions)
         f.pythoncom.CoInitialize()
         self.status["text"] = "Loading..."
@@ -721,7 +721,7 @@ class ADUnlocker(ttk.Window):
                     groups.append(x)
                     self.progress["value"] = prog
                     prog += 1
-                self.ex_groups["values"] = groups
+                # self.ex_groups["values"] = groups
             except Exception as e:
                 print(e)
                 pass
@@ -909,6 +909,7 @@ class ADUnlocker(ttk.Window):
                     data["department"] = self.depEnt.get()
                     data["company"] = self.orgCompEnt.get()
                     self.progress["value"] = 20
+                    # print(data["groups"])
                     t = threading.Thread(target=f.createUser, args=(self, data))
                     t.daemon = True
                     t.start()

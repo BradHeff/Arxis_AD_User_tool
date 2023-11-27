@@ -4,7 +4,7 @@ import time
 import ttkbootstrap as ttk
 
 from Functions import clear_console
-from icon import splashbg
+from icon import hsplashbg
 
 loadedMain = False
 
@@ -12,11 +12,11 @@ loadedMain = False
 class Splash(ttk.Toplevel):
     """docstring for Splash."""
 
-    def __init__(self, original, themename="trinitycloud"):
+    def __init__(self, original, themename="heffelhoffui"):
         super().__init__()
         global photo, root
         self.original_frame = original
-
+        self.original_frame.hide()
         W, H = 504, 250
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
@@ -37,7 +37,7 @@ class Splash(ttk.Toplevel):
             highlightthickness=0,
         )
         canvas.pack()
-        photo = ttk.PhotoImage(data=splashbg)
+        photo = ttk.PhotoImage(data=hsplashbg)
         canvas.create_image(1, 1.5, image=photo, anchor="nw")
 
         self.count = 1
