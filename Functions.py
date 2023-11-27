@@ -10,9 +10,9 @@ import win32security
 from pyad_Trinity import adgroup, adsearch, aduser, pyad_Trinity
 from ttkbootstrap import DISABLED, NORMAL
 
-DEBUG = False
+DEBUG = True
 Version = "v1.0.6.3"
-key = b'!e\xb0\xd8\xfd\x7f\x16\xf9\x16n\xd0Z.\x8bQNL\xfaA\x82\x1f\xf5~\xc8z\xda\x04z\xe6&\x12\x86'
+key = b"!e\xb0\xd8\xfd\x7f\x16\xf9\x16n\xd0Z.\x8bQNL\xfaA\x82\x1f\xf5~\xc8z\xda\x04z\xe6&\x12\x86"
 settings_file = "Settings.dat"
 
 if not DEBUG:
@@ -261,7 +261,7 @@ def widgetStatus(self, status):
     self.btn_search["state"] = status
     self.btn_userUnlock["state"] = status
     self.btn_reset["state"] = status
-    # self.move_btn['state']=status
+    self.move_btn["state"] = status
     # self.addGroup["state"] = status
 
 
@@ -271,7 +271,7 @@ def widgetStatusFailed(self, state):
         self.btn_search["state"] = DISABLED
         self.btn_userUnlock["state"] = DISABLED
         self.btn_reset["state"] = DISABLED
-        # self.move_btn['state']=DISABLED
+        self.move_btn["state"] = DISABLED
         # self.addGroup["state"] = DISABLED
     else:
         self.btn_unlockAll["state"] = NORMAL
@@ -702,21 +702,23 @@ def removeHomedrive(paths):
 # =============================================
 
 
-# def moveUser(self, bOU, aOU):
-#     pythoncom.CoInitialize()
-#     pyad_Trinity.set_defaults(ldap_server=base64.b64decode(self.server).decode("UTF-8"),
-#                       username=base64.b64decode(self.username).decode("UTF-8"),
-#                       password=base64.b64decode(self.password).decode("UTF-8"),
-#                       ssl=True)
-#     u = aduser.ADUser.from_dn(bOU)
-#     newOrg = adcontainer.ADContainer.from_dn(aOU)
-#     self.progress['value'] = 60
-#     aduser.ADUser.move(u,newOrg)
-#     selected_item = self.tree3.selection()[0]
-#     self.tree3.delete(selected_item)
-#     self.progress['value'] = 100
-#     self.selItem2 = []
-#     self.status['text'] = "Idle..."
-#     self.messageBox("SUCCESS!!","Move Complete!")
-#     widgetStatus(self, NORMAL)
-#     self.progress['value'] = 0
+def moveUser(self, bOU, aOU):
+    pythoncom.CoInitialize()
+    pyad_Trinity.set_defaults(
+        ldap_server=base64.b64decode(self.server).decode("UTF-8"),
+        username=base64.b64decode(self.username).decode("UTF-8"),
+        password=base64.b64decode(self.password).decode("UTF-8"),
+        ssl=True,
+    )
+    u = aduser.ADUser.from_dn(bOU)
+    newOrg = pyad_Trinity.adcontainer.ADContainer.from_dn(aOU)
+    self.progress["value"] = 60
+    aduser.ADUser.move(u, newOrg)
+    selected_item = self.tree3.selection()[0]
+    self.tree3.delete(selected_item)
+    self.progress["value"] = 100
+    self.selItem2 = []
+    self.status["text"] = "Idle..."
+    self.messageBox("SUCCESS!!", "Move Complete!")
+    widgetStatus(self, NORMAL)
+    self.progress["value"] = 0

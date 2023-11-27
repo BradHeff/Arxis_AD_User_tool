@@ -72,7 +72,7 @@ def baseGUI(self):
     tab1 = ttk.Frame(self.tabControl)
     self.tab2 = ttk.Frame(self.tabControl)
     # tab3 = ttk.Frame(self.tabControl)
-    # tab4 = ttk.Frame(self.tabControl)
+    tab4 = ttk.Frame(self.tabControl)
     tab5 = ttk.Frame(self.tabControl)
 
     # self.tab2.columnconfigure(0, weight=1)
@@ -86,8 +86,8 @@ def baseGUI(self):
     # tab3.rowconfigure(5, weight=1)
     # tab3.columnconfigure(0, weight=1)
 
-    # tab4.rowconfigure(4, weight=1)
-    # tab4.columnconfigure(0, weight=1)
+    tab4.rowconfigure(4, weight=1)
+    tab4.columnconfigure(0, weight=1)
 
     # tab5.rowconfigure(4, weight=1)
     # tab5.columnconfigure(0, weight=1)
@@ -100,7 +100,7 @@ def baseGUI(self):
     self.tabControl.add(tab1, text="Lock", compound="top")
     self.tabControl.add(self.tab2, text="New Users")
     # self.tabControl.add(tab3, text ='Disabled User')
-    # self.tabControl.add(tab4, text ='Move User')
+    self.tabControl.add(tab4, text="Move User")
     self.tabControl.add(tab5, text="Edit User")
     self.tabControl.bind("<<NotebookTabChanged>>", self.alterButton)
     self.tabControl.grid(sticky="nsew", columnspan=4, row=0)
@@ -108,7 +108,7 @@ def baseGUI(self):
     Tab1(self, tab1)
     Tab2(self, self.tab2)
     # Tab3(self, tab3)
-    # Tab4(self, tab4)
+    Tab4(self, tab4)
     Tab5(self, tab5)
 
     frmbtn = ttk.Frame(self)

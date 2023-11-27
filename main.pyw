@@ -923,6 +923,8 @@ class ADUnlocker(ttk.Window):
                     be filled!",
                     )
             case 2:
+                print("PRINTERD")
+            case 3:
                 if self.compFail:
                     f.widgetStatus(self, ttk.NORMAL)
 
