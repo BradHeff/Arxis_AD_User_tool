@@ -12,7 +12,7 @@ from ttkbootstrap import DISABLED, NORMAL
 
 DEBUG = True
 Version = "v1.0.6.3"
-key = b"!e\xb0\xd8\xfd\x7f\x16\xf9\x16n\xd0Z.\x8bQNL\xfaA\x82\x1f\xf5~\xc8z\xda\x04z\xe6&\x12\x86"
+key = b'\x84~\xb0\xb2\x11[\n\x8c\x8f\\d\x0e\xe8\x97\xa0\xffnG=\xbf\xed\xb6\x82k\x80*\x7f\x01\x10lW\xe9'
 settings_file = "Settings.dat"
 
 if not DEBUG:
@@ -36,7 +36,7 @@ def Switch(string, lists):
 
 
 def checkSettings(self):
-    if base64.b64decode(self.company).decode("UTF-8").__len__() <= 0:
+    if base64.b64decode(self.company).decode("UTF-8").__len__() >= 2:
         return True
     else:
         return False

@@ -75,7 +75,7 @@ class ADUnlocker(ttk.Window):
         # self.mainloop()
 
         if self.error:
-            root.destroy()
+            self.destroy()
             tkt.call_nosync(
                 self.messageBox, "ERROR!!", "company settings is incomplete"
             )
@@ -395,24 +395,25 @@ class ADUnlocker(ttk.Window):
         f.pythoncom.CoInitialize()
         self.tree4.delete(*self.tree4.get_children())
         self.var3.set(None)
-        self.entDomain['state'] = 'normal'
-        self.entDesc.delete(0, 'end')
-        self.entJobTitle.delete(0, 'end')
-        self.entSamname.delete(0, 'end')
-        self.entDomain.delete(0, 'end')
-        self.lname_entry.delete(0, 'end')
-        self.fname_entry.delete(0, 'end')
-        self.entDomain['state'] = 'readonly'
-        self.status['text'] = "Loading Users ...."
+        self.entDomain["state"] = "normal"
+        self.entDesc.delete(0, "end")
+        self.entJobTitle.delete(0, "end")
+        self.entSamname.delete(0, "end")
+        self.entDomain.delete(0, "end")
+        self.lname_entry.delete(0, "end")
+        self.fname_entry.delete(0, "end")
+        self.entDomain["state"] = "readonly"
+        self.status["text"] = "Loading Users ...."
 
         usersList = f.listUsers(self, self.positionsOU[self.var2.get()])
-        self.progress['maximum'] = float(usersList.__len__())
+        self.progress["maximum"] = float(usersList.__len__())
         progCount = 1
         self.tree3.delete(*self.tree3.get_children())
         for i in usersList:
-            self.progress['value'] = progCount
-            self.tree3.insert('', 'end', values=(i, usersList[i]['name'],
-              usersList[i]['ou']))
+            self.progress["value"] = progCount
+            self.tree3.insert(
+                "", "end", values=(i, usersList[i]["name"], usersList[i]["ou"])
+            )
             progCount += 1
         count = 0
         row = 0
@@ -420,15 +421,19 @@ class ADUnlocker(ttk.Window):
         row2 = 0
 
         list = self.lbl_frame8.grid_slaves()
-        for l in list:
-            l.destroy()
+        for lx in list:
+            lx.destroy()
         self.chkValue = ttk.StringVar(self.lbl_frame8, "1")
         for j in self.positions:
             for y in self.positions[j]:
                 if not "Student" == y:
-                    rbtn1 = ttk.Radiobutton(self.lbl_frame8, text=y,
-                      variable=self.chkValue, command=self.movePosSelect,
-                          value=y)
+                    rbtn1 = ttk.Radiobutton(
+                        self.lbl_frame8,
+                        text=y,
+                        variable=self.chkValue,
+                        command=self.movePosSelect,
+                        value=y,
+                    )
                     rbtn1.grid(row=row, column=count, padx=10, pady=10)
                     rbtn1.selection_clear()
                     count += 1
@@ -436,17 +441,21 @@ class ADUnlocker(ttk.Window):
                         count = 0
                         row += 1
                 else:
-                    rbtn2 = ttk.Radiobutton(self.lbl_frame8, text=y,
-                      variable=self.chkValue, command=self.movePosSelect,
-                      value=y)
+                    rbtn2 = ttk.Radiobutton(
+                        self.lbl_frame8,
+                        text=y,
+                        variable=self.chkValue,
+                        command=self.movePosSelect,
+                        value=y,
+                    )
                     rbtn2.grid(row=row, column=count, padx=10, pady=10)
                     rbtn2.selection_clear()
                     count2 += 1
                     if count2 > 4:
                         count2 = 0
                         row2 += 1
-        self.status['text'] = "Idle..."
-        self.progress['value'] = 0
+        self.status["text"] = "Idle..."
+        self.progress["value"] = 0
 
     def clear_group(self):
         list = self.lbl_frame2.grid_slaves()
