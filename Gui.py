@@ -88,6 +88,7 @@ def baseGUI(self):
 
     tab4.rowconfigure(4, weight=1)
     tab4.columnconfigure(0, weight=1)
+    tab4.columnconfigure(2, weight=1)
 
     # tab5.rowconfigure(4, weight=1)
     # tab5.columnconfigure(0, weight=1)
@@ -190,9 +191,6 @@ def Tab2(self, tab2):
     lbl_title = ttk.Label(tab2, text="Active Directory New Users")
     lbl_title.grid(sticky="n", columnspan=4, padx=10, pady=5)
 
-    tab2.columnconfigure(0, weight=1)
-    tab2.columnconfigure(2, weight=1)
-
     lframe = ttk.Frame(tab2)
     rframe = ttk.Frame(tab2)
 
@@ -203,6 +201,9 @@ def Tab2(self, tab2):
     # lframe.columnconfigure(1, weight=1)
     # lframe.columnconfigure(0, weight=0)
     # lframe.columnconfigure(1, weight=0)
+
+    tab2.columnconfigure(0, weight=1)
+    tab2.columnconfigure(2, weight=1)
 
     lframe.rowconfigure(1, weight=0, pad=26)
     lframe.rowconfigure(6, weight=0, pad=26)
@@ -393,11 +394,22 @@ def Tab4(self, tab4):
     lframe4 = ttk.Frame(tab4)
     rframe4 = ttk.Frame(tab4)
 
+    lframe4.rowconfigure(1, weight=0, pad=26)
+    lframe4.rowconfigure(6, weight=0, pad=26)
+
+    rframe4.rowconfigure(0, weight=0, pad=26)
+    rframe4.rowconfigure(1, weight=1)
+    rframe4.rowconfigure(2, weight=1)
+    rframe4.rowconfigure(3, weight=1)
+
+    rframe4.columnconfigure(0, weight=1)
+    lframe4.columnconfigure(0, weight=1)
+
     lframe4.grid(sticky="nsw", column=0, row=1, pady=10)
     rframe4.grid(sticky="nse", column=2, row=1, pady=10)
 
     self.lbl_frameF = ttk.Labelframe(rframe4, text="Campus")
-    self.lbl_frameF.grid(sticky="new", columnspan=2, row=1, padx=10, pady=5)
+    self.lbl_frameF.grid(sticky="nsew", columnspan=2, row=1, padx=10, pady=5)
 
     self.lbl_frame6 = ttk.Labelframe(rframe4, text="Staff User OU's")
     self.lbl_frame6.grid(sticky="new", columnspan=2, row=2, padx=10, pady=5)
@@ -405,7 +417,7 @@ def Tab4(self, tab4):
     self.lbl_frame7 = ttk.Labelframe(rframe4, text="Student User OU's")
     self.lbl_frame7.grid(sticky="new", columnspan=2, row=3, padx=10, pady=5)
 
-    self.tree3 = ttk.Treeview(lframe4, column=("c1", "c2", "c3"), show="headings")
+    self.tree3 = ttk.Treeview(lframe4, column=("c1", "c2"), show="headings")
     scrollbar = ttk.Scrollbar(lframe4)
     scrollbar.config(command=self.tree3.yview)
     scrollbar.grid(sticky=ttk.NSEW, row=1, column=4)
@@ -417,8 +429,6 @@ def Tab4(self, tab4):
     self.tree3.heading("# 1", text="USERNAME")
     self.tree3.column("# 2", anchor=ttk.CENTER)
     self.tree3.heading("# 2", text="DISPLAY NAME")
-    self.tree3.column("# 3", anchor=ttk.CENTER)
-    self.tree3.heading("# 3", text="OU")
     self.tree3.bind("<ButtonRelease-1>", self.selectItem2)
     self.tree3.grid(sticky="nsew", row=1, columnspan=2, padx=10)
 
