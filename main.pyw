@@ -69,7 +69,7 @@ class ADUnlocker(ttk.Window):
         Gui.baseGUI(self)
 
         self.title(
-            "".join(["Horizon AD User Tool v", f.Version[4 : f.Version.__len__()]])
+            "".join(["Trinity AD User Tool v", f.Version[4 : f.Version.__len__()]])
         )
 
         # self.mainloop()
@@ -91,7 +91,7 @@ class ADUnlocker(ttk.Window):
         splash.loadedMain = True
 
     def on_closing(self):
-        print("Thanks for using Horizon AD User Tool!\n")
+        print("Thanks for using Trinity AD User Tool!\n")
         root.destroy()
 
     def hide(self):

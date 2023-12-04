@@ -365,12 +365,7 @@ class MakeConf:
         )
         conf_file["TCLOUD"]["domains"] = str(
             base64.b64encode(
-                bytes(
-                    '{"Primary":["doohancomputers.com.au",\
-"heffsfabrications.com.au","trinitycloud.com.au",\
-"faithtechsolutions.net],"Secondary":"trinitycloudaus.onmicrosoft.com"}',
-                    "UTF-8",
-                )
+                bytes('{"Primary":["doohancomputers.com.au","heffsfabrications.com.au","trinitycloud.com.au","faithtechsolutions.net"],"Secondary":"trinitycloudaus.onmicrosoft.com"}', "UTF-8",)
             ).decode("UTF-8")
         )
         conf_file["TCLOUD"]["homepaths"] = str(
