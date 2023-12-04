@@ -80,14 +80,14 @@ class ADUnlocker(ttk.Window):
                 self.messageBox, "ERROR!!", "company settings is incomplete"
             )
 
-        self.options.set("TCLOUD")
+        self.options.set("Horizon")
         self.comboSelect("")
 
         # Gui.print_icon("open_lock.png")
         if not f.DEBUG:
             self.combobox["state"] = ttk.DISABLED
 
-        self.hide()
+        # self.hide()
         splash.loadedMain = True
 
     def on_closing(self):
@@ -111,33 +111,33 @@ class ADUnlocker(ttk.Window):
         else:
             f.saveConfig(self)
 
-    def addToGroups(self):
-        if "Select" in self.add_groups.get():
-            return
-        if self.var.get() == "1":
-            return
-        p = self.lbl_frame2.grid_slaves()
-        cont = True
-        for y in p:
-            if self.add_groups.get() == y["text"]:
-                cont = False
-        if cont:
-            if self.checkCount > 3:
-                self.checkCount = 0
-                self.checkRow += 1
-            self.chkBtns[self.add_groups.get()] = ttk.IntVar(self.lbl_frame2, 1)
-            # print([x for x in self.chkBtns])
-            rbtn = ttk.Checkbutton(
-                self.lbl_frame2,
-                text=self.add_groups.get(),
-                variable=self.chkBtns[self.add_groups.get()],
-                onvalue=1,
-                offvalue=0,
-            )
-            rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
-            self.checkCount += 1
-        else:
-            tkt.call_nosync(self.messageBox, "ERROR!!!", "That group already exists!")
+    # def addToGroups(self):
+    #     if "Select" in self.add_groups.get():
+    #         return
+    #     if self.var.get() == "1":
+    #         return
+    #     p = self.lbl_frame2.grid_slaves()
+    #     cont = True
+    #     for y in p:
+    #         if self.add_groups.get() == y["text"]:
+    #             cont = False
+    #     if cont:
+    #         if self.checkCount > 2:
+    #             self.checkCount = 0
+    #             self.checkRow += 1
+    #         self.chkBtns[self.add_groups.get()] = ttk.IntVar(self.lbl_frame2, 1)
+    #         # print([x for x in self.chkBtns])
+    #         rbtn = ttk.Checkbutton(
+    #             self.lbl_frame2,
+    #             text=self.add_groups.get(),
+    #             variable=self.chkBtns[self.add_groups.get()],
+    #             onvalue=1,
+    #             offvalue=0,
+    #         )
+    #         rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
+    #         self.checkCount += 1
+    #     else:
+    #         tkt.call_nosync(self.messageBox, "ERROR!!!", "That group already exists!")
 
     def alterButton(self, widget):
         if self.tabControl.index(self.tabControl.select()) == 0:
@@ -259,10 +259,10 @@ class ADUnlocker(ttk.Window):
         self.entDomain["state"] = "readonly"
 
     def getCheck(self):
+        # print(self.var.get())
         grp = []
-        for x in self.chkBtns:
-            if self.chkBtns.get(x).get() == 1:
-                grp.append(x)
+        for x in self.groups:
+            grp.append(x)
         return grp
 
     def posSelect(self):
@@ -313,7 +313,7 @@ class ADUnlocker(ttk.Window):
             )
             rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
             self.checkCount += 1
-            if self.checkCount > 3:
+            if self.checkCount > 2:
                 self.checkCount = 0
                 self.checkRow += 1
         if not self.jobTitle.__len__() <= 3:
@@ -391,62 +391,62 @@ class ADUnlocker(ttk.Window):
         t.daemon = True
         t.start()
 
-    # def moveOption(self):
-    #     f.pythoncom.CoInitialize()
-    #     self.tree4.delete(*self.tree4.get_children())
-    #     self.var3.set(None)
-    #     self.entDomain['state'] = 'normal'
-    #     self.entDesc.delete(0, 'end')
-    #     self.entJobTitle.delete(0, 'end')
-    #     self.entSamname.delete(0, 'end')
-    #     self.entDomain.delete(0, 'end')
-    #     self.lname_entry.delete(0, 'end')
-    #     self.fname_entry.delete(0, 'end')
-    #     self.entDomain['state'] = 'readonly'
-    #     self.status['text'] = "Loading Users ...."
+    def moveOption(self):
+        f.pythoncom.CoInitialize()
+        self.tree4.delete(*self.tree4.get_children())
+        self.var3.set(None)
+        self.entDomain['state'] = 'normal'
+        self.entDesc.delete(0, 'end')
+        self.entJobTitle.delete(0, 'end')
+        self.entSamname.delete(0, 'end')
+        self.entDomain.delete(0, 'end')
+        self.lname_entry.delete(0, 'end')
+        self.fname_entry.delete(0, 'end')
+        self.entDomain['state'] = 'readonly'
+        self.status['text'] = "Loading Users ...."
 
-    #     usersList = f.listUsers(self, self.positionsOU[self.var2.get()])
-    #     self.progress['maximum'] = float(usersList.__len__())
-    #     progCount = 1
-    #     self.tree3.delete(*self.tree3.get_children())
-    #     for i in usersList:
-    #         self.progress['value'] = progCount
-    #         self.tree3.insert('', 'end', values=(i, usersList[i]['name'],
-    #           usersList[i]['ou']))
-    #         progCount += 1
-    #     count = 0
-    #     row = 0
-    #     count2 = 0
-    #     row2 = 0
+        usersList = f.listUsers(self, self.positionsOU[self.var2.get()])
+        self.progress['maximum'] = float(usersList.__len__())
+        progCount = 1
+        self.tree3.delete(*self.tree3.get_children())
+        for i in usersList:
+            self.progress['value'] = progCount
+            self.tree3.insert('', 'end', values=(i, usersList[i]['name'],
+              usersList[i]['ou']))
+            progCount += 1
+        count = 0
+        row = 0
+        count2 = 0
+        row2 = 0
 
-    #     list = self.lbl_frame8.grid_slaves()
-    #     for l in list:
-    #         l.destroy()
-    #     self.chkValue = ttk.StringVar(self.lbl_frame8, "1")
-    #     for j in self.positions:
-    #         for y in self.positions[j]:
-    #             if not "Student" == y:
-    #                 rbtn1 = ttk.Radiobutton(self.lbl_frame8, text=y,
-    #                   variable=self.chkValue, command=self.movePosSelect,
-    #                       value=y)
-    #                 rbtn1.grid(row=row, column=count, padx=10, pady=10)
-    #                 rbtn1.selection_clear()
-    #                 count += 1
-    #                 if count > 4:
-    #                     count = 0
-    #                     row += 1
-    #             else:
-    #                 rbtn2 = ttk.Radiobutton(self.lbl_frame8, text=y,
-    #                   variable=self.chkValue, command=self.movePosSelect,
-    #                   value=y)
-    #                 rbtn2.grid(row=row, column=count, padx=10, pady=10)
-    #                 rbtn2.selection_clear()
-    #                 count2 += 1
-    #                 if count2 > 4:
-    #                     count2 = 0
-    #                     row2 += 1
-    #     self.status['text'] = "Idle..."
-    #     self.progress['value'] = 0
+        list = self.lbl_frame8.grid_slaves()
+        for l in list:
+            l.destroy()
+        self.chkValue = ttk.StringVar(self.lbl_frame8, "1")
+        for j in self.positions:
+            for y in self.positions[j]:
+                if not "Student" == y:
+                    rbtn1 = ttk.Radiobutton(self.lbl_frame8, text=y,
+                      variable=self.chkValue, command=self.movePosSelect,
+                          value=y)
+                    rbtn1.grid(row=row, column=count, padx=10, pady=10)
+                    rbtn1.selection_clear()
+                    count += 1
+                    if count > 4:
+                        count = 0
+                        row += 1
+                else:
+                    rbtn2 = ttk.Radiobutton(self.lbl_frame8, text=y,
+                      variable=self.chkValue, command=self.movePosSelect,
+                      value=y)
+                    rbtn2.grid(row=row, column=count, padx=10, pady=10)
+                    rbtn2.selection_clear()
+                    count2 += 1
+                    if count2 > 4:
+                        count2 = 0
+                        row2 += 1
+        self.status['text'] = "Idle..."
+        self.progress['value'] = 0
 
     def clear_group(self):
         list = self.lbl_frame2.grid_slaves()
@@ -501,11 +501,11 @@ class ADUnlocker(ttk.Window):
         self.tree2.delete(*self.tree2.get_children())
 
     def comboSelect(self, widget):
-        print(self.winfo_width())
+        # print(self.winfo_width())
         if "camp" not in str(widget):
             f.getConfig(self, self.options.get())
-            print(self.compFail)
-            print(self.servs)
+            # print(self.compFail)
+            # print(self.servs)
             self.clear_campus()
             if (
                 not f.base64.b64decode(self.campus)
@@ -549,7 +549,7 @@ class ADUnlocker(ttk.Window):
         t.start()
         # t.join()
 
-    def comboLoad(self):
+    def comboLoad(self):  # noqa
         # print(self.positions)
         f.pythoncom.CoInitialize()
         self.status["text"] = "Loading..."
@@ -721,7 +721,7 @@ class ADUnlocker(ttk.Window):
                     groups.append(x)
                     self.progress["value"] = prog
                     prog += 1
-                self.ex_groups["values"] = groups
+                # self.ex_groups["values"] = groups
             except Exception as e:
                 print(e)
                 pass
@@ -845,7 +845,7 @@ class ADUnlocker(ttk.Window):
             case 1:
                 f.widgetStatus(self, ttk.DISABLED)
                 if self.fname.get().__len__() >= 2 and self.lname.get().__len__() >= 2:
-                    if not self.dpass.get().__len__() < 8:
+                    if self.dpass.get().__len__() < 8:
                         f.widgetStatus(self, ttk.NORMAL)
 
                         tkt.call_nosync(
@@ -858,7 +858,7 @@ class ADUnlocker(ttk.Window):
                     if (
                         "Select" in self.primary_domain.get()
                         or "Select" in self.hdrive.get()
-                        or self.homePath.get().__len__() > 0
+                        or self.homePath.get().__len__() <= 0
                     ):
                         f.widgetStatus(self, ttk.NORMAL)
                         self.status["text"] = "Idle..."
@@ -874,25 +874,26 @@ class ADUnlocker(ttk.Window):
                     self.status["text"] = "Rebuilding groups..."
                     groups = self.getCheck()
                     self.status["text"] = "Setting login name..."
-                    if "flast" in self.samFormat.get():
-                        samname = "".join(
-                            [
-                                self.fname.get().strip()[0:1],
-                                self.lname.get().strip(),
-                            ]
-                        )
-                    elif "firstlast" in self.samFormat.get():
-                        samname = "".join(
-                            [self.fname.get().strip(), self.lname.get().strip()]
-                        )
-                    else:
-                        samname = "".join(
-                            [
-                                self.fname.get().strip(),
-                                ".",
-                                self.lname.get().strip(),
-                            ]
-                        )
+                    match (self.samFormat.get()):
+                        case "flastname":
+                            samname = "".join(
+                                [
+                                    self.fname.get().strip()[0:1],
+                                    self.lname.get().strip(),
+                                ]
+                            )
+                        case "firstlastname":
+                            samname = "".join(
+                                [self.fname.get().strip(), self.lname.get().strip()]
+                            )
+                        case _:
+                            samname = "".join(
+                                [
+                                    self.fname.get().strip(),
+                                    ".",
+                                    self.lname.get().strip(),
+                                ]
+                            )
                     self.status["text"] = "Rebuilding data..."
                     data["login"] = samname.lower()
                     data["first"] = self.fname.get().strip().capitalize()
@@ -908,6 +909,7 @@ class ADUnlocker(ttk.Window):
                     data["department"] = self.depEnt.get()
                     data["company"] = self.orgCompEnt.get()
                     self.progress["value"] = 20
+                    # print(data["groups"])
                     t = threading.Thread(target=f.createUser, args=(self, data))
                     t.daemon = True
                     t.start()
@@ -921,6 +923,8 @@ class ADUnlocker(ttk.Window):
                     be filled!",
                     )
             case 2:
+                print("PRINTERD")
+            case 3:
                 if self.compFail:
                     f.widgetStatus(self, ttk.NORMAL)
 

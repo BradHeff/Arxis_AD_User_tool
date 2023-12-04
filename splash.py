@@ -4,7 +4,7 @@ import time
 import ttkbootstrap as ttk
 
 from Functions import clear_console
-from icon import splashbg
+from icon import hsplashbg
 
 loadedMain = False
 
@@ -16,7 +16,7 @@ class Splash(ttk.Toplevel):
         super().__init__()
         global photo, root
         self.original_frame = original
-
+        self.original_frame.hide()
         W, H = 504, 250
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
@@ -37,7 +37,7 @@ class Splash(ttk.Toplevel):
             highlightthickness=0,
         )
         canvas.pack()
-        photo = ttk.PhotoImage(data=splashbg)
+        photo = ttk.PhotoImage(data=hsplashbg)
         canvas.create_image(1, 1.5, image=photo, anchor="nw")
 
         self.count = 1
@@ -53,7 +53,7 @@ class Splash(ttk.Toplevel):
     def ConsoleWelcome(self):
         clear_console()
         message = "====================================\n"
-        message += "======HORIZON CHRISTIAN SCHOOL======\n"
+        message += "    ======TRINITY CLOUD======\n"
         message += "====================================\n"
         message += "Author: Brad Heffernan\n"
         message += "-----------\n"
@@ -64,7 +64,6 @@ class Splash(ttk.Toplevel):
         message += "    pythoncom\n"
         message += "    win32security\n"
         message += "    pyad\n"
-        message += "    pathlib\n"
         message += "===================================="
 
         return message

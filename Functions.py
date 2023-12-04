@@ -11,8 +11,8 @@ from pyad_Trinity import adgroup, adsearch, aduser, pyad_Trinity
 from ttkbootstrap import DISABLED, NORMAL
 
 DEBUG = True
-Version = "v1.0.4.3.2"
-key = b'\x98\x83\x11\x1e\x85x\xe6T\x8fy\n\x1a\x0b\x96&u\n\x1b\x1f\x7f\x17\x00=x5\x19\x0f,\xac\xf5\xd1\x1b'
+Version = "v1.0.6.3"
+key = b"!e\xb0\xd8\xfd\x7f\x16\xf9\x16n\xd0Z.\x8bQNL\xfaA\x82\x1f\xf5~\xc8z\xda\x04z\xe6&\x12\x86"
 settings_file = "Settings.dat"
 
 if not DEBUG:
@@ -261,8 +261,8 @@ def widgetStatus(self, status):
     self.btn_search["state"] = status
     self.btn_userUnlock["state"] = status
     self.btn_reset["state"] = status
-    # self.move_btn['state']=status
-    self.addGroup["state"] = status
+    self.move_btn["state"] = status
+    # self.addGroup["state"] = status
 
 
 def widgetStatusFailed(self, state):
@@ -271,14 +271,14 @@ def widgetStatusFailed(self, state):
         self.btn_search["state"] = DISABLED
         self.btn_userUnlock["state"] = DISABLED
         self.btn_reset["state"] = DISABLED
-        # self.move_btn['state']=DISABLED
-        self.addGroup["state"] = DISABLED
+        self.move_btn["state"] = DISABLED
+        # self.addGroup["state"] = DISABLED
     else:
         self.btn_unlockAll["state"] = NORMAL
         self.btn_search["state"] = NORMAL
         self.btn_userUnlock["state"] = NORMAL
         self.btn_reset["state"] = NORMAL
-        self.addGroup["state"] = NORMAL
+        # self.addGroup["state"] = NORMAL
 
 
 def resetPassword(self, ou, newpass):
@@ -437,75 +437,77 @@ def update_user(self, data):
 
 def createUser(self, data):
     pythoncom.CoInitialize()
-    try:
-        self.status["text"] = "".join(["Creating ", data["first"], " ", data["last"]])
-        pyad_Trinity.set_defaults(
-            ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
-            username=base64.b64decode(self.username).decode("UTF-8").strip(),
-            password=base64.b64decode(self.password).decode("UTF-8").strip(),
-            ssl=True,
-        )
+    # try:
+    self.status["text"] = "".join(["Creating ", data["first"], " ", data["last"]])
+    pyad_Trinity.set_defaults(
+        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
+        username=base64.b64decode(self.username).decode("UTF-8").strip(),
+        password=base64.b64decode(self.password).decode("UTF-8").strip(),
+        ssl=True,
+    )
 
-        Nou = pyad_Trinity.adcontainer.ADContainer.from_dn(self.posOU)
-        self.progress["value"] = 30
-        pyad_Trinity.aduser.ADUser.create(
-            name="".join([data["first"], " ", data["last"]]),
-            container_object=Nou,
-            enable=True,
-            optional_attributes={
-                "givenName": data["first"],
-                "sAMAccountName": data["login"],
-                "userPrincipalName": "".join([data["login"], "@", data["domain"]]),
-                "DisplayName": "".join([data["first"], " ", data["last"]]),
-                "sn": data["last"],
-                "mail": "".join([data["login"], "@", data["domain"]]),
-                "proxyAddresses": [
-                    "".join(["SMTP:", data["login"], "@", data["domain"]]),
-                    "".join(["smtp:", data["login"], "@", data["proxy"]]),
-                ],
-                "HomeDirectory": data["homeDirectory"],
-                "HomeDrive": data["homeDrive"],
-                "title": data["title"],
-                "description": data["description"],
-                "department": data["department"],
-                "company": data["company"],
-                "pwdLastSet": 0,
-            },
-        )
-        newuser = pyad_Trinity.aduser.ADUser.from_cn(
-            "".join([data["first"], " ", data["last"]])
-        )
-        newuser.set_password(data["password"])
-        newuser.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
-        newuser.set_user_account_control_setting("PASSWD_NOTREQD", False)
+    Nou = pyad_Trinity.adcontainer.ADContainer.from_dn(self.posOU)
+    self.progress["value"] = 30
+    pyad_Trinity.aduser.ADUser.create(
+        sAMAccountName=data["login"],
+        cn="".join([data["first"], " ", data["last"]]),
+        password=data["password"],
+        container_object=Nou,
+        enable=True,
+        optional_attributes={
+            "givenName": data["first"],
+            "userPrincipalName": "".join([data["login"], "@", data["domain"]]),
+            "DisplayName": "".join([data["first"], " ", data["last"]]),
+            "sn": data["last"],
+            "mail": "".join([data["login"], "@", data["domain"]]),
+            "proxyAddresses": [
+                "".join(["SMTP:", data["login"], "@", data["domain"]]),
+                "".join(["smtp:", data["login"], "@", data["proxy"]]),
+            ],
+            "HomeDirectory": data["homeDirectory"],
+            "HomeDrive": data["homeDrive"],
+            "title": data["title"],
+            "description": data["description"],
+            "department": data["department"],
+            "company": data["company"],
+            "pwdLastSet": 0,
+        },
+    )
+    newuser = pyad_Trinity.aduser.ADUser.from_cn(
+        "".join([data["first"], " ", data["last"]])
+    )
+    # newuser.set_password(data["password"])
+    newuser.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
+    newuser.set_user_account_control_setting("PASSWD_NOTREQD", False)
 
-        self.progress["value"] = 50
-        self.status["text"] = "".join(
-            ["Adding ", data["first"], " ", data["last"], " to groups"]
-        )
-        for gp in data["groups"]:
-            newgroup = pyad_Trinity.adgroup.ADGroup.from_cn(gp)
-            newuser.add_to_group(newgroup)
-        self.progress["value"] = 80
-        self.status["text"] = "".join(
-            ["Creating ", data["first"], " ", data["last"], " home directory"]
-        )
-        createHomeDir(
-            data["login"],
-            data["homeDirectory"],
-            base64.b64decode(self.domainName).decode("UTF-8").strip(),
-        )
-        self.progress["value"] = 100
-        widgetStatus(self, NORMAL)
-        self.status["text"] = "Idle..."
-        self.messageBox("SUCCESS!!", "User Created!")
-        self.progress["value"] = 0
-    except Exception as e:
-        self.status["text"] = "Idle..."
-        widgetStatus(self, NORMAL)
-        self.progress["value"] = 0
-        self.messageBox("ERROR!!", e)
-        # self.messageBox("ERROR!!","An error has occured!")
+    self.progress["value"] = 50
+    self.status["text"] = "".join(
+        ["Adding ", data["first"], " ", data["last"], " to groups"]
+    )
+    for gp in data["groups"]:
+        # print(gp)
+        newgroup = pyad_Trinity.adgroup.ADGroup.from_cn(gp)
+        newuser.add_to_group(newgroup)
+    self.progress["value"] = 80
+    self.status["text"] = "".join(
+        ["Creating ", data["first"], " ", data["last"], " home directory"]
+    )
+    createHomeDir(
+        data["login"],
+        data["homeDirectory"],
+        base64.b64decode(self.domainName).decode("UTF-8").strip(),
+    )
+    self.progress["value"] = 100
+    widgetStatus(self, NORMAL)
+    self.status["text"] = "Idle..."
+    self.messageBox("SUCCESS!!", "User Created!")
+    self.progress["value"] = 0
+    # except Exception as e:
+    #     self.status["text"] = "Idle..."
+    #     widgetStatus(self, NORMAL)
+    #     self.progress["value"] = 0
+    #     self.messageBox("ERROR!!", e)
+    #     # self.messageBox("ERROR!!","An error has occured!")
 
 
 def createHomeDir(username, homeDir, domainName):
@@ -606,9 +608,9 @@ def listUsers(self, ou):
         ssl=True,
         type="GC",
     )
-    print(base64.b64decode(self.server).decode("UTF-8"))
-    print(base64.b64decode(self.username).decode("UTF-8"))
-    print(base64.b64decode(self.password).decode("UTF-8"))
+    # print(base64.b64decode(self.server).decode("UTF-8"))
+    # print(base64.b64decode(self.username).decode("UTF-8"))
+    # print(base64.b64decode(self.password).decode("UTF-8"))
     q = adsearch.ADQuery()
     q.execute_query(
         attributes=[
@@ -639,9 +641,9 @@ def listUsers2(self, ou):
         ssl=True,
         type="GC",
     )
-    print(base64.b64decode(self.server).decode("UTF-8"))
-    print(base64.b64decode(self.username).decode("UTF-8"))
-    print(base64.b64decode(self.password).decode("UTF-8"))
+    # print(base64.b64decode(self.server).decode("UTF-8"))
+    # print(base64.b64decode(self.username).decode("UTF-8"))
+    # print(base64.b64decode(self.password).decode("UTF-8"))
     q = adsearch.ADQuery()
     q.execute_query(
         attributes=[
@@ -700,21 +702,23 @@ def removeHomedrive(paths):
 # =============================================
 
 
-# def moveUser(self, bOU, aOU):
-#     pythoncom.CoInitialize()
-#     pyad_Trinity.set_defaults(ldap_server=base64.b64decode(self.server).decode("UTF-8"),
-#                       username=base64.b64decode(self.username).decode("UTF-8"),
-#                       password=base64.b64decode(self.password).decode("UTF-8"),
-#                       ssl=True)
-#     u = aduser.ADUser.from_dn(bOU)
-#     newOrg = adcontainer.ADContainer.from_dn(aOU)
-#     self.progress['value'] = 60
-#     aduser.ADUser.move(u,newOrg)
-#     selected_item = self.tree3.selection()[0]
-#     self.tree3.delete(selected_item)
-#     self.progress['value'] = 100
-#     self.selItem2 = []
-#     self.status['text'] = "Idle..."
-#     self.messageBox("SUCCESS!!","Move Complete!")
-#     widgetStatus(self, NORMAL)
-#     self.progress['value'] = 0
+def moveUser(self, bOU, aOU):
+    pythoncom.CoInitialize()
+    pyad_Trinity.set_defaults(
+        ldap_server=base64.b64decode(self.server).decode("UTF-8"),
+        username=base64.b64decode(self.username).decode("UTF-8"),
+        password=base64.b64decode(self.password).decode("UTF-8"),
+        ssl=True,
+    )
+    u = aduser.ADUser.from_dn(bOU)
+    newOrg = pyad_Trinity.adcontainer.ADContainer.from_dn(aOU)
+    self.progress["value"] = 60
+    aduser.ADUser.move(u, newOrg)
+    selected_item = self.tree3.selection()[0]
+    self.tree3.delete(selected_item)
+    self.progress["value"] = 100
+    self.selItem2 = []
+    self.status["text"] = "Idle..."
+    self.messageBox("SUCCESS!!", "Move Complete!")
+    widgetStatus(self, NORMAL)
+    self.progress["value"] = 0
