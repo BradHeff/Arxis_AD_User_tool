@@ -83,6 +83,7 @@ class ADUnlocker(ttk.Window):
         self.options.set("Horizon")
         self.comboSelect("")
 
+        self.combobox["state"] = ttk.DISABLED
         # Gui.print_icon("open_lock.png")
         if not f.DEBUG:
             self.combobox["state"] = ttk.DISABLED
@@ -186,13 +187,13 @@ class ADUnlocker(ttk.Window):
         #     else:
         #         if self.state:
         #             f.widgetStatusFailed(self, True)
-        # elif self.tabControl.index(self.tabControl.select()) == 3:
-        #     self.btn_unlockAll.configure(text="Bulk Move Users")
-        #     if not self.compFail:
-        #         pass
-        #     else:
-        #         if self.state:
-        #             f.widgetStatusFailed(self, True)
+        elif self.tabControl.index(self.tabControl.select()) == 3:
+            self.btn_unlockAll.configure(text="Bulk Move Users")
+            if not self.compFail:
+                pass
+            else:
+                if self.state:
+                    f.widgetStatusFailed(self, True)
         elif self.tabControl.index(self.tabControl.select()) == 2:
             self.btn_unlockAll.configure(text="Update User")
             if not self.compFail:
@@ -358,11 +359,11 @@ class ADUnlocker(ttk.Window):
     def editOption(self):
         f.pythoncom.CoInitialize()
         # print(self.campH.get())
-        # self.tree3.delete(*self.tree3.get_children())
-        # self.var2.set(None)
-        # list = self.lbl_frame8.grid_slaves()
-        # for l in list:
-        #     l.destroy()
+        self.tree3.delete(*self.tree3.get_children())
+        self.var2.set(None)
+        list = self.lbl_frame8.grid_slaves()
+        for lx in list:
+            lx.destroy()
         self.status["text"] = "Loading Users ...."
         if (
             "Year" in self.var3.get() or "Found" in self.var3.get()
@@ -481,21 +482,21 @@ class ADUnlocker(ttk.Window):
         for la in list:
             la.destroy()
 
-    # def clear_exp(self):
-    #     list = self.lbl_frame5.grid_slaves()
-    #     for l in list:
-    #         l.destroy()
+    def clear_exp(self):
+        list = self.lbl_frame5.grid_slaves()
+        for lx in list:
+            lx.destroy()
 
-    # def clear_move(self):
-    #     list = self.lbl_frame6.grid_slaves()
-    #     for l in list:
-    #         l.destroy()
-    #     list = self.lbl_frame7.grid_slaves()
-    #     for l in list:
-    #         l.destroy()
-    #     list = self.lbl_frame8.grid_slaves()
-    #     for l in list:
-    #         l.destroy()
+    def clear_move(self):
+        list = self.lbl_frame6.grid_slaves()
+        for lx in list:
+            lx.destroy()
+        list = self.lbl_frame7.grid_slaves()
+        for lxx in list:
+            lxx.destroy()
+        list = self.lbl_frame8.grid_slaves()
+        for lxxx in list:
+            lxxx.destroy()
 
     def clear_edit(self):
         list = self.lbl_frame9.grid_slaves()
@@ -539,9 +540,19 @@ class ADUnlocker(ttk.Window):
                         value=x,
                         command=lambda: self.comboSelect("camp"),
                     )
+                    balak_move = ttk.Radiobutton(
+                        self.lbl_frameF,
+                        text=x,
+                        variable=self.campH,
+                        value=x,
+                        command=lambda: self.comboSelect("camp"),
+                    )
                     if counter == 1:
                         balak.pack(side="left", fill="y", expand=True, padx=10, pady=10)
                         balak_edit.pack(
+                            side="left", fill="y", expand=True, padx=10, pady=10
+                        )
+                        balak_move.pack(
                             side="left", fill="y", expand=True, padx=10, pady=10
                         )
                     else:
@@ -549,6 +560,9 @@ class ADUnlocker(ttk.Window):
                             side="right", fill="y", expand=True, padx=10, pady=10
                         )
                         balak_edit.pack(
+                            side="right", fill="y", expand=True, padx=10, pady=10
+                        )
+                        balak_move.pack(
                             side="right", fill="y", expand=True, padx=10, pady=10
                         )
                     counter -= 1
@@ -617,12 +631,15 @@ class ADUnlocker(ttk.Window):
                             )
                             rbtn.grid(row=row, column=count, padx=10, pady=10)
                             rbtn.selection_clear()
-                            # rbtn3 = ttk.Radiobutton(self.lbl_frame6,
-                            #  text=y, variable=self.var2,
-                            # command=self.moveSelect, value=y)
-                            # rbtn3.grid(row=row, column=count, padx=10,
-                            # pady=10)
-                            # rbtn3.selection_clear()
+                            rbtn3 = ttk.Radiobutton(
+                                self.lbl_frame6,
+                                text=y,
+                                variable=self.var2,
+                                command=self.moveSelect,
+                                value=y,
+                            )
+                            rbtn3.grid(row=row, column=count, padx=10, pady=10)
+                            rbtn3.selection_clear()
                             rbtn5 = ttk.Radiobutton(
                                 self.lbl_frame9,
                                 text=y,
@@ -646,12 +663,15 @@ class ADUnlocker(ttk.Window):
                             )
                             rbtn2.grid(row=row2, column=count2, padx=10, pady=10)
                             rbtn2.selection_clear()
-                            # rbtn4 = ttk.Radiobutton(self.lbl_frame7,
-                            # text=y, variable=self.var2,
-                            # command=self.moveSelect, value=y)
-                            # rbtn4.grid(row=row2, column=count2,
-                            # padx=10, pady=10)
-                            # rbtn4.selection_clear()
+                            rbtn4 = ttk.Radiobutton(
+                                self.lbl_frame7,
+                                text=y,
+                                variable=self.var2,
+                                command=self.moveSelect,
+                                value=y,
+                            )
+                            rbtn4.grid(row=row2, column=count2, padx=10, pady=10)
+                            rbtn4.selection_clear()
                             rbtn6 = ttk.Radiobutton(
                                 self.lbl_frame10,
                                 text=y,

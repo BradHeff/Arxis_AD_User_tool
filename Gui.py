@@ -394,19 +394,16 @@ def Tab4(self, tab4):
     lframe4 = ttk.Frame(tab4)
     rframe4 = ttk.Frame(tab4)
 
+    lframe4.grid(sticky="nsw", column=0, row=1, pady=10)
+    rframe4.grid(sticky="nse", column=2, row=1, pady=10)
+
+    tab4.columnconfigure(0, weight=1)
+    tab4.columnconfigure(2, weight=1)
+
     lframe4.rowconfigure(1, weight=0, pad=26)
     lframe4.rowconfigure(6, weight=0, pad=26)
 
     rframe4.rowconfigure(0, weight=0, pad=26)
-    rframe4.rowconfigure(1, weight=1)
-    rframe4.rowconfigure(2, weight=1)
-    rframe4.rowconfigure(3, weight=1)
-
-    rframe4.columnconfigure(0, weight=1)
-    lframe4.columnconfigure(0, weight=1)
-
-    lframe4.grid(sticky="nsw", column=0, row=1, pady=10)
-    rframe4.grid(sticky="nse", column=2, row=1, pady=10)
 
     self.lbl_frameF = ttk.Labelframe(rframe4, text="Campus")
     self.lbl_frameF.grid(sticky="nsew", columnspan=2, row=1, padx=10, pady=5)
