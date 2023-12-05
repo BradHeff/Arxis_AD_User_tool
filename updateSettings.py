@@ -51,7 +51,7 @@ class MakeConf:
 
         conf_file.add_section("Horizon")
         conf_file["Horizon"]["server"] = str(
-            base64.b64encode(bytes("192.168.3.33", "UTF-8")).decode("UTF-8")
+            base64.b64encode(bytes("HCS-DC01.HORIZON.local", "UTF-8")).decode("UTF-8")
         )
         conf_file["Horizon"]["server_user"] = str(
             base64.b64encode(bytes("pyservice", "UTF-8")).decode("UTF-8")
