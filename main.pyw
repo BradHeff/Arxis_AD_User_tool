@@ -339,9 +339,21 @@ class ADUnlocker(ttk.Window):
         if (
             "Year" in self.var2.get() or "Found" in self.var2.get()
         ) and "clare" in self.campH.get():
-            self.movePosOU = self.positionsOU[self.chkValue.get() + "-Clare"]
+            self.posOU = self.positionsOU[self.var2.get() + "-Clare"]
+            print("CLARE!!")
         else:
-            self.movePosOU = self.positionsOU[self.chkValue.get()]
+            if (
+                "ESO" in self.var2.get() or "Student Support" in self.var2.get()
+            ) and "clare" in self.campH.get():
+                self.posOU = self.positionsOU["Student Support Clare"]
+                print("CLARE!!@@")
+            elif ("Admin" in self.var2.get()) and "clare" in self.campH.get:
+                self.posOU = self.positionsOU[self.var2.get() + " Clare"]
+                print("CLARE!!@@##")
+            else:
+                print(self.var2.get())
+                self.posOU = self.positionsOU[self.var2.get()]
+                print("BALAK")
 
     def updateSelect(self):
         self.entDomain["state"] = "normal"
