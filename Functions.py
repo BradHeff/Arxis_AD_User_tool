@@ -7,12 +7,20 @@ from pathlib import Path
 import configparser_crypt as cCrypt
 import pythoncom
 import win32security
-from pyad_Trinity import adgroup, adsearch, aduser, pyad_Trinity
+import pyad_Trinity
+
+import pyad_Trinity.adquery
+
+
+# from pyad_Trinity import pyad_Trinity as pyad_Trinity.pyad_Trinity
+
+# from pyad_Trinity import pyad_Trinity
+
 from ttkbootstrap import DISABLED, NORMAL
 
-DEBUG = False
+DEBUG = True
 Version = "v1.0.7.1"
-key = b'\xe88\x1bm\xaa\x86\x84\x1a\xbf{\xc3K\xd4\xbd\xd0,jJ\x00w\xd3i\xf3Y\xf5\x1b`\x8d)\xd7R['
+key = b"\x0c:\x9eX\x8d\x83j\xd7\xb1\x0c\x83R\x89.\xf2`o\xe6\x01\x8f\x9e\xf0\x9b\xa7\x9bM\x99qY\xbd\xf4\xcf"
 settings_file = "Settings.dat"
 
 if not DEBUG:
@@ -111,6 +119,7 @@ def getConfig(self, section):  # noqa
         # ===================SERVER================================
         if parser.has_option(section, "server"):
             self.server = parser.get(section, "server")
+            print(base64.b64decode(self.server).decode("UTF-8"))
             if not base64.b64decode(self.server).decode("UTF-8").__len__() <= 3:
                 self.compFail = False
                 self.servs = True
@@ -121,6 +130,7 @@ def getConfig(self, section):  # noqa
         # ===================SERVER USERNAME================================
         if parser.has_option(section, "server_user"):
             self.username = parser.get(section, "server_user")
+            print(base64.b64decode(self.username).decode("UTF-8"))
             if not base64.b64decode(self.username).decode("UTF-8").__len__() <= 3:
                 self.compFail = False
                 self.servs = True
@@ -131,6 +141,7 @@ def getConfig(self, section):  # noqa
         # ===================SERVER PASSWORD================================
         if parser.has_option(section, "server_pass"):
             self.password = parser.get(section, "server_pass")
+            print(base64.b64decode(self.password).decode("UTF-8"))
             if not base64.b64decode(self.password).decode("UTF-8").__len__() <= 3:
                 self.compFail = False
                 self.servs = True
@@ -156,33 +167,29 @@ def getConfig(self, section):  # noqa
 
         # ===================POSITIONS================================
         if parser.has_option(section, "positions"):
-            self.positions = json.loads(
-                base64.b64decode(parser.get(section, "positions")).decode("UTF-8")
-            )
+            JSON1 = base64.b64decode(parser.get(section, "positions")).decode("UTF-8")
+            self.positions = json.loads(JSON1)
             if self.positions.__len__() <= 3:
                 self.state = True
 
         # ===================GROUPS================================
         if parser.has_option(section, "groups"):
-            self.groupPos = json.loads(
-                base64.b64decode(parser.get(section, "groups")).decode("UTF-8")
-            )
+            JSON2 = base64.b64decode(parser.get(section, "groups")).decode("UTF-8")
+            self.groupPos = json.loads(JSON2)
             if self.groupPos.__len__() <= 3:
                 self.state = True
 
         # ===================POSITIONS OU================================
         if parser.has_option(section, "positionsou"):
-            self.positionsOU = json.loads(
-                base64.b64decode(parser.get(section, "positionsou")).decode("UTF-8")
-            )
+            JSON3 = base64.b64decode(parser.get(section, "positionsou")).decode("UTF-8")
+            self.positionsOU = json.loads(JSON3)
             if self.positionsOU.__len__() <= 3:
                 self.state = True
 
         # ===================EXPIRED OU================================
         if parser.has_option(section, "expiredous"):
-            self.expiredOUs = json.loads(
-                base64.b64decode(parser.get(section, "expiredous")).decode("UTF-8")
-            )
+            JSON4 = base64.b64decode(parser.get(section, "expiredous")).decode("UTF-8")
+            self.expiredOUs = json.loads(JSON4)
             if self.expiredOUs.__len__() <= 3:
                 self.state = True
 
@@ -195,9 +202,8 @@ def getConfig(self, section):  # noqa
 
         # ===================DOMAINS================================
         if parser.has_option(section, "domains"):
-            self.domains = json.loads(
-                base64.b64decode(parser.get(section, "domains")).decode("UTF-8")
-            )
+            JSON5 = base64.b64decode(parser.get(section, "domains")).decode("UTF-8")
+            self.domains = json.loads(JSON5)
             if self.domains.__len__() <= 3:
                 self.state = True
 
@@ -212,9 +218,8 @@ def getConfig(self, section):  # noqa
 
         # ===================TITLES================================
         if parser.has_option(section, "title"):
-            self.jobTitle = json.loads(
-                base64.b64decode(parser.get(section, "title")).decode("UTF-8")
-            )
+            JSON6 = base64.b64decode(parser.get(section, "title")).decode("UTF-8")
+            self.jobTitle = json.loads(JSON6)
             if self.jobTitle.__len__() <= 3:
                 self.state = True
 
@@ -285,13 +290,13 @@ def resetPassword(self, ou, newpass):
     pythoncom.CoInitialize()
     selected_item = self.tree.selection()[0]
     try:
-        pyad_Trinity.set_defaults(
+        pyad_Trinity.pyad_Trinity.set_defaults(
             ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
             username=base64.b64decode(self.username).decode("UTF-8").strip(),
             password=base64.b64decode(self.password).decode("UTF-8").strip(),
             ssl=True,
         )
-        lockeduser = aduser.ADUser.from_dn(ou)
+        lockeduser = pyad_Trinity.aduser.ADUser.from_dn(ou)
         lockeduser.set_password(newpass)
 
         lockeduser.update_attribute("lockoutTime", "0")
@@ -316,13 +321,13 @@ def resetPassword(self, ou, newpass):
 
 def unlockUser(self, ou, all=0):
     pythoncom.CoInitialize()
-    pyad_Trinity.set_defaults(
+    pyad_Trinity.pyad_Trinity.set_defaults(
         ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
         username=base64.b64decode(self.username).decode("UTF-8").strip(),
         password=base64.b64decode(self.password).decode("UTF-8").strip(),
         ssl=True,
     )
-    lockeduser = aduser.ADUser.from_dn(ou)
+    lockeduser = pyad_Trinity.aduser.ADUser.from_dn(ou)
     lockeduser.update_attribute("lockoutTime", "0")
     if all == 0:
         widgetStatus(self, NORMAL)
@@ -348,14 +353,17 @@ def unlockAll(self, locked):
 
 def listLocked(self):
     pythoncom.CoInitialize()
-    pyad_Trinity.set_defaults(
+    from pyad_Trinity import pyad_Trinity as PT
+
+    PT.set_defaults(
         ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
         username=base64.b64decode(self.username).decode("UTF-8").strip(),
         password=base64.b64decode(self.password).decode("UTF-8").strip(),
         ssl=True,
     )
+    import pyad_Trinity.adquery as AQ
 
-    q = adsearch.ADQuery()
+    q = AQ.ADQuery()  # noqa
     q.execute_query(
         attributes=[
             "displayName",
@@ -439,14 +447,13 @@ def createUser(self, data):
     pythoncom.CoInitialize()
     # try:
     self.status["text"] = "".join(["Creating ", data["first"], " ", data["last"]])
-    pyad_Trinity.set_defaults(
+    pyad_Trinity.pyad_Trinity.set_defaults(
         ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
         username=base64.b64decode(self.username).decode("UTF-8").strip(),
         password=base64.b64decode(self.password).decode("UTF-8").strip(),
-        ssl=True,
     )
 
-    Nou = pyad_Trinity.adcontainer.ADContainer.from_dn(self.posOU)
+    Nou = pyad_Trinity.from_dn(self.posOU)
     self.progress["value"] = 30
     pyad_Trinity.aduser.ADUser.create(
         sAMAccountName=data["login"],
@@ -569,49 +576,60 @@ def remove_groups(self):
 
 
 def listGroups(self, ou):
-    # try:
-    pythoncom.CoInitialize()
-    pyad_Trinity.set_defaults(
-        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
-        username=base64.b64decode(self.username).decode("UTF-8").strip(),
-        password=base64.b64decode(self.password).decode("UTF-8").strip(),
-        ssl=True,
-        type="GC",
-    )
-    # print(base64.b64decode(self.server).decode("UTF-8"))
-    # print(base64.b64decode(self.username).decode("UTF-8"))
-    # print(base64.b64decode(self.password).decode("UTF-8"))
-    q = adsearch.ADQuery()
-    q.execute_query(
-        attributes=["cn", "distinguishedName", "sAMAccountName"],
-        where_clause="objectClass = 'Group'",
-        base_dn=ou,
-    )
-    groups = {}
-    for x in q.get_results():
-        # print(x)
-        groups[x["sAMAccountName"]] = {
-            "name": x["cn"],
-            "ou": x["distinguishedName"],
-        }
-    return groups
-    # except Exception as e:
-    #     print(e)
+    try:
+        pythoncom.CoInitialize()
+        from pyad_Trinity import pyad_Trinity
+
+        pyad_Trinity.set_defaults(
+            ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
+            username=base64.b64decode(self.username).decode("UTF-8").strip(),
+            password=base64.b64decode(self.password).decode("UTF-8").strip(),
+            ssl=True,
+        )
+        # print(base64.b64decode(self.server).decode("UTF-8"))
+        # print(base64.b64decode(self.username).decode("UTF-8"))
+        # print(base64.b64decode(self.password).decode("UTF-8"))
+
+        import pyad_Trinity.adquery
+
+        q = pyad_Trinity.adquery.ADQuery()  # noqa
+        # print(q)
+        # print(ou)
+        q.execute_query(
+            attributes=["cn", "distinguishedName", "sAMAccountName"],
+            where_clause="objectClass = 'Group'",
+            base_dn=str(ou),
+        )
+        groups = {}
+        for x in q.get_results():
+            # print(x)
+            groups[x["sAMAccountName"]] = {
+                "name": x["cn"],
+                "ou": x["distinguishedName"],
+            }
+        return groups
+    except Exception as e:
+        print("LISTGROUPS EXCEPTION")
+        print(e)
 
 
 def listUsers(self, ou):
     pythoncom.CoInitialize()
-    pyad_Trinity.set_defaults(
+    from pyad_Trinity import pyad_Trinity as PT
+
+    PT.set_defaults(
         ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
         username=base64.b64decode(self.username).decode("UTF-8").strip(),
         password=base64.b64decode(self.password).decode("UTF-8").strip(),
         ssl=True,
-        type="GC",
     )
     # print(base64.b64decode(self.server).decode("UTF-8"))
     # print(base64.b64decode(self.username).decode("UTF-8"))
     # print(base64.b64decode(self.password).decode("UTF-8"))
-    q = adsearch.ADQuery()
+    import pyad_Trinity.adquery as AQ
+
+    q = AQ.ADQuery()  # noqa
+    # print(q)
     q.execute_query(
         attributes=[
             "displayName",
@@ -621,6 +639,7 @@ def listUsers(self, ou):
         ],
         where_clause="objectClass = 'user'",
         base_dn=ou,
+        type="GC",
     )
     users = {}
     for x in q.get_results():
@@ -634,17 +653,20 @@ def listUsers(self, ou):
 
 def listUsers2(self, ou):
     pythoncom.CoInitialize()
-    pyad_Trinity.set_defaults(
+    from pyad_Trinity import pyad_Trinity as PT
+
+    PT.set_defaults(
         ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
         username=base64.b64decode(self.username).decode("UTF-8").strip(),
         password=base64.b64decode(self.password).decode("UTF-8").strip(),
         ssl=True,
-        type="GC",
     )
     # print(base64.b64decode(self.server).decode("UTF-8"))
     # print(base64.b64decode(self.username).decode("UTF-8"))
     # print(base64.b64decode(self.password).decode("UTF-8"))
-    q = adsearch.ADQuery()
+    import pyad_Trinity.adquery as AQ
+
+    q = AQ.ADQuery()  # noqa
     q.execute_query(
         attributes=[
             "displayName",
@@ -660,6 +682,7 @@ def listUsers2(self, ou):
         ],
         where_clause="objectClass = 'user'",
         base_dn=ou,
+        type="GC",
     )
     users = {}
     for x in q.get_results():
@@ -679,15 +702,15 @@ def listUsers2(self, ou):
 
 def removeGroups(self, users, groupOU):
     pythoncom.CoInitialize()
-    pyad_Trinity.set_defaults(
+    pyad_Trinity.pyad_Trinity.set_defaults(
         ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
         username=base64.b64decode(self.username).decode("UTF-8").strip(),
         password=base64.b64decode(self.password).decode("UTF-8").strip(),
         ssl=True,
         type="GC",
     )
-    u = aduser.ADUser.from_dn(users)
-    g = adgroup.ADGroup.from_dn(groupOU)
+    u = pyad_Trinity.aduser.ADUser.from_dn(users)
+    g = pyad_Trinity.adgroup.ADGroup.from_dn(groupOU)
     u.remove_from_group(g)
 
 
@@ -704,16 +727,16 @@ def removeHomedrive(paths):
 
 def moveUser(self, bOU, aOU):
     pythoncom.CoInitialize()
-    pyad_Trinity.set_defaults(
+    pyad_Trinity.pyad_Trinity.set_defaults(
         ldap_server=base64.b64decode(self.server).decode("UTF-8"),
         username=base64.b64decode(self.username).decode("UTF-8"),
         password=base64.b64decode(self.password).decode("UTF-8"),
         ssl=True,
     )
-    u = aduser.ADUser.from_dn(bOU)
+    u = pyad_Trinity.aduser.ADUser.from_dn(bOU)
     newOrg = pyad_Trinity.adcontainer.ADContainer.from_dn(aOU)
     self.progress["value"] = 60
-    aduser.ADUser.move(u, newOrg)
+    pyad_Trinity.aduser.ADUser.move(u, newOrg)
     selected_item = self.tree3.selection()[0]
     self.tree3.delete(selected_item)
     self.progress["value"] = 100
