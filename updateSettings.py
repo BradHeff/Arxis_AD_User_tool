@@ -54,7 +54,12 @@ class MakeConf:
             base64.b64encode(bytes("HCS-DC01.HORIZON.local", "UTF-8")).decode("UTF-8")
         )
         conf_file["Horizon"]["server_user"] = str(
-            base64.b64encode(bytes("pyservice", "UTF-8")).decode("UTF-8")
+            base64.b64encode(
+                bytes(
+                    "CN=python service account,OU=Services,OU=Users,OU=Horizon,DC=HORIZON,DC=local",
+                    "UTF-8",
+                )
+            ).decode("UTF-8")
         )
         conf_file["Horizon"]["server_pass"] = str(
             base64.b64encode(bytes("BoomDoggy123", "UTF-8")).decode("UTF-8")
@@ -69,95 +74,102 @@ class MakeConf:
         )
         conf_file["Horizon"]["groups"] = str(
             base64.b64encode(
-                bytes('{"Executive":["SG_FS_Management", "SG_FS_HR", \
-"SG_FS_ExecDrive", "Local PC Administrators",\
-"Office365-A1Plus-Faculty", "Office365-AzureAD-P2",\
-"SG_FS_Adminfiles", "SG_WF_Staff", "Horizon Staff",\
-"Library Users", "SG_FS_Photos", "GEveryone", "GTeachers",\
-"SG_Admin"],"Managment":["SG_FS_Management",\
-"Local PC Administrators", "Office365-A1Plus-Faculty",\
-"Office365-AzureAD-P2", "SG_FS_Adminfiles", "SG_WF_Staff",\
-"Horizon Staff", "Library Users", "SG_FS_Photos",\
-"GEveryone", "GTeachers", "SG_Teachers"],"Primary Teacher":\
-["Office365-A1Plus-Faculty", "Office365-AzureAD-P2",\
-"SG_FS_Adminfiles", "SG_WF_Staff", "Horizon Staff",\
-"Library Users", "SG_FS_Photos", "GEveryone", "GTeachers",\
-"SG_Teachers"],"Secondary Teacher":\
-["Office365-A1Plus-Faculty", "Office365-AzureAD-P2",\
-"SG_FS_Adminfiles", "SG_WF_Staff", "Horizon Staff",\
-"Library Users", "SG_FS_Photos", "GEveryone", "GTeachers",\
-"SG_Teachers"],"Temporary Teacher":\
-["Office365-A1Plus-Faculty", "Office365-AzureAD-P2",\
-"SG_FS_Adminfiles", "SG_WF_Staff", "Horizon Staff",\
-"Library Users", "SG_FS_Photos", "GEveryone",\
-"GTeachers", "SG_Teachers"],"ESO":\
-["Office365-A1Plus-Faculty", "Office365-AzureAD-P2",\
-"SG_FS_Adminfiles", "SG_WF_Staff", "Horizon Staff",\
-"Office Staff", "Library Users", "SG_FS_Photos",\
-"GEveryone", "GTeachers"],"Admin":\
-["Office365-A1Plus-Faculty", "Office365-AzureAD-P2",\
-"SG_FS_Adminfiles", "SG_WF_Staff", "Horizon Staff",\
-"SG_FS_PCSchools", "SG_FS_Photos", "SG_LA_Reception",\
-"SG_LA_STAFF055", "SG_LA_StudentDesk", "SG_Admin"],\
-"Admin Temp":["Office365-A1Plus-Faculty",\
-"Office365-AzureAD-P2", "SG_FS_Adminfiles",\
-"SG_WF_Staff", "Horizon Staff", "SG_FS_PCSchools",\
-"SG_FS_Photos", "SG_LA_Reception", "SG_LA_STAFF055",\
-"SG_LA_StudentDesk", "SG_Admin"],"Grounds":\
-["Office365-A1Plus-Faculty", "Office365-AzureAD-P2",\
-"SG_WF_Staff", "Horizon Staff"],"Counsellor":\
-["Office365-A1Plus-Faculty", "Office365-AzureAD-P2",\
-"SG_FS_Adminfiles", "SG_WF_Staff", "Horizon Staff",\
-"SG_FS_Photos", "GEveryone", "GTeachers",\
-"Library Users", "Primary", "SG_FS_Counsellors",\
-"SG_MFA_Counsellors", "SG_Admin"],"Foundation":\
-["SG_Reception", "Office365-A3-Student",\
-"Office365-AzureAD-P2", "SG_Students",\
-"SG_WF_Student"],"Year1":["SG_Year1",\
-"Office365-A3-Student", "Office365-AzureAD-P2",\
-"SG_Students", "SG_WF_Student"],"Year2":["SG_Year2",\
-"Office365-A3-Student", "Office365-AzureAD-P2",\
-"SG_Students", "SG_WF_Student"],"Year3":["SG_Year3",\
-"Office365-A3-Student", "Office365-AzureAD-P2",\
-"SG_Students", "SG_WF_Student"],"Year4":\
-["SG_Year4", "Office365-A3-Student",\
-"Office365-AzureAD-P2", "SG_Students",\
-"SG_WF_Student"],"Year5":\
-["SG_Year5", "Office365-A3-Student",\
-"Office365-AzureAD-P2", "SG_Students",\
-"SG_WF_Student"],"Year6":["SG_Year6",\
-"Office365-A3-Student", "Office365-AzureAD-P2",\
-"SG_Students", "SG_WF_Student"],"Year7":\
-["SG_Year7", "Office365-A3-Student",\
-"Office365-AzureAD-P2", "SG_Students",\
-"SG_WF_Student"],"Year8":["SG_Year8",\
-"Office365-A3-Student", "Office365-AzureAD-P2",\
-"SG_Students", "SG_WF_Student"],"Year9":\
-["SG_Year9", "Office365-A3-Student",\
-"Office365-AzureAD-P2", "SG_Students",\
-"SG_WF_Student"],"Year10":["SG_Year10",\
-"Office365-A3-Student", "Office365-AzureAD-P2",\
-"SG_Students", "SG_WF_Student"],"Year11":\
-["SG_Year11", "Office365-A3-Student",\
-"Office365-AzureAD-P2", "SG_Students",\
-"SG_WF_Student"],"Year12":["SG_Year12",\
-"Office365-A3-Student", "Office365-AzureAD-P2",\
-"SG_Students", "SG_WF_Student"]}', "UTF-8")
+                bytes(
+                    '{"Executive":["CN=SG_FS_Management,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "SG_FS_HR,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", \
+"SG_FS_ExecDrive,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Local PC Administrators,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-A1Plus-Faculty,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"SG_FS_Adminfiles,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_WF_Staff,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Horizon Staff,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Library Users,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "SG_FS_Photos,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=GEveryone,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=GTeachers,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_Admin,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Managment":["SG_FS_Management,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Local PC Administrators,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-A1Plus-Faculty,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "SG_FS_Adminfiles,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_WF_Staff,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Horizon Staff,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Library Users,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "SG_FS_Photos,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=GEveryone,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=GTeachers,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_Teachers,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Primary Teacher":\
+["CN=Office365-A1Plus-Faculty,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_FS_Adminfiles,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_WF_Staff,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Horizon Staff,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Library Users,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_FS_Photos,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=GEveryone,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=GTeachers,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_Teachers,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Secondary Teacher":\
+["CN=Office365-A1Plus-Faculty,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_FS_Adminfiles,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_WF_Staff,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Horizon Staff,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Library Users,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_FS_Photos,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=GEveryone,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=GTeachers,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_Teachers,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Temporary Teacher":\
+["CN=Office365-A1Plus-Faculty,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_FS_Adminfiles,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_WF_Staff,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Horizon Staff,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Library Users,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_FS_Photos,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=GEveryone,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=GTeachers,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_Teachers,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"ESO":\
+["CN=Office365-A1Plus-Faculty,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_FS_Adminfiles,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_WF_Staff,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Horizon Staff,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office Staff,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Library Users,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_FS_Photos,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=GEveryone,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=GTeachers,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Admin":\
+["CN=Office365-A1Plus-Faculty,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_FS_Adminfiles,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_WF_Staff,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Horizon Staff,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_FS_PCSchools,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_FS_Photos,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_LA_Reception,OU=LocalAdmin,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_LA_STAFF055,OU=LocalAdmin,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_LA_StudentDesk,OU=LocalAdmin,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_Admin,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],\
+"Admin Temp":["CN=Office365-A1Plus-Faculty,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_FS_Adminfiles,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_WF_Staff,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Horizon Staff,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_FS_PCSchools,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_FS_Photos,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_LA_Reception,OU=LocalAdmin,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_LA_STAFF055,OU=LocalAdmin,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_LA_StudentDesk,OU=LocalAdmin,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_Admin,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Grounds":\
+["CN=Office365-A1Plus-Faculty,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_WF_Staff,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Horizon Staff,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Counsellor":\
+["CN=Office365-A1Plus-Faculty,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_FS_Adminfiles,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_WF_Staff,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Horizon Staff,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_FS_Photos,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=GEveryone,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=GTeachers,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Library Users,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "Primary", "CN=SG_FS_Counsellors,OU=SG_FileShare,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"SG_MFA_Counsellors", "CN=SG_Admin,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Foundation":\
+["CN=SG_Reception,OU=Year Levels,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Year1":["CN=SG_Year1,OU=Year Levels,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Year2":["CN=SG_Year2,OU=Year Levels,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Year3":["CN=SG_Year3,OU=Year Levels,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Year4":\
+["CN=SG_Year4,OU=Year Levels,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Year5":\
+["CN=SG_Year5,OU=Year Levels,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Year6":["CN=SG_Year6,OU=Year Levels,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Year7":\
+["CN=SG_Year7,OU=Year Levels,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Year8":["CN=SG_Year8,OU=Year Levels,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Year9":\
+["CN=SG_Year9,OU=Year Levels,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Year10":["CN=SG_Year10,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Year11":\
+["CN=SG_Year11,OU=Year Levels,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"],"Year12":["CN=SG_Year12,OU=Year Levels,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",\
+"CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local", "CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"]}',
+                    "UTF-8",
+                )
             ).decode("UTF-8")
         )
         conf_file["Horizon"]["positions"] = str(
             base64.b64encode(
-                bytes('{"Staff":["Executive","Managment","Admin",\
+                bytes(
+                    '{"Staff":["Executive","Managment","Admin",\
 "Admin Temp","Primary Teacher","Secondary Teacher",\
 "Temporary Teacher","ESO","Grounds",\
 "Counsellor"],\
 "Students":["Foundation","Year1","Year2","Year3","Year4","Year5","Year6",\
-"Year7","Year8","Year9","Year10","Year11","Year12"]}', "UTF-8")
+"Year7","Year8","Year9","Year10","Year11","Year12"]}',
+                    "UTF-8",
+                )
             ).decode("UTF-8")
         )
         conf_file["Horizon"]["positionsou"] = str(
             base64.b64encode(
-                bytes('{"Executive":"OU=Executive,OU=Staff,OU=Users,\
+                bytes(
+                    '{"Executive":"OU=Executive,OU=Staff,OU=Users,\
 OU=Horizon,DC=HORIZON,DC=local",\
 "Managment":"OU=Managment,OU=Staff,OU=Users,OU=Horizon,\
 DC=HORIZON,DC=local","Primary Teacher":\
@@ -219,12 +231,15 @@ DC=HORIZON,DC=local",\
 OU=Horizon,DC=HORIZON,DC=local",\
 "Year12-Clare":"OU=Year 12,\
 OU=Students-Clare,OU=Users,OU=Horizon,\
-DC=HORIZON,DC=local"}', "UTF-8")
+DC=HORIZON,DC=local"}',
+                    "UTF-8",
+                )
             ).decode("UTF-8")
         )
         conf_file["Horizon"]["title"] = str(
             base64.b64encode(
-                bytes('{"Executive":"Executive Team","Managment":\
+                bytes(
+                    '{"Executive":"Executive Team","Managment":\
 "Management Team","Admin":"Administration","Admin Temp":\
 "Temporary Administrator","Primary Teacher":"Primary Teacher",\
 "Secondary Teacher":"Secondary Teacher","Temporary Teacher":\
@@ -236,16 +251,21 @@ DC=HORIZON,DC=local"}', "UTF-8")
 "Year 6 Student","Year7":"Year 7 Student","Year8":\
 "Year 8 Student","Year9":"Year 9 Student","Year10":\
 "Year 10 Student","Year11":"Year 11 Student","Year12":\
-"Year 12 Student"}', "UTF-8")
+"Year 12 Student"}',
+                    "UTF-8",
+                )
             ).decode("UTF-8")
         )
         conf_file["Horizon"]["expiredous"] = str(
             base64.b64encode(
-                bytes('{"Disabled":"OU=Disabled,OU=Users,OU=Horizon,DC=HORIZON,\
+                bytes(
+                    '{"Disabled":"OU=Disabled,OU=Users,OU=Horizon,DC=HORIZON,\
 DC=local","ExpiredStaff":"OU=ExpiredStaff,OU=Users,\
 OU=Horizon,DC=HORIZON,DC=local","ExpiredStudents":\
 "OU=ExpiredStudents,OU=Users,OU=Horizon,DC=HORIZON,\
-DC=local"}', "UTF-8")
+DC=local"}',
+                    "UTF-8",
+                )
             ).decode("UTF-8")
         )
         conf_file["Horizon"]["groupsou"] = str(
@@ -263,9 +283,12 @@ DC=local"}', "UTF-8")
         )
         conf_file["Horizon"]["homepaths"] = str(
             base64.b64encode(
-                bytes("\\\\HCS-FS01\\office_stuserver,\
+                bytes(
+                    "\\\\HCS-FS01\\office_stuserver,\
 \\\\HCS-FS01\\teachers_stuserver,\
-\\\\HCS-FS01\\students_stuserver", "UTF-8")
+\\\\HCS-FS01\\students_stuserver",
+                    "UTF-8",
+                )
             ).decode("UTF-8")
         )
         conf_file["Horizon"]["campus"] = str(

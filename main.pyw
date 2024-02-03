@@ -369,7 +369,7 @@ class ADUnlocker(ttk.Window):
         t.start()
 
     def editOption(self):
-        f.pythoncom.CoInitialize()
+        # f.pythoncom.CoInitialize()
         # print(self.campH.get())
         self.tree3.delete(*self.tree3.get_children())
         self.var2.set(None)
@@ -405,7 +405,7 @@ class ADUnlocker(ttk.Window):
         t.start()
 
     def moveOption(self):
-        f.pythoncom.CoInitialize()
+        # f.pythoncom.CoInitialize()
         self.tree4.delete(*self.tree4.get_children())
         self.var3.set(None)
         self.entDomain["state"] = "normal"
@@ -586,7 +586,7 @@ class ADUnlocker(ttk.Window):
 
     def comboLoad(self):  # noqa
         # print(self.positions)
-        f.pythoncom.CoInitialize()
+        # f.pythoncom.CoInitialize()
         self.status["text"] = "Loading..."
         self.clear_pos()
         self.clear_group()
@@ -753,21 +753,21 @@ class ADUnlocker(ttk.Window):
             # try:
             # print(f.base64.b64decode(self.username).decode("UTF-8"))
             self.progress["value"] = 80
-            print("START GROUPS SEARCH")
-            print(f.base64.b64decode(self.groupOU).decode("UTF-8"))
+            # print("START GROUPS SEARCH")
+            # print(f.base64.b64decode(self.groupOU).decode("UTF-8"))
 
-            self.fullGroups = f.listGroups(
-                self, f.base64.b64decode(self.groupOU).decode("UTF-8")
-            )
-            print(self.fullGroups)
-            groups = []
-            self.progress["maximum"] = float(self.fullGroups.__len__())
-            print(self.progress["maximum"])
+            # self.fullGroups = f.listGroups(
+            #     self, f.base64.b64decode(self.groupOU).decode("UTF-8")
+            # )
+            # print(self.fullGroups)
+            # groups = []
+            # self.progress["maximum"] = float(self.fullGroups.__len__())
+            # print(self.progress["maximum"])
             prog = 1
-            for x in self.fullGroups:
-                groups.append(x)
-                self.progress["value"] = prog
-                prog += 1
+            # for x in self.fullGroups:
+            #     groups.append(x)
+            #     self.progress["value"] = prog
+            #     prog += 1
             # self.ex_groups["values"] = groups
             # except Exception as e:
             #     print("ERROR END")
@@ -821,7 +821,7 @@ class ADUnlocker(ttk.Window):
         t.start()
 
     def loads(self):
-        f.pythoncom.CoInitialize()
+        # f.pythoncom.CoInitialize()
         # try:
         self.status["text"] = "Searching locked users ..."
         locked = f.listLocked(self)

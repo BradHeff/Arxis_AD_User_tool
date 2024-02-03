@@ -5,22 +5,19 @@ from os import mkdir, path, removedirs, system
 from pathlib import Path
 
 import configparser_crypt as cCrypt
-import pythoncom
+
+# import pythoncom
 import win32security
-import pyad_Trinity
 
-import pyad_Trinity.adquery
-
-
-# from pyad_Trinity import pyad_Trinity as pyad_Trinity.pyad_Trinity
-
-# from pyad_Trinity import pyad_Trinity
-
+from ldap3 import Connection, Server, MODIFY_REPLACE, SAFE_SYNC
+from ldap3.extend.microsoft.removeMembersFromGroups import (
+    ad_remove_members_from_groups as removeUsersInGroups,
+)
 from ttkbootstrap import DISABLED, NORMAL
 
 DEBUG = True
 Version = "v1.0.7.1"
-key = b"\x0c:\x9eX\x8d\x83j\xd7\xb1\x0c\x83R\x89.\xf2`o\xe6\x01\x8f\x9e\xf0\x9b\xa7\x9bM\x99qY\xbd\xf4\xcf"
+key = b"m\x14V\xf7`\xcc%\x9d\x8d:z3r@\x07\x02\xc9\x0e\xa3\xaa\xdf\x1f53\xf8\x01\xd1\x86\x83\xce}\x8e"
 settings_file = "Settings.dat"
 
 if not DEBUG:
@@ -48,6 +45,17 @@ def checkSettings(self):
         return True
     else:
         return False
+
+
+def ldap_connection(self):
+    server = Server(base64.b64decode(self.server).decode("UTF-8").strip())
+    return Connection(
+        server,
+        base64.b64decode(self.username).decode("UTF-8").strip(),
+        base64.b64decode(self.password).decode("UTF-8").strip(),
+        client_strategy=SAFE_SYNC,
+        auto_bind=True,
+    )
 
 
 def saveConfig(self):
@@ -444,24 +452,12 @@ def update_user(self, data):
 
 
 def createUser(self, data):
-    pythoncom.CoInitialize()
+    # pythoncom.CoInitialize()
     # try:
     self.status["text"] = "".join(["Creating ", data["first"], " ", data["last"]])
-    pyad_Trinity.pyad_Trinity.set_defaults(
-        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
-        username=base64.b64decode(self.username).decode("UTF-8").strip(),
-        password=base64.b64decode(self.password).decode("UTF-8").strip(),
-    )
 
-    Nou = pyad_Trinity.from_dn(self.posOU)
-    self.progress["value"] = 30
-    pyad_Trinity.aduser.ADUser.create(
-        sAMAccountName=data["login"],
-        cn="".join([data["first"], " ", data["last"]]),
-        password=data["password"],
-        container_object=Nou,
-        enable=True,
-        optional_attributes={
+    with ldap_connection(self) as c:
+        attributes = {
             "givenName": data["first"],
             "userPrincipalName": "".join([data["login"], "@", data["domain"]]),
             "DisplayName": "".join([data["first"], " ", data["last"]]),
@@ -478,23 +474,37 @@ def createUser(self, data):
             "department": data["department"],
             "company": data["company"],
             "pwdLastSet": 0,
-        },
+        }
+        user_dn = "".join(["CN=", data["first"], " ", data["last"], ",", self.posOU])
+        result = c.add(
+            dn=user_dn,
+            object_class=["top", "person", "organizationalPerson", "user"],
+            attributes=attributes,
+        )
+        if not result:
+            msg = "ERROR: User '{0}' was not created: {1}".format(
+                "".join([data["first"], " ", data["last"]]), c.result.get("description")
+            )
+            raise Exception(msg)
+
+    self.progress["value"] = 30
+    c.extend.microsoft.unlock_account(user=user_dn)
+    c.extend.microsoft.modify_password(
+        user=user_dn, new_password=data["password"], old_password=None
     )
-    newuser = pyad_Trinity.aduser.ADUser.from_cn(
-        "".join([data["first"], " ", data["last"]])
-    )
-    # newuser.set_password(data["password"])
-    newuser.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
-    newuser.set_user_account_control_setting("PASSWD_NOTREQD", False)
+    # Enable account - must happen after user password is set
+    enable_account = {"userAccountControl": (MODIFY_REPLACE, [512])}
+    c.modify(user_dn, changes=enable_account)
 
     self.progress["value"] = 50
     self.status["text"] = "".join(
         ["Adding ", data["first"], " ", data["last"], " to groups"]
     )
-    for gp in data["groups"]:
-        # print(gp)
-        newgroup = pyad_Trinity.adgroup.ADGroup.from_cn(gp)
-        newuser.add_to_group(newgroup)
+    print(data["groups"])
+    c.extend.microsoft.add_members_to_groups([user_dn], data["groups"])
+    # for gp in data["groups"]:
+    #     newgroup = pyad_Trinity.adgroup.ADGroup.from_cn(gp)
+    #     newuser.add_to_group(newgroup)
     self.progress["value"] = 80
     self.status["text"] = "".join(
         ["Creating ", data["first"], " ", data["last"], " home directory"]
@@ -541,10 +551,10 @@ def createHomeDir(username, homeDir, domainName):
 
 
 def remove_groups(self):
-    pythoncom.CoInitialize()
+    # pythoncom.CoInitialize()
     try:
         userlist = listUsers(self, self.expiredOU)
-        group = listGroups(self, base64.b64decode(self.groupOU).decode("UTF-8"))
+        # group = listGroups(self, base64.b64decode(self.groupOU).decode("UTF-8"))
         maxs = userlist.__len__()
         self.status["text"] = "Loading Users..."
         userCount = 1
@@ -560,8 +570,8 @@ def remove_groups(self):
         for y in userlist:
             count += 1
             self.progress["value"] = count
-            for x in group:
-                removeGroups(self, userlist[y]["ou"], group[x]["ou"])
+            # for x in group:
+            #     removeGroups(self, userlist[y]["ou"], group[x]["ou"])
             self.status["text"] = "Cleaning Users: " + str(count) + "/" + str(maxs)
             removeHomedrive(userlist[y]["homeDir"])
             for child in self.tree2.get_children():
@@ -575,74 +585,56 @@ def remove_groups(self):
     self.after(1000, self.resetProgress)
 
 
-def listGroups(self, ou):
-    # try:
-    pythoncom.CoInitialize()
-    from pyad_Trinity import pyad_Trinity
+# def listGroups(self, ou):
+#     try:
+#         server = Server(base64.b64decode(self.server).decode("UTF-8").strip())
+#         conn = Connection(
+#             server,
+#             base64.b64decode(self.username).decode("UTF-8").strip(),
+#             base64.b64decode(self.password).decode("UTF-8").strip(),
+#             client_strategy=SAFE_SYNC,
+#             auto_bind=True,
+#         )
+#         status, result, response, _ = conn.search(
+#             search_base=str(ou),
+#             search_filter="(objectClass='group')",
+#             attributes=["cn", "distinguishedName", "sAMAccountName"],
+#         )
 
-    pyad_Trinity.set_defaults(
-        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
-        username=base64.b64decode(self.username).decode("UTF-8").strip(),
-        password=base64.b64decode(self.password).decode("UTF-8").strip(),
-        ssl=True,
-    )
-    # print(base64.b64decode(self.server).decode("UTF-8"))
-    # print(base64.b64decode(self.username).decode("UTF-8"))
-    # print(base64.b64decode(self.password).decode("UTF-8"))
-
-    import pyad_Trinity.adquery
-
-    q = pyad_Trinity.adquery.ADQuery()  # noqa
-    # print(q)
-    # print(ou)
-    q.execute_query(
-        attributes=["cn", "distinguishedName", "sAMAccountName"],
-        where_clause="objectClass = 'Group'",
-        base_dn=str(ou),
-    )
-    groups = {}
-    for x in q.get_results():
-        # print(x)
-        groups[x["sAMAccountName"]] = {
-            "name": x["cn"],
-            "ou": x["distinguishedName"],
-        }
-    return groups
-    # except Exception as e:
-    #     print("LISTGROUPS EXCEPTION")
-    #     print(e)
+#         groups = {}
+#         for x in result.get_values():
+#             print(x)
+#             groups[x["sAMAccountName"]] = {
+#                 "name": x["cn"],
+#                 "ou": x["distinguishedName"],
+#             }
+#         return groups
+#     except Exception as e:
+#         print("LISTGROUPS EXCEPTION")
+#         print(e)
 
 
 def listUsers(self, ou):
-    pythoncom.CoInitialize()
-    from pyad_Trinity import pyad_Trinity as PT
-
-    PT.set_defaults(
-        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
-        username=base64.b64decode(self.username).decode("UTF-8").strip(),
-        password=base64.b64decode(self.password).decode("UTF-8").strip(),
-        ssl=True,
+    server = Server(base64.b64decode(self.server).decode("UTF-8").strip())
+    conn = Connection(
+        server,
+        base64.b64decode(self.username).decode("UTF-8").strip(),
+        base64.b64decode(self.password).decode("UTF-8").strip(),
+        client_strategy=SAFE_SYNC,
+        auto_bind=True,
     )
-    # print(base64.b64decode(self.server).decode("UTF-8"))
-    # print(base64.b64decode(self.username).decode("UTF-8"))
-    # print(base64.b64decode(self.password).decode("UTF-8"))
-    import pyad_Trinity.adquery as AQ
-
-    q = AQ.ADQuery()  # noqa
-    # print(q)
-    q.execute_query(
+    status, result, response, _ = conn.search(
+        search_base=str(ou),
+        search_filter="objectClass = 'user'",
         attributes=[
             "displayName",
             "distinguishedName",
             "sAMAccountName",
             "homeDirectory",
         ],
-        where_clause="objectClass = 'user'",
-        base_dn=ou,
-        type="GC",
     )
     users = {}
-    for x in q.get_results():
+    for x in result.get_values():
         users[x["sAMAccountName"]] = {
             "name": x["displayName"],
             "ou": x["distinguishedName"],
@@ -652,22 +644,17 @@ def listUsers(self, ou):
 
 
 def listUsers2(self, ou):
-    pythoncom.CoInitialize()
-    from pyad_Trinity import pyad_Trinity as PT
-
-    PT.set_defaults(
-        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
-        username=base64.b64decode(self.username).decode("UTF-8").strip(),
-        password=base64.b64decode(self.password).decode("UTF-8").strip(),
-        ssl=True,
+    server = Server(base64.b64decode(self.server).decode("UTF-8").strip())
+    conn = Connection(
+        server,
+        base64.b64decode(self.username).decode("UTF-8").strip(),
+        base64.b64decode(self.password).decode("UTF-8").strip(),
+        client_strategy=SAFE_SYNC,
+        auto_bind=True,
     )
-    # print(base64.b64decode(self.server).decode("UTF-8"))
-    # print(base64.b64decode(self.username).decode("UTF-8"))
-    # print(base64.b64decode(self.password).decode("UTF-8"))
-    import pyad_Trinity.adquery as AQ
-
-    q = AQ.ADQuery()  # noqa
-    q.execute_query(
+    status, result, response, _ = conn.search(
+        search_base=str(ou),
+        search_filter="objectClass = 'user'",
         attributes=[
             "displayName",
             "distinguishedName",
@@ -680,12 +667,9 @@ def listUsers2(self, ou):
             "givenName",
             "proxyAddresses",
         ],
-        where_clause="objectClass = 'user'",
-        base_dn=ou,
-        type="GC",
     )
     users = {}
-    for x in q.get_results():
+    for x in result.get_values():
         users[x["sAMAccountName"]] = {
             "name": x["displayName"],
             "ou": x["distinguishedName"],
@@ -701,17 +685,15 @@ def listUsers2(self, ou):
 
 
 def removeGroups(self, users, groupOU):
-    pythoncom.CoInitialize()
-    pyad_Trinity.pyad_Trinity.set_defaults(
-        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
-        username=base64.b64decode(self.username).decode("UTF-8").strip(),
-        password=base64.b64decode(self.password).decode("UTF-8").strip(),
-        ssl=True,
-        type="GC",
+    server = Server(base64.b64decode(self.server).decode("UTF-8").strip())
+    conn = Connection(
+        server,
+        base64.b64decode(self.username).decode("UTF-8").strip(),
+        base64.b64decode(self.password).decode("UTF-8").strip(),
+        client_strategy=SAFE_SYNC,
+        auto_bind=True,
     )
-    u = pyad_Trinity.aduser.ADUser.from_dn(users)
-    g = pyad_Trinity.adgroup.ADGroup.from_dn(groupOU)
-    u.remove_from_group(g)
+    removeUsersInGroups(conn, users, groupOU, fix=True)
 
 
 def removeHomedrive(paths):
@@ -721,11 +703,9 @@ def removeHomedrive(paths):
     except Exception as e:
         print(e)
 
+    # =============================================
 
-# =============================================
-
-
-def moveUser(self, bOU, aOU):
+    # def moveUser(self, bOU, aOU):
     pythoncom.CoInitialize()
     pyad_Trinity.pyad_Trinity.set_defaults(
         ldap_server=base64.b64decode(self.server).decode("UTF-8"),
