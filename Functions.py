@@ -576,41 +576,41 @@ def remove_groups(self):
 
 
 def listGroups(self, ou):
-    try:
-        pythoncom.CoInitialize()
-        from pyad_Trinity import pyad_Trinity
+    # try:
+    pythoncom.CoInitialize()
+    from pyad_Trinity import pyad_Trinity
 
-        pyad_Trinity.set_defaults(
-            ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
-            username=base64.b64decode(self.username).decode("UTF-8").strip(),
-            password=base64.b64decode(self.password).decode("UTF-8").strip(),
-            ssl=True,
-        )
-        # print(base64.b64decode(self.server).decode("UTF-8"))
-        # print(base64.b64decode(self.username).decode("UTF-8"))
-        # print(base64.b64decode(self.password).decode("UTF-8"))
+    pyad_Trinity.set_defaults(
+        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
+        username=base64.b64decode(self.username).decode("UTF-8").strip(),
+        password=base64.b64decode(self.password).decode("UTF-8").strip(),
+        ssl=True,
+    )
+    # print(base64.b64decode(self.server).decode("UTF-8"))
+    # print(base64.b64decode(self.username).decode("UTF-8"))
+    # print(base64.b64decode(self.password).decode("UTF-8"))
 
-        import pyad_Trinity.adquery
+    import pyad_Trinity.adquery
 
-        q = pyad_Trinity.adquery.ADQuery()  # noqa
-        # print(q)
-        # print(ou)
-        q.execute_query(
-            attributes=["cn", "distinguishedName", "sAMAccountName"],
-            where_clause="objectClass = 'Group'",
-            base_dn=str(ou),
-        )
-        groups = {}
-        for x in q.get_results():
-            # print(x)
-            groups[x["sAMAccountName"]] = {
-                "name": x["cn"],
-                "ou": x["distinguishedName"],
-            }
-        return groups
-    except Exception as e:
-        print("LISTGROUPS EXCEPTION")
-        print(e)
+    q = pyad_Trinity.adquery.ADQuery()  # noqa
+    # print(q)
+    # print(ou)
+    q.execute_query(
+        attributes=["cn", "distinguishedName", "sAMAccountName"],
+        where_clause="objectClass = 'Group'",
+        base_dn=str(ou),
+    )
+    groups = {}
+    for x in q.get_results():
+        # print(x)
+        groups[x["sAMAccountName"]] = {
+            "name": x["cn"],
+            "ou": x["distinguishedName"],
+        }
+    return groups
+    # except Exception as e:
+    #     print("LISTGROUPS EXCEPTION")
+    #     print(e)
 
 
 def listUsers(self, ou):

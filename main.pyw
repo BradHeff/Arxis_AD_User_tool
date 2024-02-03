@@ -750,29 +750,29 @@ class ADUnlocker(ttk.Window):
                 print(e)
                 pass
         if not f.base64.b64decode(self.groupOU).decode("UTF-8").__len__() <= 3:
-            try:
-                # print(f.base64.b64decode(self.username).decode("UTF-8"))
-                self.progress["value"] = 80
-                print("START GROUPS SEARCH")
-                print(f.base64.b64decode(self.groupOU).decode("UTF-8"))
+            # try:
+            # print(f.base64.b64decode(self.username).decode("UTF-8"))
+            self.progress["value"] = 80
+            print("START GROUPS SEARCH")
+            print(f.base64.b64decode(self.groupOU).decode("UTF-8"))
 
-                self.fullGroups = f.listGroups(
-                    self, f.base64.b64decode(self.groupOU).decode("UTF-8")
-                )
-                print(self.fullGroups)
-                groups = []
-                self.progress["maximum"] = float(self.fullGroups.__len__())
-                print(self.progress["maximum"])
-                prog = 1
-                for x in self.fullGroups:
-                    groups.append(x)
-                    self.progress["value"] = prog
-                    prog += 1
-                # self.ex_groups["values"] = groups
-            except Exception as e:
-                print("ERROR END")
-                print(e)
-                pass
+            self.fullGroups = f.listGroups(
+                self, f.base64.b64decode(self.groupOU).decode("UTF-8")
+            )
+            print(self.fullGroups)
+            groups = []
+            self.progress["maximum"] = float(self.fullGroups.__len__())
+            print(self.progress["maximum"])
+            prog = 1
+            for x in self.fullGroups:
+                groups.append(x)
+                self.progress["value"] = prog
+                prog += 1
+            # self.ex_groups["values"] = groups
+            # except Exception as e:
+            #     print("ERROR END")
+            #     print(e)
+            #     pass
         self.progress["value"] = 0
         self.status["text"] = "Idle..."
         if f.path.isfile(f.settings_dir + "Config.ini") and not self.loaded:
