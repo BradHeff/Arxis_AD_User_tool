@@ -1,15 +1,15 @@
 import base64
-import json
 import sys
 from os import mkdir, path, removedirs, system
 from pathlib import Path
-
+from flask import json
 import configparser_crypt as cCrypt
+import OpenSSL
 
 # import pythoncom
 import win32security
 
-from ldap3 import Connection, Server, MODIFY_REPLACE, SAFE_SYNC
+from ldap3 import Connection, Server, MODIFY_REPLACE, SAFE_SYNC, SUBTREE, Tls
 from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
@@ -17,9 +17,12 @@ from ttkbootstrap import DISABLED, NORMAL
 
 DEBUG = True
 Version = "v1.0.7.1"
-key = b"m\x14V\xf7`\xcc%\x9d\x8d:z3r@\x07\x02\xc9\x0e\xa3\xaa\xdf\x1f53\xf8\x01\xd1\x86\x83\xce}\x8e"
+key = b"t\xbazhnI\t\x8d\x7f\x82\x18\xbd\xc3\xf0\x1a\n$\x04\xab\x86t\x06\xbf\x05\xc3\xed\xf7T\xc5\x9f\x93\xbc"
 settings_file = "Settings.dat"
-
+UAC = 32 + 65536
+tls_configuration = Tls(
+    validate=OpenSSL.SSL.VERIFY_NONE, version=OpenSSL.SSL.TLSv1_1_METHOD
+)
 if not DEBUG:
     exe_dir = str(path.dirname(sys.executable))
 else:
@@ -48,7 +51,11 @@ def checkSettings(self):
 
 
 def ldap_connection(self):
-    server = Server(base64.b64decode(self.server).decode("UTF-8").strip())
+    server = Server(
+        base64.b64decode(self.server).decode("UTF-8").strip(),
+        use_ssl=True,
+        tls=tls_configuration,
+    )
     return Connection(
         server,
         base64.b64decode(self.username).decode("UTF-8").strip(),
@@ -127,7 +134,7 @@ def getConfig(self, section):  # noqa
         # ===================SERVER================================
         if parser.has_option(section, "server"):
             self.server = parser.get(section, "server")
-            print(base64.b64decode(self.server).decode("UTF-8"))
+            # print(base64.b64decode(self.server).decode("UTF-8"))
             if not base64.b64decode(self.server).decode("UTF-8").__len__() <= 3:
                 self.compFail = False
                 self.servs = True
@@ -138,7 +145,7 @@ def getConfig(self, section):  # noqa
         # ===================SERVER USERNAME================================
         if parser.has_option(section, "server_user"):
             self.username = parser.get(section, "server_user")
-            print(base64.b64decode(self.username).decode("UTF-8"))
+            # print(base64.b64decode(self.username).decode("UTF-8"))
             if not base64.b64decode(self.username).decode("UTF-8").__len__() <= 3:
                 self.compFail = False
                 self.servs = True
@@ -149,7 +156,7 @@ def getConfig(self, section):  # noqa
         # ===================SERVER PASSWORD================================
         if parser.has_option(section, "server_pass"):
             self.password = parser.get(section, "server_pass")
-            print(base64.b64decode(self.password).decode("UTF-8"))
+            # print(base64.b64decode(self.password).decode("UTF-8"))
             if not base64.b64decode(self.password).decode("UTF-8").__len__() <= 3:
                 self.compFail = False
                 self.servs = True
@@ -295,32 +302,26 @@ def widgetStatusFailed(self, state):
 
 
 def resetPassword(self, ou, newpass):
-    pythoncom.CoInitialize()
     selected_item = self.tree.selection()[0]
     try:
-        pyad_Trinity.pyad_Trinity.set_defaults(
-            ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
-            username=base64.b64decode(self.username).decode("UTF-8").strip(),
-            password=base64.b64decode(self.password).decode("UTF-8").strip(),
-            ssl=True,
-        )
-        lockeduser = pyad_Trinity.aduser.ADUser.from_dn(ou)
-        lockeduser.set_password(newpass)
+        with ldap_connection(self) as c:
+            c.extend.microsoft.modify_password(
+                user=ou, new_password=newpass["password"], old_password=None
+            )
+            result = c.modify(
+                dn=ou,
+                changes={"lockoutTime": "0"},
+            )
+            if not result:
+                msg = "ERROR: '{0}'".format(
+                    c.result.get("description"),
+                )
+                raise Exception(msg)
 
-        lockeduser.update_attribute("lockoutTime", "0")
-
-        # lockeduser.update_attribute("PwdLastSet", "0")
         self.tree.delete(selected_item)
         self.selItem = []
         widgetStatus(self, NORMAL)
         self.messageBox("SUCCESS!!", "Password set and user unlocked!")
-    except pyad_Trinity.aduser.win32Exception as e:
-        self.selItem = []
-        widgetStatus(self, NORMAL)
-        self.messageBox(
-            "ERROR!!",
-            e.error_info["message"].strip() + "\nCheck password is in format abc123!!",
-        )
     except:  # noqa
         self.selItem = []
         widgetStatus(self, NORMAL)
@@ -328,21 +329,23 @@ def resetPassword(self, ou, newpass):
 
 
 def unlockUser(self, ou, all=0):
-    pythoncom.CoInitialize()
-    pyad_Trinity.pyad_Trinity.set_defaults(
-        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
-        username=base64.b64decode(self.username).decode("UTF-8").strip(),
-        password=base64.b64decode(self.password).decode("UTF-8").strip(),
-        ssl=True,
-    )
-    lockeduser = pyad_Trinity.aduser.ADUser.from_dn(ou)
-    lockeduser.update_attribute("lockoutTime", "0")
+    self.status["text"] = "".join(["Unlocking ", ou.split(",")[0].replace("CN=", "")])
+    with ldap_connection(self) as c:
+        result = c.modify(
+            dn=ou,
+            changes={"lockoutTime": (MODIFY_REPLACE, ["0"])},
+        )
+        if not result:
+            msg = "ERROR: '{0}'".format(
+                c.result.get("description"),
+            )
+            raise Exception(msg)
+
     if all == 0:
         widgetStatus(self, NORMAL)
 
 
 def unlockAll(self, locked):
-    pythoncom.CoInitialize()
     count = 0
     props = 1
     for x in locked:
@@ -360,59 +363,46 @@ def unlockAll(self, locked):
 
 
 def listLocked(self):
-    pythoncom.CoInitialize()
-    from pyad_Trinity import pyad_Trinity as PT
-
-    PT.set_defaults(
-        ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
-        username=base64.b64decode(self.username).decode("UTF-8").strip(),
-        password=base64.b64decode(self.password).decode("UTF-8").strip(),
-        ssl=True,
-    )
-    import pyad_Trinity.adquery as AQ
-
-    q = AQ.ADQuery()  # noqa
-    q.execute_query(
-        attributes=[
-            "displayName",
-            "lockoutTime",
-            "distinguishedName",
-            "sAMAccountName",
-        ],
-        where_clause="objectClass = 'user' and lockoutTime >= '1'",
-        base_dn=base64.b64decode(self.ou).decode("UTF-8"),
-    )
     users = {}
-    for x in q.get_results():
-        users[x["sAMAccountName"]] = {
-            "name": x["displayName"],
-            "ou": x["distinguishedName"],
-        }
+    with ldap_connection(self) as c:
+        status, result, response, _ = c.search(
+            search_base=base64.b64decode(self.ou).decode("UTF-8"),
+            search_filter="(&(objectClass=user)(objectCategory=person)(lockoutTime>=1))",
+            search_scope=SUBTREE,
+            attributes=[
+                "displayName",
+                "lockoutTime",
+                "distinguishedName",
+                "sAMAccountName",
+            ],
+            get_operational_attributes=True,
+        )
 
+        for x in response:
+            res = x["attributes"]
+            # print(res["displayName"])
+            users[res["sAMAccountName"]] = {
+                "name": res["displayName"],
+                "ou": res["distinguishedName"],
+            }
+    # print(users)
     return users
 
 
 def update_user(self, data):
-    pythoncom.CoInitialize()
+
     try:
         self.status["text"] = "".join(["Updating ", data["first"], " ", data["last"]])
-        pyad_Trinity.set_defaults(
-            ldap_server=base64.b64decode(self.server).decode("UTF-8").strip(),
-            username=base64.b64decode(self.username).decode("UTF-8").strip(),
-            password=base64.b64decode(self.password).decode("UTF-8").strip(),
-            ssl=True,
-        )
+        with ldap_connection(self) as c:
 
-        Nou = pyad_Trinity.aduser.ADUser.from_dn(data["ou"])
-        self.progress["value"] = 60
+            self.progress["value"] = 60
 
-        if data["proxy"].__len__() > 3:
-            proxy = "".join(["smtp:", data["login"], "@", data["proxy"]])
-        else:
-            proxy = ""
+            if data["proxy"].__len__() > 3:
+                proxy = "".join(["smtp:", data["login"], "@", data["proxy"]])
+            else:
+                proxy = ""
 
-        Nou.update_attributes(
-            {
+            attributes = {
                 "givenName": data["first"],
                 "sAMAccountName": data["login"],
                 "sn": data["last"],
@@ -426,24 +416,26 @@ def update_user(self, data):
                     proxy,
                 ],
             }
-        )
-
+            result = c.modify(
+                dn=data["ou"],
+                changes=attributes,
+            )
+            if not result:
+                msg = "ERROR: User '{0}' was not created: {1}".format(
+                    "".join([data["first"], " ", data["last"]]),
+                    c.result.get("description"),
+                )
+                raise Exception(msg)
         if data["password"].__len__() >= 8:
-            Nou.set_password(data["password"])
+            c.extend.microsoft.modify_password(
+                user=data["ou"], new_password=data["password"], old_password=None
+            )
         self.progress["value"] = 100
         widgetStatus(self, NORMAL)
         self.status["text"] = "Idle..."
         self.messageBox("SUCCESS!!", "User Updated!")
         self.progress["value"] = 0
         self.updateSelect()
-    except pyad_Trinity.aduser.win32Exception as e:
-        self.status["text"] = "Idle..."
-        widgetStatus(self, NORMAL)
-        self.messageBox(
-            "ERROR!!",
-            e.error_info["message"].strip() + "\nCheck password is in format abc123!!",
-        )
-        self.progress["value"] = 0
     except:  # noqa
         self.status["text"] = "Idle..."
         widgetStatus(self, NORMAL)
@@ -453,78 +445,83 @@ def update_user(self, data):
 
 def createUser(self, data):
     # pythoncom.CoInitialize()
-    # try:
-    self.status["text"] = "".join(["Creating ", data["first"], " ", data["last"]])
+    try:
+        self.status["text"] = "".join(["Creating ", data["first"], " ", data["last"]])
 
-    with ldap_connection(self) as c:
-        attributes = {
-            "givenName": data["first"],
-            "userPrincipalName": "".join([data["login"], "@", data["domain"]]),
-            "DisplayName": "".join([data["first"], " ", data["last"]]),
-            "sn": data["last"],
-            "mail": "".join([data["login"], "@", data["domain"]]),
-            "proxyAddresses": [
-                "".join(["SMTP:", data["login"], "@", data["domain"]]),
-                "".join(["smtp:", data["login"], "@", data["proxy"]]),
-            ],
-            "HomeDirectory": data["homeDirectory"],
-            "HomeDrive": data["homeDrive"],
-            "title": data["title"],
-            "description": data["description"],
-            "department": data["department"],
-            "company": data["company"],
-            "pwdLastSet": 0,
-        }
-        user_dn = "".join(["CN=", data["first"], " ", data["last"], ",", self.posOU])
-        result = c.add(
-            dn=user_dn,
-            object_class=["top", "person", "organizationalPerson", "user"],
-            attributes=attributes,
-        )
-        if not result:
-            msg = "ERROR: User '{0}' was not created: {1}".format(
-                "".join([data["first"], " ", data["last"]]), c.result.get("description")
+        with ldap_connection(self) as c:
+            attributes = {
+                "givenName": data["first"],
+                "userPrincipalName": "".join([data["login"], "@", data["domain"]]),
+                "DisplayName": "".join([data["first"], " ", data["last"]]),
+                "sn": data["last"],
+                "mail": "".join([data["login"], "@", data["domain"]]),
+                "proxyAddresses": [
+                    "".join(["SMTP:", data["login"], "@", data["domain"]]),
+                    "".join(["smtp:", data["login"], "@", data["proxy"]]),
+                ],
+                "HomeDirectory": data["homeDirectory"],
+                "HomeDrive": data["homeDrive"],
+                "title": data["title"],
+                "description": data["description"],
+                "department": data["department"],
+                "company": data["company"],
+                "pwdLastSet": 0,
+            }
+            user_dn = "".join(
+                ["CN=", data["first"], " ", data["last"], ",", self.posOU]
             )
-            raise Exception(msg)
+            result = c.add(
+                dn=user_dn,
+                object_class=["top", "person", "organizationalPerson", "user"],
+                attributes=attributes,
+            )
+            if not result:
+                msg = "ERROR: User '{0}' was not created: {1}".format(
+                    "".join([data["first"], " ", data["last"]]),
+                    c.result.get("description"),
+                )
+                raise Exception(msg)
 
-    self.progress["value"] = 30
-    c.extend.microsoft.unlock_account(user=user_dn)
-    c.extend.microsoft.modify_password(
-        user=user_dn, new_password=data["password"], old_password=None
-    )
-    # Enable account - must happen after user password is set
-    enable_account = {"userAccountControl": (MODIFY_REPLACE, [512])}
-    c.modify(user_dn, changes=enable_account)
+        self.progress["value"] = 30
+        c.extend.microsoft.unlock_account(user=user_dn)
+        c.extend.microsoft.modify_password(
+            user=user_dn, new_password=data["password"], old_password=None
+        )
+        # Enable account - must happen after user password is set
+        # newuser.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
+        # newuser.set_user_account_control_setting("PASSWD_NOTREQD", False)
+        enable_account = {"userAccountControl": (MODIFY_REPLACE, [UAC])}
+        c.modify(user_dn, changes=enable_account)
 
-    self.progress["value"] = 50
-    self.status["text"] = "".join(
-        ["Adding ", data["first"], " ", data["last"], " to groups"]
-    )
-    print(data["groups"])
-    c.extend.microsoft.add_members_to_groups([user_dn], data["groups"])
-    # for gp in data["groups"]:
-    #     newgroup = pyad_Trinity.adgroup.ADGroup.from_cn(gp)
-    #     newuser.add_to_group(newgroup)
-    self.progress["value"] = 80
-    self.status["text"] = "".join(
-        ["Creating ", data["first"], " ", data["last"], " home directory"]
-    )
-    createHomeDir(
-        data["login"],
-        data["homeDirectory"],
-        base64.b64decode(self.domainName).decode("UTF-8").strip(),
-    )
-    self.progress["value"] = 100
-    widgetStatus(self, NORMAL)
-    self.status["text"] = "Idle..."
-    self.messageBox("SUCCESS!!", "User Created!")
-    self.progress["value"] = 0
-    # except Exception as e:
-    #     self.status["text"] = "Idle..."
-    #     widgetStatus(self, NORMAL)
-    #     self.progress["value"] = 0
-    #     self.messageBox("ERROR!!", e)
-    #     # self.messageBox("ERROR!!","An error has occured!")
+        self.progress["value"] = 50
+        self.status["text"] = "".join(
+            ["Adding ", data["first"], " ", data["last"], " to groups"]
+        )
+        # print(data["groups"])
+        c.extend.microsoft.add_members_to_groups([user_dn], data["groups"])
+        # for gp in data["groups"]:
+        #     newgroup = pyad_Trinity.adgroup.ADGroup.from_cn(gp)
+        #     newuser.add_to_group(newgroup)
+        self.progress["value"] = 80
+        self.status["text"] = "".join(
+            ["Creating ", data["first"], " ", data["last"], " home directory"]
+        )
+        createHomeDir(
+            data["login"],
+            data["homeDirectory"],
+            base64.b64decode(self.domainName).decode("UTF-8").strip(),
+        )
+        self.progress["value"] = 100
+        widgetStatus(self, NORMAL)
+        self.status["text"] = "Idle..."
+        self.messageBox("SUCCESS!!", "User Created!")
+        self.progress["value"] = 0
+    except Exception as e:
+        self.status["text"] = "Idle..."
+        widgetStatus(self, NORMAL)
+        self.progress["value"] = 0
+        self.messageBox("ERROR!!", e)
+        # self.messageBox("ERROR!!","An error has occured!")
 
 
 def createHomeDir(username, homeDir, domainName):
@@ -545,9 +542,6 @@ def createHomeDir(username, homeDir, domainName):
         win32security.SetFileSecurity(
             homeDir, win32security.DACL_SECURITY_INFORMATION, sd
         )
-
-
-# =========================================================================
 
 
 def remove_groups(self):
@@ -585,115 +579,79 @@ def remove_groups(self):
     self.after(1000, self.resetProgress)
 
 
-# def listGroups(self, ou):
-#     try:
-#         server = Server(base64.b64decode(self.server).decode("UTF-8").strip())
-#         conn = Connection(
-#             server,
-#             base64.b64decode(self.username).decode("UTF-8").strip(),
-#             base64.b64decode(self.password).decode("UTF-8").strip(),
-#             client_strategy=SAFE_SYNC,
-#             auto_bind=True,
-#         )
-#         status, result, response, _ = conn.search(
-#             search_base=str(ou),
-#             search_filter="(objectClass='group')",
-#             attributes=["cn", "distinguishedName", "sAMAccountName"],
-#         )
-
-#         groups = {}
-#         for x in result.get_values():
-#             print(x)
-#             groups[x["sAMAccountName"]] = {
-#                 "name": x["cn"],
-#                 "ou": x["distinguishedName"],
-#             }
-#         return groups
-#     except Exception as e:
-#         print("LISTGROUPS EXCEPTION")
-#         print(e)
-
-
 def listUsers(self, ou):
-    server = Server(base64.b64decode(self.server).decode("UTF-8").strip())
-    conn = Connection(
-        server,
-        base64.b64decode(self.username).decode("UTF-8").strip(),
-        base64.b64decode(self.password).decode("UTF-8").strip(),
-        client_strategy=SAFE_SYNC,
-        auto_bind=True,
-    )
-    status, result, response, _ = conn.search(
-        search_base=str(ou),
-        search_filter="objectClass = 'user'",
-        attributes=[
-            "displayName",
-            "distinguishedName",
-            "sAMAccountName",
-            "homeDirectory",
-        ],
-    )
     users = {}
-    for x in result.get_values():
-        users[x["sAMAccountName"]] = {
-            "name": x["displayName"],
-            "ou": x["distinguishedName"],
-            "homeDir": x["homeDirectory"],
-        }
+    with ldap_connection(self) as c:
+        status, result, response, _ = c.search(
+            search_base=str(ou),
+            search_filter="(&(objectClass=user)(objectCategory=person))",
+            attributes=[
+                "displayName",
+                "distinguishedName",
+                "sAMAccountName",
+                "homeDirectory",
+            ],
+            search_scope=SUBTREE,
+            get_operational_attributes=True,
+        )
+        if not result:
+            msg = "ERROR: '{0}'".format(c.result.get("description"))
+            raise Exception(msg)
+
+        for x in response:
+            res = x["attributes"]
+            users[res["sAMAccountName"]] = {
+                "name": res["displayName"],
+                "ou": res["distinguishedName"],
+                "homeDir": res["homeDirectory"],
+            }
     return users
 
 
 def listUsers2(self, ou):
-    server = Server(base64.b64decode(self.server).decode("UTF-8").strip())
-    conn = Connection(
-        server,
-        base64.b64decode(self.username).decode("UTF-8").strip(),
-        base64.b64decode(self.password).decode("UTF-8").strip(),
-        client_strategy=SAFE_SYNC,
-        auto_bind=True,
-    )
-    status, result, response, _ = conn.search(
-        search_base=str(ou),
-        search_filter="objectClass = 'user'",
-        attributes=[
-            "displayName",
-            "distinguishedName",
-            "sAMAccountName",
-            "description",
-            "title",
-            "mail",
-            "userPrincipalName",
-            "sn",
-            "givenName",
-            "proxyAddresses",
-        ],
-    )
     users = {}
-    for x in result.get_values():
-        users[x["sAMAccountName"]] = {
-            "name": x["displayName"],
-            "ou": x["distinguishedName"],
-            "fname": x["givenName"],
-            "lname": x["sn"],
-            "description": x["description"],
-            "title": x["title"],
-            "mail": x["mail"],
-            "userPrincipalName": x["userPrincipalName"],
-            "proxyAddresses": x["proxyAddresses"],
-        }
+    with ldap_connection(self) as c:
+        status, result, response, _ = c.search(
+            search_base=str(ou),
+            search_filter="(&(objectClass=user)(objectCategory=person))",
+            attributes=[
+                "displayName",
+                "distinguishedName",
+                "sAMAccountName",
+                "description",
+                "title",
+                "mail",
+                "userPrincipalName",
+                "sn",
+                "givenName",
+                "proxyAddresses",
+            ],
+            search_scope=SUBTREE,
+            get_operational_attributes=True,
+        )
+        if not result:
+            msg = "ERROR: '{0}'".format(c.result.get("description"))
+            raise Exception(msg)
+
+        for x in response:
+            res = x["attributes"]
+            users[res["sAMAccountName"]] = {
+                "name": res["displayName"],
+                "ou": res["distinguishedName"],
+                "fname": res["givenName"],
+                "lname": res["sn"],
+                "description": res["description"],
+                "title": res["title"],
+                "mail": res["mail"],
+                "userPrincipalName": res["userPrincipalName"],
+                "proxyAddresses": res["proxyAddresses"],
+            }
     return users
 
 
 def removeGroups(self, users, groupOU):
-    server = Server(base64.b64decode(self.server).decode("UTF-8").strip())
-    conn = Connection(
-        server,
-        base64.b64decode(self.username).decode("UTF-8").strip(),
-        base64.b64decode(self.password).decode("UTF-8").strip(),
-        client_strategy=SAFE_SYNC,
-        auto_bind=True,
-    )
-    removeUsersInGroups(conn, users, groupOU, fix=True)
+    with ldap_connection(self) as c:
+        removeUsersInGroups(c, users, groupOU, fix=True)
 
 
 def removeHomedrive(paths):
@@ -703,20 +661,22 @@ def removeHomedrive(paths):
     except Exception as e:
         print(e)
 
-    # =============================================
 
-    # def moveUser(self, bOU, aOU):
-    pythoncom.CoInitialize()
-    pyad_Trinity.pyad_Trinity.set_defaults(
-        ldap_server=base64.b64decode(self.server).decode("UTF-8"),
-        username=base64.b64decode(self.username).decode("UTF-8"),
-        password=base64.b64decode(self.password).decode("UTF-8"),
-        ssl=True,
-    )
-    u = pyad_Trinity.aduser.ADUser.from_dn(bOU)
-    newOrg = pyad_Trinity.adcontainer.ADContainer.from_dn(aOU)
+def moveUser(self, bOU, aOU):
     self.progress["value"] = 60
-    pyad_Trinity.aduser.ADUser.move(u, newOrg)
+    username = bOU.split(",")[0]
+    with ldap_connection(self) as c:
+        result = c.modify_dn(
+            bOU,
+            username,
+            new_superior=aOU,
+        )
+        if not result:
+            msg = "ERROR: User '{0}'".format(
+                c.result.get("description"),
+            )
+            raise Exception(msg)
+
     selected_item = self.tree3.selection()[0]
     self.tree3.delete(selected_item)
     self.progress["value"] = 100

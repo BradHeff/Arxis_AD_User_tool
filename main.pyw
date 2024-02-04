@@ -54,7 +54,8 @@ class ADUnlocker(ttk.Window):
 
         self.checkCount = 0
         self.checkRow = 0
-
+        # username = "CN=SOMEONE SPECIAL,OU=Primary Teachers,OU=Teachers,OU=Staff,OU=Users,OU=Horizon,DC=HORIZON,DC=local".split(",")[0]
+        # print(username)
         self.load = ttk.BooleanVar(self, False)
         self.comp = "Select Company"
 
@@ -851,11 +852,17 @@ class ADUnlocker(ttk.Window):
             return
 
         f.widgetStatus(self, ttk.DISABLED)
+        self.status["text"] = "".join(["Unlocking ", self.selItem[1]])
+        t = threading.Thread(target=self.unlocker, args=[])
+        t.daemon = True
+        t.start()
 
+    def unlocker(self):
         f.unlockUser(self, self.selItem[2])
         selected_item = self.tree.selection()[0]
         self.tree.delete(selected_item)
         self.selItem = []
+        self.status["text"] = "Idle..."
         tkt.call_nosync(self.messageBox, "SUCCESS!!", "Unlock Complete!")
 
     def unlockAll(self):
