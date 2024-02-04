@@ -11,13 +11,16 @@ import splash
 
 
 class ADUnlocker(ttk.Window):
+    """Main Class for AD Unlocker"""
+
     def __init__(self):
         super(ADUnlocker, self).__init__(themename="heffelhoffui")
         self.bind_all("<Control-c>", self.handler)
         signal(SIGINT, lambda x, y: print("") or self.handler())
-        self.after(500, self.check)
+        # self.after(500, self.check)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         splash.Splash(self)
+
         self.data = dict()
         self.domains = dict()
         self.chkBtns = dict()
@@ -270,7 +273,7 @@ class ADUnlocker(ttk.Window):
             grp.append(x)
         return grp
 
-    def posSelect(self):
+    def posSelect(self, value):
         self.clear_group()
         camp = "Balaklava"
         self.dep = "Balaklava Campus"
@@ -278,8 +281,9 @@ class ADUnlocker(ttk.Window):
             if "Year" in self.var.get() or "Found" in self.var.get():
                 self.posOU = self.positionsOU[self.var.get() + "-Clare"]
             elif "ESO" in self.var.get() or "Student Support" in self.var.get():
+                self.posOU = self.positionsOU["Student Support Clare"]
+            elif "Admin" in self.var.get() and "Temp" not in self.var.get():
                 self.posOU = self.positionsOU[self.var.get() + " Clare"]
-
             self.groups = self.groupPos[self.var.get()]
             descDate = "".join([self.date, " Clare"])
             camp = "Clare"
@@ -376,7 +380,7 @@ class ADUnlocker(ttk.Window):
                     self, self.positionsOU["Student Support Clare"]
                 )
                 self.editPosOU = self.positionsOU["Student Support Clare"]
-            elif "Admin" in self.var3.get():
+            elif "Admin" in self.var3.get() and "Temp" not in self.var3.get():
                 self.updateList = f.listUsers2(
                     self, self.positionsOU[self.var3.get() + " Clare"]
                 )
@@ -414,7 +418,7 @@ class ADUnlocker(ttk.Window):
             elif "ESO" in self.var2.get() or "Student Support" in self.var2.get():
                 self.moveNewPosOU = self.positionsOU["Student Support Clare"]
                 print("CLARE!!@@")
-            elif "Admin" in self.var2.get():
+            elif "Admin" in self.var2.get() and "Temp" not in self.var2.get():
                 self.moveNewPosOU = self.positionsOU[self.var2.get() + " Clare"]
                 print("CLARE!!@@#")
             else:
@@ -445,27 +449,26 @@ class ADUnlocker(ttk.Window):
                     self, self.positionsOU[self.var2.get() + "-Clare"]
                 )
                 self.movePosOU = self.positionsOU[self.var2.get() + "-Clare"]
-                print("CLARE!!@")
+
             elif "ESO" in self.var2.get() or "Student Support" in self.var2.get():
                 self.updateList = f.listUsers2(
                     self, self.positionsOU["Student Support Clare"]
                 )
                 self.movePosOU = self.positionsOU["Student Support Clare"]
-                print("CLARE!!@@")
-            elif "Admin" in self.var2.get():
+
+            elif "Admin" in self.var2.get() and "Temp" not in self.var2.get():
                 self.updateList = f.listUsers2(
                     self, self.positionsOU[self.var2.get() + " Clare"]
                 )
                 self.movePosOU = self.positionsOU[self.var2.get() + " Clare"]
-                print("CLARE!!@@#")
+
             else:
                 self.updateList = f.listUsers2(self, self.positionsOU[self.var2.get()])
                 self.movePosOU = self.positionsOU[self.var2.get()]
-                print("CLARE!!@@##")
+
         else:
             self.updateList = f.listUsers2(self, self.positionsOU[self.var2.get()])
             self.movePosOU = self.positionsOU[self.var2.get()]
-            print("BALAK")
 
         usersList = f.listUsers(self, self.movePosOU)
         self.progress["maximum"] = float(usersList.__len__())

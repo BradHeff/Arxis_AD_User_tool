@@ -1,24 +1,22 @@
 import base64
 import sys
-from os import mkdir, path, removedirs, system
-from pathlib import Path
-from flask import json
 import configparser_crypt as cCrypt
 import OpenSSL
-
-# import pythoncom
 import win32security
 
+from os import mkdir, path, removedirs, system
+from pathlib import Path
+from ttkbootstrap import DISABLED, NORMAL
+from ttkbootstrap.toast import ToastNotification
+from flask import json
 from ldap3 import Connection, Server, MODIFY_REPLACE, SAFE_SYNC, SUBTREE, Tls
 from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
-from ttkbootstrap import DISABLED, NORMAL
-from ttkbootstrap.toast import ToastNotification
 
-DEBUG = False
+DEBUG = True
 Version = "v2.0.1.1"
-key = b'\xc2\xe0tnp\x8b\xa7\xbb$5\x13\x8a\n\x90h\x9e7\xef\x93\xc3\x8f\xd8\x1aD\xab0\xad\x01\x96R\x12\xcb'
+key = b"\xc2\xe0tnp\x8b\xa7\xbb$5\x13\x8a\n\x90h\x9e7\xef\x93\xc3\x8f\xd8\x1aD\xab0\xad\x01\x96R\x12\xcb"
 settings_file = "Settings.dat"
 UAC = 32 + 65536
 tls_configuration = Tls(

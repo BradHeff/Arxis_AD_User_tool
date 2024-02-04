@@ -159,7 +159,7 @@ def Tab1(self, tab1):
     self.tree.column("# 2", anchor=ttk.CENTER)
     self.tree.heading("# 2", text="DISPLAY NAME")
     self.tree.column("# 3", anchor=ttk.CENTER)
-    self.tree.heading("# 3", text="OU")
+    self.tree.heading("# 3", text="USER DN")
     self.tree.bind("<ButtonRelease-1>", self.selectItem)
     self.tree.grid(sticky=ttk.NSEW, row=1, columnspan=4, padx=10)
 
@@ -382,7 +382,7 @@ def Tab3(self, tab3):
     self.tree2.column("# 2", anchor=ttk.CENTER)
     self.tree2.heading("# 2", text="DISPLAY NAME")
     self.tree2.column("# 3", anchor=ttk.CENTER)
-    self.tree2.heading("# 3", text="OU")
+    self.tree2.heading("# 3", text="USER DN")
     self.tree2.grid(sticky="nsew", row=2, columnspan=4, padx=5)
 
 
@@ -390,24 +390,21 @@ def Tab4(self, tab4):
     lbl_title4 = ttk.Label(tab4, text="Active Directory Move Users")
     lbl_title4.grid(sticky="n", columnspan=4, padx=10)
 
-    lframe4 = ttk.Frame(tab4, bootstyle="danger", borderwidth=1)
-    rframe4 = ttk.Frame(tab4)
-
-    lframe4.grid(sticky="nsew", column=0, row=1, pady=10)
-    rframe4.grid(sticky="nsew", column=2, row=1, pady=10)
-    lframe4.config(borderwidth=3)
     tab4.columnconfigure(0, weight=1)
     tab4.columnconfigure(2, weight=1)
 
-    # lframe4.columnconfigure(0, weight=2)
+    lframe4 = ttk.Frame(tab4)
+    rframe4 = ttk.Frame(tab4)
 
-    # lframe4.rowconfigure(1, weight=0, pad=26)
     lframe4.rowconfigure(6, weight=0, pad=26)
 
     rframe4.rowconfigure(0, weight=0, pad=26)
 
+    lframe4.grid(sticky=ttk.NSEW, column=0, row=1, pady=10)
+    rframe4.grid(sticky=ttk.NSEW, column=2, row=1, pady=10)
+
     self.lbl_frameF = ttk.Labelframe(rframe4, text="Campus")
-    self.lbl_frameF.grid(sticky="nsew", columnspan=2, row=1, padx=10, pady=5)
+    self.lbl_frameF.grid(sticky=ttk.NSEW, columnspan=2, row=1, padx=10, pady=5)
     self.McampH = ttk.StringVar(self.lbl_frameF, "balaklava")
 
     self.lbl_frame6 = ttk.Labelframe(rframe4, text="Staff User OU's")
@@ -416,29 +413,31 @@ def Tab4(self, tab4):
     self.lbl_frame7 = ttk.Labelframe(rframe4, text="Student User OU's")
     self.lbl_frame7.grid(sticky="new", columnspan=2, row=3, padx=10, pady=5)
 
-    self.tree3 = ttk.Treeview(lframe4, column=("c1", "c2"), show="headings")
+    self.tree3 = ttk.Treeview(lframe4, column=("c1", "c2", "c3"), show="headings")
     self.tree3.column("# 1", anchor=ttk.CENTER)
     self.tree3.heading("# 1", text="USERNAME")
     self.tree3.column("# 2", anchor=ttk.CENTER)
     self.tree3.heading("# 2", text="DISPLAY NAME")
+    self.tree3.column("# 3", anchor=ttk.CENTER)
+    self.tree3.heading("# 3", text="USER DN")
     self.tree3.bind("<ButtonRelease-1>", self.selectItem2)
-    self.tree3.grid(row=0, column=0, columnspan=3, sticky=ttk.NSEW)
+    self.tree3.grid(row=0, columnspan=2, sticky=ttk.NSEW)
 
     scrollbar = ttk.Scrollbar(lframe4)
     scrollbar.config(command=self.tree3.yview)
-    scrollbar.grid(row=0, column=4, sticky="nsw")
+    scrollbar.grid(row=0, column=2, sticky="nsw")
     scrollbar2 = ttk.Scrollbar(lframe4, orient=ttk.HORIZONTAL)
     scrollbar2.config(command=self.tree3.xview)
-    scrollbar2.grid(column=0, columnspan=3, sticky=ttk.EW)
+    scrollbar2.grid(column=0, columnspan=2, sticky=ttk.EW)
 
     self.lbl_frame8 = ttk.Labelframe(lframe4, text="Move To OU")
-    self.lbl_frame8.grid(column=0, columnspan=3, sticky="new")
+    self.lbl_frame8.grid(column=0, columnspan=2, sticky="new")
 
     self.move_btn = ttk.Button(
         lframe4, text="Move User", width=20, command=self.moveUser
     )
     self.move_btn.configure(state=ttk.DISABLED)
-    self.move_btn.grid(column=4, sticky=ttk.SE)
+    self.move_btn.grid(column=1, sticky=ttk.SE)
 
 
 def Tab5(self, tab5):

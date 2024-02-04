@@ -10,7 +10,7 @@ loadedMain = False
 
 
 class Splash(ttk.Toplevel):
-    """docstring for Splash."""
+    """Splash Screen displayed before the program starts"""
 
     def __init__(self, original, themename="heffelhoffui"):
         super().__init__()
@@ -46,7 +46,7 @@ class Splash(ttk.Toplevel):
         self.prog.place(x=1.5, y=240)
         print(self.ConsoleWelcome())
         # self.prog["value"] = 100
-        t = threading.Thread(target=self.runProg)
+        t = threading.Thread(target=self.startSplash)
         t.daemon = True
         t.start()
 
@@ -58,17 +58,19 @@ class Splash(ttk.Toplevel):
         message += "Author: Brad Heffernan\n"
         message += "-----------\n"
         message += "Libraries:\n"
-        message += "    tkinter\n"
         message += "    ttkbootstrap\n"
+        message += "    ldap3\n"
+        message += "    flask\n"
+        message += "    pyOpenSSL\n"
         message += "    configparser_crypt\n"
-        message += "    pythoncom\n"
-        message += "    win32security\n"
-        message += "    pyad\n"
+        message += "    pywin32\n"
+        message += "    tinyaes\n"
+        message += "    tkthread\n"
         message += "===================================="
 
         return message
 
-    def runProg(self):
+    def startSplash(self):
         while self.count < 99:
             self.count += 10
             if loadedMain is True:
