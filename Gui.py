@@ -2,13 +2,12 @@ import io
 
 import ttkbootstrap as ttk
 from PIL import Image, ImageTk
-
 from Functions import Version, base64, loadConfig, saveConfig
 from icon import himage
 
 
 def Window(self):
-    self.W, self.H = 1085, 630
+    self.W, self.H = 1190, 630
     screen_width = self.winfo_screenwidth()
     screen_height = self.winfo_screenheight()
     center_x = int(screen_width / 2 - self.W / 2)
@@ -391,22 +390,25 @@ def Tab4(self, tab4):
     lbl_title4 = ttk.Label(tab4, text="Active Directory Move Users")
     lbl_title4.grid(sticky="n", columnspan=4, padx=10)
 
-    lframe4 = ttk.Frame(tab4)
+    lframe4 = ttk.Frame(tab4, bootstyle="danger", borderwidth=1)
     rframe4 = ttk.Frame(tab4)
 
-    lframe4.grid(sticky="nsw", column=0, row=1, pady=10)
-    rframe4.grid(sticky="nse", column=2, row=1, pady=10)
-
+    lframe4.grid(sticky="nsew", column=0, row=1, pady=10)
+    rframe4.grid(sticky="nsew", column=2, row=1, pady=10)
+    lframe4.config(borderwidth=3)
     tab4.columnconfigure(0, weight=1)
     tab4.columnconfigure(2, weight=1)
 
-    lframe4.rowconfigure(1, weight=0, pad=26)
+    # lframe4.columnconfigure(0, weight=2)
+
+    # lframe4.rowconfigure(1, weight=0, pad=26)
     lframe4.rowconfigure(6, weight=0, pad=26)
 
     rframe4.rowconfigure(0, weight=0, pad=26)
 
     self.lbl_frameF = ttk.Labelframe(rframe4, text="Campus")
     self.lbl_frameF.grid(sticky="nsew", columnspan=2, row=1, padx=10, pady=5)
+    self.McampH = ttk.StringVar(self.lbl_frameF, "balaklava")
 
     self.lbl_frame6 = ttk.Labelframe(rframe4, text="Staff User OU's")
     self.lbl_frame6.grid(sticky="new", columnspan=2, row=2, padx=10, pady=5)
@@ -415,28 +417,28 @@ def Tab4(self, tab4):
     self.lbl_frame7.grid(sticky="new", columnspan=2, row=3, padx=10, pady=5)
 
     self.tree3 = ttk.Treeview(lframe4, column=("c1", "c2"), show="headings")
-    scrollbar = ttk.Scrollbar(lframe4)
-    scrollbar.config(command=self.tree3.yview)
-    scrollbar.grid(sticky=ttk.NSEW, row=1, column=4)
-    scrollbar2 = ttk.Scrollbar(lframe4, orient=ttk.HORIZONTAL)
-    scrollbar2.config(command=self.tree3.xview)
-    scrollbar2.grid(sticky=ttk.NSEW, row=2, columnspan=2)
-
     self.tree3.column("# 1", anchor=ttk.CENTER)
     self.tree3.heading("# 1", text="USERNAME")
     self.tree3.column("# 2", anchor=ttk.CENTER)
     self.tree3.heading("# 2", text="DISPLAY NAME")
     self.tree3.bind("<ButtonRelease-1>", self.selectItem2)
-    self.tree3.grid(sticky="nsew", row=1, columnspan=2, padx=10)
+    self.tree3.grid(row=0, column=0, columnspan=3, sticky=ttk.NSEW)
 
-    self.lbl_frame8 = ttk.Labelframe(rframe4, text="Move To OU")
-    self.lbl_frame8.grid(sticky="new", columnspan=2, row=4, padx=10, pady=5)
+    scrollbar = ttk.Scrollbar(lframe4)
+    scrollbar.config(command=self.tree3.yview)
+    scrollbar.grid(row=0, column=4, sticky="nsw")
+    scrollbar2 = ttk.Scrollbar(lframe4, orient=ttk.HORIZONTAL)
+    scrollbar2.config(command=self.tree3.xview)
+    scrollbar2.grid(column=0, columnspan=3, sticky=ttk.EW)
+
+    self.lbl_frame8 = ttk.Labelframe(lframe4, text="Move To OU")
+    self.lbl_frame8.grid(column=0, columnspan=3, sticky="new")
 
     self.move_btn = ttk.Button(
-        rframe4, text="Move User", width=20, command=self.moveUser
+        lframe4, text="Move User", width=20, command=self.moveUser
     )
     self.move_btn.configure(state=ttk.DISABLED)
-    self.move_btn.grid(sticky="w", column=0, row=7, padx=10, pady=10)
+    self.move_btn.grid(column=4, sticky=ttk.SE)
 
 
 def Tab5(self, tab5):
@@ -457,7 +459,7 @@ def Tab5(self, tab5):
 
     self.lbl_frameG = ttk.Labelframe(lframe5, text="Campus")
     self.lbl_frameG.grid(sticky="new", columnspan=2, row=1, padx=10, pady=5)
-
+    self.EcampH = ttk.StringVar(self.lbl_frameG, "balaklava")
     self.lbl_frame9 = ttk.Labelframe(lframe5, text="Staff User OU's")
     self.lbl_frame9.grid(sticky="new", columnspan=2, row=2, padx=10, pady=5)
 

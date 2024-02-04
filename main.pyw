@@ -44,7 +44,9 @@ class ADUnlocker(ttk.Window):
         self.company = ""
         self.samFormat = ""
         self.groupPos = ""
+        self.editPosOU = ""
         self.movePosOU = ""
+        self.moveNewPosOU = ""
         self.department = ""
         self.servs = False
         self.isRunning = False
@@ -70,7 +72,7 @@ class ADUnlocker(ttk.Window):
         Gui.baseGUI(self)
 
         self.title(
-            "".join(["Trinity AD User Tool v", f.Version[4 : f.Version.__len__()]])
+            "".join(["Horizon AD User Tool v", f.Version[4 : f.Version.__len__()]])
         )
 
         # self.mainloop()
@@ -82,7 +84,7 @@ class ADUnlocker(ttk.Window):
             )
 
         self.options.set("Horizon")
-        self.comboSelect("")
+        self.comboSelect("", "H")
 
         self.combobox["state"] = ttk.NORMAL
         # Gui.print_icon("open_lock.png")
@@ -143,11 +145,11 @@ class ADUnlocker(ttk.Window):
 
     def alterButton(self, widget):
         if self.tabControl.index(self.tabControl.select()) == 0:
-            self.btn_unlockAll.configure(text="Unlock All")
+            self.btn_unlockAll.configure(text="Unlock All", state=ttk.NORMAL)
             if self.state and self.servs:
                 f.widgetStatusFailed(self, False)
         elif self.tabControl.index(self.tabControl.select()) == 1:
-            self.btn_unlockAll.configure(text="Create User")
+            self.btn_unlockAll.configure(text="Create User", state=ttk.NORMAL)
             if "Select" not in self.options.get():
                 if not self.compFail:
                     if self.domains["Primary"].__len__() <= 0:
@@ -188,15 +190,16 @@ class ADUnlocker(ttk.Window):
         #     else:
         #         if self.state:
         #             f.widgetStatusFailed(self, True)
-        elif self.tabControl.index(self.tabControl.select()) == 3:
-            self.btn_unlockAll.configure(text="Bulk Move Users")
+        elif self.tabControl.index(self.tabControl.select()) == 2:
+            self.btn_unlockAll.configure(text="Bulk Move Users", state=ttk.DISABLED)
+
             if not self.compFail:
                 pass
             else:
                 if self.state:
                     f.widgetStatusFailed(self, True)
-        elif self.tabControl.index(self.tabControl.select()) == 2:
-            self.btn_unlockAll.configure(text="Update User")
+        elif self.tabControl.index(self.tabControl.select()) == 3:
+            self.btn_unlockAll.configure(text="Update User", state=ttk.NORMAL)
             if not self.compFail:
                 pass
             else:
@@ -271,47 +274,52 @@ class ADUnlocker(ttk.Window):
         self.clear_group()
         camp = "Balaklava"
         self.dep = "Balaklava Campus"
-        if (
-            "Year" in self.var.get() or "Found" in self.var.get()
-        ) and "clare" in self.campH.get():
-            self.posOU = self.positionsOU[self.var.get() + "-Clare"]
-        else:
-            self.posOU = self.positionsOU[self.var.get()]
-        if (
-            "ESO" in self.var.get() or "Student Support" in self.var.get()
-        ) and "clare" in self.campH.get():
-            self.posOU = self.positionsOU[self.var.get() + " Clare"]
-        self.groups = self.groupPos[self.var.get()]
         if "clare" in self.campH.get():
+            if "Year" in self.var.get() or "Found" in self.var.get():
+                self.posOU = self.positionsOU[self.var.get() + "-Clare"]
+            elif "ESO" in self.var.get() or "Student Support" in self.var.get():
+                self.posOU = self.positionsOU[self.var.get() + " Clare"]
+
+            self.groups = self.groupPos[self.var.get()]
             descDate = "".join([self.date, " Clare"])
             camp = "Clare"
             self.dep = "Clare Campus"
         else:
             descDate = self.date
-        if "Year" in self.var.get() or "Found" in self.var.get():
-            self.desc.delete(0, "end")
-            if "Found" in self.var.get():
-                text = "".join([self.var.get(), " - ", descDate])
+            if "Year" in self.var.get() or "Found" in self.var.get():
+                self.posOU = self.positionsOU[self.var.get()]
+                self.desc.delete(0, "end")
+                if "Found" in self.var.get():
+                    text = "".join([self.var.get(), " - ", descDate])
+                else:
+                    text = "".join(
+                        [
+                            self.var.get()[0:4],
+                            " ",
+                            self.var.get()[4 : len(self.var.get())],
+                            " - ",
+                            descDate,
+                        ]
+                    )
+                self.desc.insert(0, text)
             else:
-                text = "".join(
-                    [
-                        self.var.get()[0:4],
-                        " ",
-                        self.var.get()[4 : len(self.var.get())],
-                        " - ",
-                        descDate,
-                    ]
-                )
-            self.desc.insert(0, text)
-        else:
-            self.desc.delete(0, "end")
-            self.desc.insert(0, descDate)
+                self.posOU = self.positionsOU[self.var.get()]
+                self.desc.delete(0, "end")
+                self.desc.insert(0, descDate)
+
+            self.groups = self.groupPos[self.var.get()]
+
         self.checkCount = 0
         self.checkRow = 0
         for x in self.groups:
-            self.chkBtns[x] = ttk.IntVar(self.lbl_frame2, 1)
+            gn = x.split(",")[0].replace("CN=", "")
+            self.chkBtns[gn] = ttk.IntVar(self.lbl_frame2, 1)
             rbtn = ttk.Checkbutton(
-                self.lbl_frame2, text=x, variable=self.chkBtns[x], onvalue=1, offvalue=0
+                self.lbl_frame2,
+                text=gn,
+                variable=self.chkBtns[gn],
+                onvalue=1,
+                offvalue=0,
             )
             rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
             self.checkCount += 1
@@ -336,27 +344,7 @@ class ADUnlocker(ttk.Window):
                 print(e)
                 pass
 
-    def movePosSelect(self):
-        if (
-            "Year" in self.var2.get() or "Found" in self.var2.get()
-        ) and "clare" in self.campH.get():
-            self.posOU = self.positionsOU[self.var2.get() + "-Clare"]
-            print("CLARE!!")
-        else:
-            if (
-                "ESO" in self.var2.get() or "Student Support" in self.var2.get()
-            ) and "clare" in self.campH.get():
-                self.posOU = self.positionsOU["Student Support Clare"]
-                print("CLARE!!@@")
-            elif ("Admin" in self.var2.get()) and "clare" in self.campH.get:
-                self.posOU = self.positionsOU[self.var2.get() + " Clare"]
-                print("CLARE!!@@##")
-            else:
-                print(self.var2.get())
-                self.posOU = self.positionsOU[self.var2.get()]
-                print("BALAK")
-
-    def updateSelect(self):
+    def editSelect(self, value):
         self.entDomain["state"] = "normal"
         self.entDesc.delete(0, "end")
         self.entJobTitle.delete(0, "end")
@@ -370,22 +358,35 @@ class ADUnlocker(ttk.Window):
         t.start()
 
     def editOption(self):
-        # f.pythoncom.CoInitialize()
-        # print(self.campH.get())
         self.tree3.delete(*self.tree3.get_children())
         self.var2.set(None)
+        self.var.set(None)
         list = self.lbl_frame8.grid_slaves()
         for lx in list:
             lx.destroy()
         self.status["text"] = "Loading Users ...."
-        if (
-            "Year" in self.var3.get() or "Found" in self.var3.get()
-        ) and "clare" in self.campH.get():
-            self.updateList = f.listUsers2(
-                self, self.positionsOU[self.var3.get() + "-Clare"]
-            )
+        if "clare" in self.EcampH.get():
+            if "Year" in self.var3.get() or "Found" in self.var3.get():
+                self.updateList = f.listUsers2(
+                    self, self.positionsOU[self.var3.get() + "-Clare"]
+                )
+                self.editPosOU = self.positionsOU[self.var3.get() + "-Clare"]
+            elif "ESO" in self.var3.get() or "Student Support" in self.var3.get():
+                self.updateList = f.listUsers2(
+                    self, self.positionsOU["Student Support Clare"]
+                )
+                self.editPosOU = self.positionsOU["Student Support Clare"]
+            elif "Admin" in self.var3.get():
+                self.updateList = f.listUsers2(
+                    self, self.positionsOU[self.var3.get() + " Clare"]
+                )
+                self.editPosOU = self.positionsOU[self.var3.get() + " Clare"]
+            else:
+                self.updateList = f.listUsers2(self, self.positionsOU[self.var3.get()])
+                self.editPosOU = self.positionsOU[self.var3.get()]
         else:
             self.updateList = f.listUsers2(self, self.positionsOU[self.var3.get()])
+            self.editPosOU = self.positionsOU[self.var3.get()]
         self.tree4.delete(*self.tree4.get_children())
         self.progress["maximum"] = self.updateList.__len__()
         count = 0
@@ -400,15 +401,34 @@ class ADUnlocker(ttk.Window):
         self.progress["value"] = 0
         self.status["text"] = "Idle..."
 
-    def moveSelect(self):
-        t = threading.Thread(target=self.moveOption)
+    def moveSelect(self, value):
+        t = threading.Thread(target=self.movePosSelect, args=(value,))
         t.daemon = True
         t.start()
 
-    def moveOption(self):
-        # f.pythoncom.CoInitialize()
+    def moveNewPosSelect(self, value=None):
+        if "clare" in self.McampH.get():
+            if "Year" in self.var2.get() or "Found" in self.var2.get():
+                self.moveNewPosOU = self.positionsOU[self.var2.get() + "-Clare"]
+                print("CLARE!!@")
+            elif "ESO" in self.var2.get() or "Student Support" in self.var2.get():
+                self.moveNewPosOU = self.positionsOU["Student Support Clare"]
+                print("CLARE!!@@")
+            elif "Admin" in self.var2.get():
+                self.moveNewPosOU = self.positionsOU[self.var2.get() + " Clare"]
+                print("CLARE!!@@#")
+            else:
+                self.moveNewPosOU = self.positionsOU[self.var2.get()]
+                print("CLARE!!@@##")
+        else:
+            self.moveNewPosOU = self.positionsOU[self.var2.get()]
+            print("BALAK")
+
+    def movePosSelect(self, value=None):
         self.tree4.delete(*self.tree4.get_children())
+        self.tree3.delete(*self.tree3.get_children())
         self.var3.set(None)
+        self.var.set(None)
         self.entDomain["state"] = "normal"
         self.entDesc.delete(0, "end")
         self.entJobTitle.delete(0, "end")
@@ -419,10 +439,37 @@ class ADUnlocker(ttk.Window):
         self.entDomain["state"] = "readonly"
         self.status["text"] = "Loading Users ...."
 
-        usersList = f.listUsers(self, self.positionsOU[self.var2.get()])
+        if "clare" in self.McampH.get():
+            if "Year" in self.var2.get() or "Found" in self.var2.get():
+                self.updateList = f.listUsers2(
+                    self, self.positionsOU[self.var2.get() + "-Clare"]
+                )
+                self.movePosOU = self.positionsOU[self.var2.get() + "-Clare"]
+                print("CLARE!!@")
+            elif "ESO" in self.var2.get() or "Student Support" in self.var2.get():
+                self.updateList = f.listUsers2(
+                    self, self.positionsOU["Student Support Clare"]
+                )
+                self.movePosOU = self.positionsOU["Student Support Clare"]
+                print("CLARE!!@@")
+            elif "Admin" in self.var2.get():
+                self.updateList = f.listUsers2(
+                    self, self.positionsOU[self.var2.get() + " Clare"]
+                )
+                self.movePosOU = self.positionsOU[self.var2.get() + " Clare"]
+                print("CLARE!!@@#")
+            else:
+                self.updateList = f.listUsers2(self, self.positionsOU[self.var2.get()])
+                self.movePosOU = self.positionsOU[self.var2.get()]
+                print("CLARE!!@@##")
+        else:
+            self.updateList = f.listUsers2(self, self.positionsOU[self.var2.get()])
+            self.movePosOU = self.positionsOU[self.var2.get()]
+            print("BALAK")
+
+        usersList = f.listUsers(self, self.movePosOU)
         self.progress["maximum"] = float(usersList.__len__())
         progCount = 1
-        self.tree3.delete(*self.tree3.get_children())
         for i in usersList:
             self.progress["value"] = progCount
             self.tree3.insert(
@@ -445,7 +492,7 @@ class ADUnlocker(ttk.Window):
                         self.lbl_frame8,
                         text=y,
                         variable=self.chkValue,
-                        command=self.movePosSelect,
+                        command=lambda: self.moveNewPosSelect(value),
                         value=y,
                     )
                     rbtn1.grid(row=row, column=count, padx=10, pady=10)
@@ -459,7 +506,7 @@ class ADUnlocker(ttk.Window):
                         self.lbl_frame8,
                         text=y,
                         variable=self.chkValue,
-                        command=self.movePosSelect,
+                        command=lambda: self.moveNewPosSelect(value),
                         value=y,
                     )
                     rbtn2.grid(row=row, column=count, padx=10, pady=10)
@@ -523,7 +570,7 @@ class ADUnlocker(ttk.Window):
         self.expiredOU = self.expiredOUs[self.exOU.get()]
         self.tree2.delete(*self.tree2.get_children())
 
-    def comboSelect(self, widget):
+    def comboSelect(self, widget, value="H"):
         # print(self.winfo_width())
         if "camp" not in str(widget):
             f.getConfig(self, self.options.get())
@@ -544,21 +591,21 @@ class ADUnlocker(ttk.Window):
                         text=x,
                         variable=self.campH,
                         value=x,
-                        command=lambda: self.comboSelect("camp"),
+                        command=lambda: self.comboSelect("camp", "H"),
                     )
                     balak_edit = ttk.Radiobutton(
                         self.lbl_frameG,
                         text=x,
-                        variable=self.campH,
+                        variable=self.EcampH,
                         value=x,
-                        command=lambda: self.comboSelect("camp"),
+                        command=lambda: self.comboSelect("camp", "E"),
                     )
                     balak_move = ttk.Radiobutton(
                         self.lbl_frameF,
                         text=x,
-                        variable=self.campH,
+                        variable=self.McampH,
                         value=x,
-                        command=lambda: self.comboSelect("camp"),
+                        command=lambda: self.comboSelect("camp", "M"),
                     )
                     if counter == 1:
                         balak.pack(side="left", fill="y", expand=True, padx=10, pady=10)
@@ -580,22 +627,22 @@ class ADUnlocker(ttk.Window):
                         )
                     counter -= 1
 
-        t = threading.Thread(target=self.comboLoad)
+        t = threading.Thread(target=self.comboLoad, args=(value))
         t.daemon = True
         t.start()
         # t.join()
 
-    def comboLoad(self):  # noqa
+    def comboLoad(self, value):  # noqa
         # print(self.positions)
         # f.pythoncom.CoInitialize()
         self.status["text"] = "Loading..."
         self.clear_pos()
         self.clear_group()
         # self.clear_exp()
-        # self.clear_move()
+        self.clear_move()
         self.clear_edit()
         self.tree4.delete(*self.tree4.get_children())
-        # self.tree3.delete(*self.tree3.get_children())
+        self.tree3.delete(*self.tree3.get_children())
         # self.tree2.delete(*self.tree2.get_children())
         self.tree.delete(*self.tree.get_children())
         self.desc.delete(0, "end")
@@ -639,7 +686,7 @@ class ADUnlocker(ttk.Window):
                                 self.lbl_frame,
                                 text=y,
                                 variable=self.var,
-                                command=self.posSelect,
+                                command=lambda: self.posSelect(value),
                                 value=y,
                             )
                             rbtn.grid(row=row, column=count, padx=10, pady=10)
@@ -648,7 +695,7 @@ class ADUnlocker(ttk.Window):
                                 self.lbl_frame6,
                                 text=y,
                                 variable=self.var2,
-                                command=self.moveSelect,
+                                command=lambda: self.moveSelect(value),
                                 value=y,
                             )
                             rbtn3.grid(row=row, column=count, padx=10, pady=10)
@@ -657,7 +704,7 @@ class ADUnlocker(ttk.Window):
                                 self.lbl_frame9,
                                 text=y,
                                 variable=self.var3,
-                                command=self.updateSelect,
+                                command=lambda: self.editSelect(value),
                                 value=y,
                             )
                             rbtn5.grid(row=row, column=count, padx=10, pady=10)
@@ -671,7 +718,7 @@ class ADUnlocker(ttk.Window):
                                 self.lbl_frame4,
                                 text=y,
                                 variable=self.var,
-                                command=self.posSelect,
+                                command=lambda: self.posSelect(value),
                                 value=y,
                             )
                             rbtn2.grid(row=row2, column=count2, padx=10, pady=10)
@@ -680,7 +727,7 @@ class ADUnlocker(ttk.Window):
                                 self.lbl_frame7,
                                 text=y,
                                 variable=self.var2,
-                                command=self.moveSelect,
+                                command=lambda: self.moveSelect(value),
                                 value=y,
                             )
                             rbtn4.grid(row=row2, column=count2, padx=10, pady=10)
@@ -689,7 +736,7 @@ class ADUnlocker(ttk.Window):
                                 self.lbl_frame10,
                                 text=y,
                                 variable=self.var3,
-                                command=self.updateSelect,
+                                command=lambda: self.editSelect(value),
                                 value=y,
                             )
                             rbtn6.grid(row=row2, column=count2, padx=10, pady=10)
@@ -806,7 +853,7 @@ class ADUnlocker(ttk.Window):
         self.progress["max"] = 100
         self.progress["value"] = 30
         t = threading.Thread(
-            target=f.moveUser, args=[self, self.selItem2[2], self.movePosOU]
+            target=f.moveUser, args=[self, self.selItem2[2], self.moveNewPosOU]
         )
         t.daemon = True
         t.start()
@@ -822,22 +869,24 @@ class ADUnlocker(ttk.Window):
         t.start()
 
     def loads(self):
-        # f.pythoncom.CoInitialize()
-        # try:
-        self.status["text"] = "Searching locked users ..."
-        locked = f.listLocked(self)
-        if locked.__len__() <= 0:
-            f.widgetStatus(self, ttk.NORMAL)
-            self.status["text"] = "Idle..."
-            tkt.call_nosync(self.messageBox, "SUCCESS!!", "No Locked Users!")
-            return
-        self.status["text"] = "Populating list..."
-        for x in locked:
-            self.tree.insert("", "end", values=(x, locked[x]["name"], locked[x]["ou"]))
-        # except Exception as e:
-        #     tkt.call_nosync(
-        #         self.messageBox, "Error", "An error occurred, Check settings"
-        #     )
+        try:
+            self.status["text"] = "Searching locked users ..."
+            locked = f.listLocked(self)
+            if locked.__len__() <= 0:
+                f.widgetStatus(self, ttk.NORMAL)
+                self.status["text"] = "Idle..."
+                # tkt.call_nosync(self.messageBox, "SUCCESS!!", "No Locked Users!")
+                tkt.call_nosync(f.Toast, "COMPLETE!", "No Locked Users!", "happy")
+                return
+            else:
+                self.status["text"] = "Populating list..."
+                for x in locked:
+                    self.tree.insert(
+                        "", "end", values=(x, locked[x]["name"], locked[x]["ou"])
+                    )
+        except Exception as e:
+            tkt.call_nosync(self.messageBox, "Error", "An error occurred, " + str(e))
+            tkt.call_nosync(f.Toast, "ERROR!", "An error occurred", "angry")
 
         f.widgetStatus(self, ttk.NORMAL)
         self.status["text"] = "Idle..."
@@ -863,7 +912,8 @@ class ADUnlocker(ttk.Window):
         self.tree.delete(selected_item)
         self.selItem = []
         self.status["text"] = "Idle..."
-        tkt.call_nosync(self.messageBox, "SUCCESS!!", "Unlock Complete!")
+        tkt.call_nosync(f.Toast, "COMPLETE!", "Users Unlocked!", "happy")
+        # tkt.call_nosync(self.messageBox, "SUCCESS!!", "Unlock Complete!")
 
     def unlockAll(self):
         f.widgetStatus(self, ttk.DISABLED)

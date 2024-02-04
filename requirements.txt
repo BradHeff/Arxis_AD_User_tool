@@ -2,7 +2,7 @@ pillow==9.5.0
 ttkbootstrap
 ldap3
 flask
-ssl
+pyOpenSSL
 configparser_crypt
 pywin32
 tinyaes

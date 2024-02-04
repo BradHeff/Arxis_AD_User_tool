@@ -10,11 +10,11 @@ if '%username%' == 'brad.heffernan' goto home
 goto ender
 
 :home
-pyinstaller.exe --clean --noconfirm --onefile --key="BCjrtVKYf4aKSFoBsJ8bifEkG8ubccsPvaHN3NfevxL8uqk5kWzYDFwhjX62Zp8JgZnK6rV5Zr" --distpath="scrap/dist" --workpath="scrap/build" --name=%1 --hidden-import="pyad" --hidden-import="ttkbootstrap" --hidden-import="pywin32" --icon="icon.ico" --version-file="version.rc" %2
+pyinstaller.exe --clean --noconfirm --onefile --distpath="scrap/dist" --workpath="scrap/build" --name=%1 --hidden-import="ldap3" --hidden-import="ttkbootstrap" --hidden-import="pywin32" --icon="icon.ico" --version-file="version.rc" %2
 exit
 
 :work
-pyinstaller.exe --clean --noconfirm --onefile --key="BCjrtVKYf4aKSFoBsJ8bifEkG8ubccsPvaHN3NfevxL8uqk5kWzYDFwhjX62Zp8JgZnK6rV5Zr" --distpath="scrap/dist" --workpath="scrap/build" --name=%1 --hidden-import="pyad" --hidden-import="ttkbootstrap" --hidden-import="pywin32" --icon="icon.ico" --version-file="version.rc" %2
+pyinstaller.exe --clean --noconfirm --onefile --distpath="scrap/dist" --workpath="scrap/build" --name=%1 --hidden-import="ldap3" --hidden-import="ttkbootstrap" --hidden-import="pywin32" --icon="icon.ico" --version-file="version.rc" %2
 
 
 :ender

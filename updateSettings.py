@@ -180,7 +180,7 @@ OU=Horizon,DC=HORIZON,DC=local","Temporary Teacher":\
 "OU=Temporary Teachers,OU=Teachers,OU=Staff,OU=Users,\
 OU=Horizon,DC=HORIZON,DC=local","ESO":"OU=Student Support,\
 OU=Staff,OU=Users,OU=Horizon,DC=HORIZON,DC=local",\
-"ESO Clare":"OU=Student Support Clare,OU=Staff,OU=Users,\
+"Student Support Clare":"OU=Student Support Clare,OU=Staff,OU=Users,\
 OU=Horizon,DC=HORIZON,DC=local","Admin":\
 "OU=Admin Staff,OU=Staff,OU=Users,OU=Horizon,DC=HORIZON,\
 DC=local","Admin Clare": "OU=Admin Staff Clare,OU=Staff,\

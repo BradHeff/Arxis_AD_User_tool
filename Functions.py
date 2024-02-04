@@ -14,10 +14,11 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
 from ttkbootstrap import DISABLED, NORMAL
+from ttkbootstrap.toast import ToastNotification
 
-DEBUG = True
-Version = "v1.0.7.1"
-key = b"t\xbazhnI\t\x8d\x7f\x82\x18\xbd\xc3\xf0\x1a\n$\x04\xab\x86t\x06\xbf\x05\xc3\xed\xf7T\xc5\x9f\x93\xbc"
+DEBUG = False
+Version = "v2.0.1.1"
+key = b'\xc2\xe0tnp\x8b\xa7\xbb$5\x13\x8a\n\x90h\x9e7\xef\x93\xc3\x8f\xd8\x1aD\xab0\xad\x01\x96R\x12\xcb'
 settings_file = "Settings.dat"
 UAC = 32 + 65536
 tls_configuration = Tls(
@@ -30,6 +31,26 @@ else:
 
 settings_dir = "".join([exe_dir, "\\Settings\\"])
 # data_dir = ''.join([exe_dir, '\\Data\\'])
+
+
+def Toast(title, message, types="happy"):
+    happy = "😀"
+    sad = "😟"
+    angry = "🤬"
+    icon = ""
+    if "er" in types:
+        icon = angry
+    elif "war" in types:
+        icon = sad
+    else:
+        icon = happy
+    toast = ToastNotification(
+        title=title,
+        message=message,
+        icon=icon,
+        duration=10000,
+    )
+    toast.show_toast()
 
 
 def clear_console():
@@ -63,6 +84,15 @@ def ldap_connection(self):
         client_strategy=SAFE_SYNC,
         auto_bind=True,
     )
+
+
+def get_operation_result(connection, operation_result):
+    if not connection.strategy.sync:
+        _, result = connection.get_response(operation_result)
+    else:
+        result = connection.result
+
+    return result
 
 
 def saveConfig(self):
@@ -321,7 +351,8 @@ def resetPassword(self, ou, newpass):
         self.tree.delete(selected_item)
         self.selItem = []
         widgetStatus(self, NORMAL)
-        self.messageBox("SUCCESS!!", "Password set and user unlocked!")
+        # self.messageBox("SUCCESS!!", "Password set and user unlocked!")
+        Toast("SUCCESS!!", "Password set and user unlocked!", "happy")
     except:  # noqa
         self.selItem = []
         widgetStatus(self, NORMAL)
@@ -433,9 +464,10 @@ def update_user(self, data):
         self.progress["value"] = 100
         widgetStatus(self, NORMAL)
         self.status["text"] = "Idle..."
-        self.messageBox("SUCCESS!!", "User Updated!")
+        # self.messageBox("SUCCESS!!", "User Updated!")
+        Toast("SUCCESS!!", "User Updated!", "happy")
         self.progress["value"] = 0
-        self.updateSelect()
+        self.editSelect("E")
     except:  # noqa
         self.status["text"] = "Idle..."
         widgetStatus(self, NORMAL)
@@ -514,13 +546,15 @@ def createUser(self, data):
         self.progress["value"] = 100
         widgetStatus(self, NORMAL)
         self.status["text"] = "Idle..."
-        self.messageBox("SUCCESS!!", "User Created!")
+        # self.messageBox("SUCCESS!!", "User Created!")
+        Toast("SUCCESS!!", "User Created!", "happy")
         self.progress["value"] = 0
     except Exception as e:
         self.status["text"] = "Idle..."
         widgetStatus(self, NORMAL)
         self.progress["value"] = 0
         self.messageBox("ERROR!!", e)
+        Toast("ERROR!!", "An error has occured!", "angry")
         # self.messageBox("ERROR!!","An error has occured!")
 
 
@@ -667,13 +701,18 @@ def moveUser(self, bOU, aOU):
     username = bOU.split(",")[0]
     with ldap_connection(self) as c:
         result = c.modify_dn(
-            bOU,
-            username,
+            dn=bOU,
+            relative_dn=username,
+            delete_old_dn=False,
             new_superior=aOU,
         )
-        if not result:
-            msg = "ERROR: User '{0}'".format(
-                c.result.get("description"),
+        res = get_operation_result(c, result)
+        if not res["description"] == "success":
+            msg = (
+                "unable to move user "
+                + username.replace("CN=", "")
+                + ": "
+                + str(result)
             )
             raise Exception(msg)
 
@@ -682,6 +721,7 @@ def moveUser(self, bOU, aOU):
     self.progress["value"] = 100
     self.selItem2 = []
     self.status["text"] = "Idle..."
-    self.messageBox("SUCCESS!!", "Move Complete!")
+    # self.messageBox("SUCCESS!!", "Move Complete!")
+    Toast("SUCCESS!!", "Move Complete!", "happy")
     widgetStatus(self, NORMAL)
     self.progress["value"] = 0
