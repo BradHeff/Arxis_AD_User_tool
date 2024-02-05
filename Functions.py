@@ -14,7 +14,7 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
 
-DEBUG = False
+DEBUG = True
 Version = "v2.0.8.2"
 key = b"}\xa4\x95\xf8\xd2L\xe3\x99&\xcb\xe5\xb3A\xa3\xbb\x18\xc6p\x90\x85'\x03P\xdeA\xbaS\xa4\x83$4\x8d"
 settings_file = "Settings.dat"
@@ -130,7 +130,7 @@ def loadConfig(self, check=False):
         if parser.has_section("newuser"):
             self.campH.set(parser.get("newuser", "campus"))
             self.var.set(parser.get("newuser", "pos"))
-            self.posSelect()
+            self.posSelect("H")
             self.samFormat.set(parser.get("newuser", "format"))
             self.primary_domain.set(parser.get("newuser", "domain"))
             self.hdrive.set(parser.get("newuser", "hdrive"))
@@ -419,11 +419,9 @@ def listLocked(self):
 
 
 def update_user(self, data):
-
     # try:
     self.status["text"] = "".join(["Updating ", data["first"], " ", data["last"]])
     with ldap_connection(self) as c:
-
         self.progress["value"] = 60
 
         if data["proxy"].__len__() > 3:
@@ -489,6 +487,7 @@ def createUser(self, data):
 
         with ldap_connection(self) as c:
             attributes = {
+                "SAMAccountName": data["login"],
                 "givenName": data["first"],
                 "userPrincipalName": "".join([data["login"], "@", data["domain"]]),
                 "DisplayName": "".join([data["first"], " ", data["last"]]),
