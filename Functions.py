@@ -309,7 +309,7 @@ def widgetStatus(self, status):
     self.btn_search["state"] = status
     self.btn_userUnlock["state"] = status
     self.btn_reset["state"] = status
-    self.move_btn["state"] = status
+    # self.move_btn["state"] = status
     # self.addGroup["state"] = status
 
 
@@ -319,7 +319,7 @@ def widgetStatusFailed(self, state):
         self.btn_search["state"] = DISABLED
         self.btn_userUnlock["state"] = DISABLED
         self.btn_reset["state"] = DISABLED
-        self.move_btn["state"] = DISABLED
+        # self.move_btn["state"] = DISABLED
         # self.addGroup["state"] = DISABLED
     else:
         self.btn_unlockAll["state"] = NORMAL
@@ -334,7 +334,7 @@ def resetPassword(self, ou, newpass):
     try:
         with ldap_connection(self) as c:
             c.extend.microsoft.modify_password(
-                user=ou, new_password=newpass["password"], old_password=None
+                user=ou, new_password=newpass, old_password=None
             )
             result = c.modify(
                 dn=ou,
@@ -354,7 +354,8 @@ def resetPassword(self, ou, newpass):
     except:  # noqa
         self.selItem = []
         widgetStatus(self, NORMAL)
-        self.messageBox("ERROR!!", "An error has occured!")
+        Toast("ERROR!!", "An error has occured!", "angry")
+        # self.messageBox("ERROR!!", "An error has occured!")
 
 
 def unlockUser(self, ou, all=0):
@@ -387,7 +388,8 @@ def unlockAll(self, locked):
     self.tree.delete(*self.tree.get_children())
     widgetStatus(self, NORMAL)
     self.status["text"] = "Idle..."
-    self.messageBox("SUCCESS!!", "Unlock Complete!")
+    Toast("SUCCESS!!", "Unlock Complete!", "happy")
+    # self.messageBox("SUCCESS!!", "Unlock Complete!")
     self.progress["value"] = 0
 
 
@@ -419,65 +421,69 @@ def listLocked(self):
 
 
 def update_user(self, data):
-    # try:
-    self.status["text"] = "".join(["Updating ", data["first"], " ", data["last"]])
-    with ldap_connection(self) as c:
-        self.progress["value"] = 60
+    try:
+        self.status["text"] = "".join(["Updating ", data["first"], " ", data["last"]])
+        with ldap_connection(self) as c:
+            self.progress["value"] = 60
 
-        if data["proxy"].__len__() > 3:
-            proxy = "".join(["smtp:", data["login"], "@", data["proxy"]])
-        else:
-            proxy = ""
+            if data["proxy"].__len__() > 3:
+                proxy = "".join(["smtp:", data["login"], "@", data["proxy"]])
+            else:
+                proxy = ""
 
-        attributes = {
-            "givenName": (MODIFY_REPLACE, [data["first"]]),
-            "sAMAccountName": (MODIFY_REPLACE, [data["login"]]),
-            "sn": (MODIFY_REPLACE, [data["last"]]),
-            "DisplayName": (
-                MODIFY_REPLACE,
-                ["".join([data["first"], " ", data["last"]])],
-            ),
-            "title": (MODIFY_REPLACE, [data["title"]]),
-            "description": (MODIFY_REPLACE, [data["description"]]),
-            "userPrincipalName": (
-                MODIFY_REPLACE,
-                ["".join([data["login"], "@", data["domain"]])],
-            ),
-            "mail": (MODIFY_REPLACE, ["".join([data["login"], "@", data["domain"]])]),
-            "proxyAddresses": [
-                (
+            attributes = {
+                "givenName": (MODIFY_REPLACE, [data["first"]]),
+                "sAMAccountName": (MODIFY_REPLACE, [data["login"]]),
+                "sn": (MODIFY_REPLACE, [data["last"]]),
+                "DisplayName": (
                     MODIFY_REPLACE,
-                    ["".join(["SMTP:", data["login"], "@", data["domain"]])],
+                    ["".join([data["first"], " ", data["last"]])],
                 ),
-                (MODIFY_REPLACE, [proxy]),
-            ],
-        }
-        result = c.modify(
-            dn=data["ou"],
-            changes=attributes,
-        )
-        if not result:
-            msg = "ERROR: User '{0}' was not created: {1}".format(
-                "".join([data["first"], " ", data["last"]]),
-                c.result.get("description"),
+                "title": (MODIFY_REPLACE, [data["title"]]),
+                "description": (MODIFY_REPLACE, [data["description"]]),
+                "userPrincipalName": (
+                    MODIFY_REPLACE,
+                    ["".join([data["login"], "@", data["domain"]])],
+                ),
+                "mail": (
+                    MODIFY_REPLACE,
+                    ["".join([data["login"], "@", data["domain"]])],
+                ),
+                "proxyAddresses": [
+                    (
+                        MODIFY_REPLACE,
+                        ["".join(["SMTP:", data["login"], "@", data["domain"]])],
+                    ),
+                    (MODIFY_REPLACE, [proxy]),
+                ],
+            }
+            result = c.modify(
+                dn=data["ou"],
+                changes=attributes,
             )
-            raise Exception(msg)
-    if data["password"].__len__() >= 8:
-        c.extend.microsoft.modify_password(
-            user=data["ou"], new_password=data["password"], old_password=None
-        )
-    self.progress["value"] = 100
-    widgetStatus(self, NORMAL)
-    self.status["text"] = "Idle..."
-    # self.messageBox("SUCCESS!!", "User Updated!")
-    Toast("SUCCESS!!", "User Updated!", "happy")
-    self.progress["value"] = 0
-    self.editSelect("E")
-    # except:  # noqa
-    #     self.status["text"] = "Idle..."
-    #     widgetStatus(self, NORMAL)
-    #     self.messageBox("ERROR!!", "An error has occured!")
-    #     self.progress["value"] = 0
+            if not result:
+                msg = "ERROR: User '{0}' was not created: {1}".format(
+                    "".join([data["first"], " ", data["last"]]),
+                    c.result.get("description"),
+                )
+                raise Exception(msg)
+        if data["password"].__len__() >= 8:
+            c.extend.microsoft.modify_password(
+                user=data["ou"], new_password=data["password"], old_password=None
+            )
+        self.progress["value"] = 100
+        widgetStatus(self, NORMAL)
+        self.status["text"] = "Idle..."
+        # self.messageBox("SUCCESS!!", "User Updated!")
+        Toast("SUCCESS!!", "User Updated!", "happy")
+        self.progress["value"] = 0
+        self.editSelect("E")
+    except:  # noqa
+        self.status["text"] = "Idle..."
+        widgetStatus(self, NORMAL)
+        Toast("ERROR!!", "An error has occured!", "angry")
+        # self.messageBox("ERROR!!", "An error has occured!")
+        self.progress["value"] = 0
 
 
 def createUser(self, data):
@@ -559,9 +565,8 @@ def createUser(self, data):
         self.status["text"] = "Idle..."
         widgetStatus(self, NORMAL)
         self.progress["value"] = 0
-        self.messageBox("ERROR!!", e)
         Toast("ERROR!!", "An error has occured!", "angry")
-        # self.messageBox("ERROR!!","An error has occured!")
+        self.messageBox("ERROR!!", e)
 
 
 def createHomeDir(username, homeDir, domainName):

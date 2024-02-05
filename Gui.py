@@ -14,7 +14,7 @@ def Window(self):
     center_y = int(screen_height / 2 - self.H / 2)
     self.geometry(f"{self.W}x{self.H}+{center_x}+{center_y}")
     # self.resizable(0, 0)
-    self.minsize(1080, 630)
+    self.minsize(1190, 630)
     self.attributes("-fullscreen", False)
 
 
@@ -421,7 +421,7 @@ def Tab4(self, tab4):
     self.tree3.column("# 3", anchor=ttk.CENTER)
     self.tree3.heading("# 3", text="USER DN")
     self.tree3.bind("<ButtonRelease-1>", self.selectItem2)
-    self.tree3.grid(row=0, columnspan=2, sticky=ttk.NSEW)
+    self.tree3.grid(row=0, columnspan=2, sticky=ttk.NSEW, padx=10, pady=5)
 
     scrollbar = ttk.Scrollbar(lframe4)
     scrollbar.config(command=self.tree3.yview)
@@ -430,14 +430,18 @@ def Tab4(self, tab4):
     scrollbar2.config(command=self.tree3.xview)
     scrollbar2.grid(column=0, columnspan=2, sticky=ttk.EW)
 
-    self.lbl_frame8 = ttk.Labelframe(lframe4, text="Move To OU")
-    self.lbl_frame8.grid(column=0, columnspan=2, sticky="new")
+    self.lbl_frameF2 = ttk.Labelframe(lframe4, text="Move To Campus")
+    self.lbl_frameF2.grid(sticky=ttk.NSEW, columnspan=2, row=1, padx=10, pady=5)
+    self.McampH2 = ttk.StringVar(self.lbl_frameF2, "balaklava")
 
-    self.move_btn = ttk.Button(
-        lframe4, text="Move User", width=20, command=self.moveUser
-    )
-    self.move_btn.configure(state=ttk.DISABLED)
-    self.move_btn.grid(column=1, sticky=ttk.SE)
+    self.lbl_frame8 = ttk.Labelframe(lframe4, text="Move To OU")
+    self.lbl_frame8.grid(column=0, columnspan=2, sticky="new", padx=10, pady=5)
+
+    # self.move_btn = ttk.Button(
+    #     lframe4, text="Move User", width=20, command=self.moveUser
+    # )
+    # self.move_btn.configure(state=ttk.DISABLED)
+    # self.move_btn.grid(column=1, sticky=ttk.SE)
 
 
 def Tab5(self, tab5):

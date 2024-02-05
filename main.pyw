@@ -147,67 +147,70 @@ class ADUnlocker(ttk.Window):
     #         tkt.call_nosync(self.messageBox, "ERROR!!!", "That group already exists!")
 
     def alterButton(self, widget):
-        if self.tabControl.index(self.tabControl.select()) == 0:
-            self.btn_unlockAll.configure(text="Unlock All", state=ttk.NORMAL)
-            if self.state and self.servs:
-                f.widgetStatusFailed(self, False)
-        elif self.tabControl.index(self.tabControl.select()) == 1:
-            self.btn_unlockAll.configure(text="Create User", state=ttk.NORMAL)
-            if "Select" not in self.options.get():
+        match self.tabControl.index(self.tabControl.select()):
+            case 0:
+                self.btn_unlockAll.configure(text="Unlock All", state=ttk.NORMAL)
+                if self.state and self.servs:
+                    f.widgetStatusFailed(self, False)
+            case 1:
+                self.btn_unlockAll.configure(text="Create User", state=ttk.NORMAL)
+                if "Select" not in self.options.get():
+                    if not self.compFail:
+                        if self.domains["Primary"].__len__() <= 0:
+                            f.widgetStatusFailed(self, True)
+
+                            tkt.call_nosync(
+                                self.messageBox,
+                                "ERROR!!",
+                                "Domains Settings is not complete!",
+                            )
+                            return
+                        if self.groupPos.__len__() <= 0:
+                            f.widgetStatusFailed(self, True)
+
+                            tkt.call_nosync(
+                                self.messageBox,
+                                "ERROR!!",
+                                "Group Settings is not complete!",
+                            )
+                            return
+                        if self.positions.__len__() <= 0:
+                            f.widgetStatusFailed(self, True)
+
+                            tkt.call_nosync(
+                                self.messageBox,
+                                "ERROR!!",
+                                "Positions Settings is not complete!",
+                            )
+
+                            return
+                    else:
+                        if self.state:
+                            f.widgetStatusFailed(self, True)
+            # case 2:
+            #     self.btn_unlockAll.configure(text="Remove Groups")
+            #     if not self.compFail:
+            #         pass
+            #     else:
+            #         if self.state:
+            #             f.widgetStatusFailed(self, True)
+            case 2:
+                self.btn_unlockAll.configure(text="Move User", state=ttk.NORMAL)
+
                 if not self.compFail:
-                    if self.domains["Primary"].__len__() <= 0:
-                        f.widgetStatusFailed(self, True)
-
-                        tkt.call_nosync(
-                            self.messageBox,
-                            "ERROR!!",
-                            "Domains Settings is not complete!",
-                        )
-                        return
-                    if self.groupPos.__len__() <= 0:
-                        f.widgetStatusFailed(self, True)
-
-                        tkt.call_nosync(
-                            self.messageBox,
-                            "ERROR!!",
-                            "Group Settings is not complete!",
-                        )
-                        return
-                    if self.positions.__len__() <= 0:
-                        f.widgetStatusFailed(self, True)
-
-                        tkt.call_nosync(
-                            self.messageBox,
-                            "ERROR!!",
-                            "Positions Settings is not complete!",
-                        )
-
-                        return
+                    pass
                 else:
                     if self.state:
                         f.widgetStatusFailed(self, True)
-        # elif self.tabControl.index(self.tabControl.select()) == 2:
-        #     self.btn_unlockAll.configure(text="Remove Groups")
-        #     if not self.compFail:
-        #         pass
-        #     else:
-        #         if self.state:
-        #             f.widgetStatusFailed(self, True)
-        elif self.tabControl.index(self.tabControl.select()) == 2:
-            self.btn_unlockAll.configure(text="Bulk Move Users", state=ttk.DISABLED)
-
-            if not self.compFail:
-                pass
-            else:
-                if self.state:
-                    f.widgetStatusFailed(self, True)
-        elif self.tabControl.index(self.tabControl.select()) == 3:
-            self.btn_unlockAll.configure(text="Update User", state=ttk.NORMAL)
-            if not self.compFail:
-                pass
-            else:
-                if self.state:
-                    f.widgetStatusFailed(self, True)
+            case 3:
+                self.btn_unlockAll.configure(text="Update User", state=ttk.NORMAL)
+                if not self.compFail:
+                    pass
+                else:
+                    if self.state:
+                        f.widgetStatusFailed(self, True)
+            case _:
+                f.Toast("ERROR!!!", "Something went wrong!", "sad")
 
     def driveSelect(self, el):
         pass
@@ -479,45 +482,7 @@ class ADUnlocker(ttk.Window):
                 "", "end", values=(i, usersList[i]["name"], usersList[i]["ou"])
             )
             progCount += 1
-        count = 0
-        row = 0
-        count2 = 0
-        row2 = 0
 
-        list = self.lbl_frame8.grid_slaves()
-        for lx in list:
-            lx.destroy()
-        self.chkValue = ttk.StringVar(self.lbl_frame8, "1")
-        for j in self.positions:
-            for y in self.positions[j]:
-                if not "Student" == y:
-                    rbtn1 = ttk.Radiobutton(
-                        self.lbl_frame8,
-                        text=y,
-                        variable=self.chkValue,
-                        command=lambda: self.moveNewPosSelect(value),
-                        value=y,
-                    )
-                    rbtn1.grid(row=row, column=count, padx=10, pady=10)
-                    rbtn1.selection_clear()
-                    count += 1
-                    if count > 4:
-                        count = 0
-                        row += 1
-                else:
-                    rbtn2 = ttk.Radiobutton(
-                        self.lbl_frame8,
-                        text=y,
-                        variable=self.chkValue,
-                        command=lambda: self.moveNewPosSelect(value),
-                        value=y,
-                    )
-                    rbtn2.grid(row=row, column=count, padx=10, pady=10)
-                    rbtn2.selection_clear()
-                    count2 += 1
-                    if count2 > 4:
-                        count2 = 0
-                        row2 += 1
         self.status["text"] = "Idle..."
         self.progress["value"] = 0
 
@@ -610,12 +575,21 @@ class ADUnlocker(ttk.Window):
                         value=x,
                         command=lambda: self.comboSelect("camp", "M"),
                     )
+                    balak_move2 = ttk.Radiobutton(
+                        self.lbl_frameF2,
+                        text=x,
+                        variable=self.McampH2,
+                        value=x,
+                    )
                     if counter == 1:
                         balak.pack(side="left", fill="y", expand=True, padx=10, pady=10)
                         balak_edit.pack(
                             side="left", fill="y", expand=True, padx=10, pady=10
                         )
                         balak_move.pack(
+                            side="left", fill="y", expand=True, padx=10, pady=10
+                        )
+                        balak_move2.pack(
                             side="left", fill="y", expand=True, padx=10, pady=10
                         )
                     else:
@@ -626,6 +600,9 @@ class ADUnlocker(ttk.Window):
                             side="right", fill="y", expand=True, padx=10, pady=10
                         )
                         balak_move.pack(
+                            side="right", fill="y", expand=True, padx=10, pady=10
+                        )
+                        balak_move2.pack(
                             side="right", fill="y", expand=True, padx=10, pady=10
                         )
                     counter -= 1
@@ -676,6 +653,11 @@ class ADUnlocker(ttk.Window):
                 row = 0
                 count2 = 0
                 row2 = 0
+
+                count11 = 0
+                row11 = 0
+
+                self.chkValue = ttk.StringVar(self.lbl_frame8, "1")
                 self.var = ttk.StringVar(None, "1")
                 self.var2 = ttk.StringVar(None, "1")
                 self.var3 = ttk.StringVar(None, "1")
@@ -684,6 +666,7 @@ class ADUnlocker(ttk.Window):
                         prog = 1
                         self.progress["maximum"] = float(self.positions.__len__())
                         self.progress["value"] = prog
+
                         if not x == "Students":
                             rbtn = ttk.Radiobutton(
                                 self.lbl_frame,
@@ -703,6 +686,19 @@ class ADUnlocker(ttk.Window):
                             )
                             rbtn3.grid(row=row, column=count, padx=10, pady=10)
                             rbtn3.selection_clear()
+                            rbtn11 = ttk.Radiobutton(
+                                self.lbl_frame8,
+                                text=y,
+                                variable=self.chkValue,
+                                command=lambda: self.moveNewPosSelect(value),
+                                value=y,
+                            )
+                            rbtn11.grid(row=row11, column=count11, padx=10, pady=10)
+                            rbtn11.selection_clear()
+                            count11 += 1
+                            if count11 > 4:
+                                count11 = 0
+                                row11 += 1
                             rbtn5 = ttk.Radiobutton(
                                 self.lbl_frame9,
                                 text=y,
@@ -735,6 +731,19 @@ class ADUnlocker(ttk.Window):
                             )
                             rbtn4.grid(row=row2, column=count2, padx=10, pady=10)
                             rbtn4.selection_clear()
+                            rbtn12 = ttk.Radiobutton(
+                                self.lbl_frame8,
+                                text=y,
+                                variable=self.chkValue,
+                                command=lambda: self.moveNewPosSelect(value),
+                                value=y,
+                            )
+                            rbtn12.grid(row=row11, column=count11, padx=10, pady=10)
+                            rbtn12.selection_clear()
+                            count11 += 1
+                            if count11 > 4:
+                                count11 = 0
+                                row11 += 1
                             rbtn6 = ttk.Radiobutton(
                                 self.lbl_frame10,
                                 text=y,
@@ -845,21 +854,7 @@ class ADUnlocker(ttk.Window):
         t.start()
 
     def moveUser(self):
-        if self.var2.get().__len__() <= 2 or self.movePosOU.__len__() <= 1:
-            tkt.call_nosync(self.messageBox, "ERROR!!", "You must select a position!")
-            return
-        if self.selItem2.__len__() <= 0:
-            tkt.call_nosync(self.messageBox, "ERROR!!", "You must select a user!")
-            return
-        self.status["text"] = "Moving " + str(self.selItem2[1]) + "..."
-        f.widgetStatus(self, ttk.DISABLED)
-        self.progress["max"] = 100
-        self.progress["value"] = 30
-        t = threading.Thread(
-            target=f.moveUser, args=[self, self.selItem2[2], self.moveNewPosOU]
-        )
-        t.daemon = True
-        t.start()
+        pass
 
     def loadUsers(self):
         if "Select" in self.options.get():
@@ -1030,8 +1025,38 @@ class ADUnlocker(ttk.Window):
                         "First and Lastname must\n\
                     be filled!",
                     )
+            # case 2:
+            #     print("PRINTERD")
             case 2:
-                print("PRINTERD")
+                if self.compFail:
+                    f.widgetStatus(self, ttk.NORMAL)
+
+                    tkt.call_nosync(
+                        self.messageBox,
+                        "ERROR!!",
+                        "Your Settings are incomplete\n\
+                    for this TAB!",
+                    )
+                    return
+                if self.var2.get().__len__() <= 2 or self.movePosOU.__len__() <= 1:
+                    tkt.call_nosync(
+                        self.messageBox, "ERROR!!", "You must select a position!"
+                    )
+                    return
+                if self.selItem2.__len__() <= 0:
+                    tkt.call_nosync(
+                        self.messageBox, "ERROR!!", "You must select a user!"
+                    )
+                    return
+                self.status["text"] = "Moving " + str(self.selItem2[1]) + "..."
+                f.widgetStatus(self, ttk.DISABLED)
+                self.progress["max"] = 100
+                self.progress["value"] = 30
+                t = threading.Thread(
+                    target=f.moveUser, args=[self, self.selItem2[2], self.moveNewPosOU]
+                )
+                t.daemon = True
+                t.start()
             case 3:
                 if self.compFail:
                     f.widgetStatus(self, ttk.NORMAL)
@@ -1112,6 +1137,7 @@ class ADUnlocker(ttk.Window):
                         "Password must be 8\
                     characters long",
                     )
+
             case _:
                 print("")
 
