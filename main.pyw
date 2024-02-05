@@ -414,7 +414,7 @@ class ADUnlocker(ttk.Window):
         t.start()
 
     def moveNewPosSelect(self, value=None):
-        if "clare" in self.McampH.get():
+        if "clare" in self.McampH2.get():
             if "Year" in self.var2.get() or "Found" in self.var2.get():
                 self.moveNewPosOU = self.positionsOU[self.var2.get() + "-Clare"]
                 print("CLARE!!@")
@@ -1107,23 +1107,21 @@ class ADUnlocker(ttk.Window):
                     data["title"] = self.entJobTitle.get()
                     data["ou"] = self.updateList[self.selItem3[0]]["ou"]
                     data["password"] = self.entPass.get()
+                    data["proxy"] = None
 
                     self.progress["value"] = 20
-
-                    if not self.updateList[self.selItem3[0]]["proxyAddresses"] is None:
-                        for x in self.updateList[self.selItem3[0]]["proxyAddresses"]:
+                    lists = self.updateList[self.selItem3[0]]
+                    if lists["proxyAddresses"] is not None:
+                        for x in lists["proxyAddresses"]:
                             if self.entDomain.get() not in x and x.__len__() > 5:
                                 data["proxy"] = x.split("@")[1]
                             else:
                                 if not self.domains["Secondary"].__len__() <= 3:
                                     data["proxy"] = self.domains["Secondary"]
-                                else:
-                                    data["proxy"] = ""
+
                     else:
                         if not self.domains["Secondary"].__len__() <= 3:
                             data["proxy"] = self.domains["Secondary"]
-                        else:
-                            data["proxy"] = ""
 
                     t = threading.Thread(target=f.update_user, args=[self, data])
                     t.daemon = True

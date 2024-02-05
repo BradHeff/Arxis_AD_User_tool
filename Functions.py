@@ -421,69 +421,69 @@ def listLocked(self):
 
 
 def update_user(self, data):
-    try:
-        self.status["text"] = "".join(["Updating ", data["first"], " ", data["last"]])
-        with ldap_connection(self) as c:
-            self.progress["value"] = 60
+    # try:
+    self.status["text"] = "".join(["Updating ", data["first"], " ", data["last"]])
+    with ldap_connection(self) as c:
+        self.progress["value"] = 60
 
-            if data["proxy"].__len__() > 3:
-                proxy = "".join(["smtp:", data["login"], "@", data["proxy"]])
-            else:
-                proxy = ""
+        if data["proxy"] is None:
+            proxy = "".join(["smtp:", data["login"], "@", self.domains["Secondary"]])
+        else:
+            proxy = "".join(["smtp:", data["login"], "@", data["proxy"]])
 
-            attributes = {
-                "givenName": (MODIFY_REPLACE, [data["first"]]),
-                "sAMAccountName": (MODIFY_REPLACE, [data["login"]]),
-                "sn": (MODIFY_REPLACE, [data["last"]]),
-                "DisplayName": (
+        attributes = {
+            "givenName": (MODIFY_REPLACE, [data["first"]]),
+            "sAMAccountName": (MODIFY_REPLACE, [data["login"]]),
+            "sn": (MODIFY_REPLACE, [data["last"]]),
+            "DisplayName": (
+                MODIFY_REPLACE,
+                ["".join([data["first"], " ", data["last"]])],
+            ),
+            "title": (MODIFY_REPLACE, [data["title"]]),
+            "description": (MODIFY_REPLACE, [data["description"]]),
+            "userPrincipalName": (
+                MODIFY_REPLACE,
+                ["".join([data["login"], "@", data["domain"]])],
+            ),
+            "mail": (
+                MODIFY_REPLACE,
+                ["".join([data["login"], "@", data["domain"]])],
+            ),
+            "proxyAddresses": [
+                (
                     MODIFY_REPLACE,
-                    ["".join([data["first"], " ", data["last"]])],
+                    ["".join(["SMTP:", data["login"], "@", data["domain"]])],
                 ),
-                "title": (MODIFY_REPLACE, [data["title"]]),
-                "description": (MODIFY_REPLACE, [data["description"]]),
-                "userPrincipalName": (
-                    MODIFY_REPLACE,
-                    ["".join([data["login"], "@", data["domain"]])],
-                ),
-                "mail": (
-                    MODIFY_REPLACE,
-                    ["".join([data["login"], "@", data["domain"]])],
-                ),
-                "proxyAddresses": [
-                    (
-                        MODIFY_REPLACE,
-                        ["".join(["SMTP:", data["login"], "@", data["domain"]])],
-                    ),
-                    (MODIFY_REPLACE, [proxy]),
-                ],
-            }
-            result = c.modify(
-                dn=data["ou"],
-                changes=attributes,
+                (MODIFY_REPLACE, [proxy]),
+            ],
+        }
+        result = c.modify(
+            dn=data["ou"],
+            changes=attributes,
+        )
+        if not result:
+            msg = "ERROR: User '{0}' was not created: {1}".format(
+                "".join([data["first"], " ", data["last"]]),
+                c.result.get("description"),
             )
-            if not result:
-                msg = "ERROR: User '{0}' was not created: {1}".format(
-                    "".join([data["first"], " ", data["last"]]),
-                    c.result.get("description"),
-                )
-                raise Exception(msg)
-        if data["password"].__len__() >= 8:
-            c.extend.microsoft.modify_password(
-                user=data["ou"], new_password=data["password"], old_password=None
-            )
-        self.progress["value"] = 100
-        widgetStatus(self, NORMAL)
-        self.status["text"] = "Idle..."
-        # self.messageBox("SUCCESS!!", "User Updated!")
-        Toast("SUCCESS!!", "User Updated!", "happy")
-        self.progress["value"] = 0
-        self.editSelect("E")
-    except:  # noqa
-        self.status["text"] = "Idle..."
-        widgetStatus(self, NORMAL)
-        Toast("ERROR!!", "An error has occured!", "angry")
-        # self.messageBox("ERROR!!", "An error has occured!")
-        self.progress["value"] = 0
+            raise Exception(msg)
+    if data["password"].__len__() >= 8:
+        c.extend.microsoft.modify_password(
+            user=data["ou"], new_password=data["password"], old_password=None
+        )
+    self.progress["value"] = 100
+    widgetStatus(self, NORMAL)
+    self.status["text"] = "Idle..."
+    # self.messageBox("SUCCESS!!", "User Updated!")
+    Toast("SUCCESS!!", "User Updated!", "happy")
+    self.progress["value"] = 0
+    self.editSelect("E")
+    # except:  # noqa
+    #     self.status["text"] = "Idle..."
+    #     widgetStatus(self, NORMAL)
+    #     Toast("ERROR!!", "An error has occured!", "angry")
+    #     # self.messageBox("ERROR!!", "An error has occured!")
+    #     self.progress["value"] = 0
 
 
 def createUser(self, data):
@@ -712,9 +712,8 @@ def moveUser(self, bOU, aOU):
     username = bOU.split(",")[0]
     with ldap_connection(self) as c:
         result = c.modify_dn(
-            dn=bOU,
-            relative_dn=username,
-            delete_old_dn=False,
+            bOU,
+            username,
             new_superior=aOU,
         )
         res = get_operation_result(c, result)
