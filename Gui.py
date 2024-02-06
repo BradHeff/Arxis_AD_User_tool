@@ -428,14 +428,14 @@ def Tab4(self, tab4):
     scrollbar.grid(row=0, column=2, sticky="nsw")
     scrollbar2 = ttk.Scrollbar(lframe4, orient=ttk.HORIZONTAL)
     scrollbar2.config(command=self.tree3.xview)
-    scrollbar2.grid(column=0, columnspan=2, sticky=ttk.EW)
+    scrollbar2.grid(column=0, columnspan=2, sticky="new")
 
     self.lbl_frameF2 = ttk.Labelframe(lframe4, text="Move To Campus")
-    self.lbl_frameF2.grid(sticky=ttk.NSEW, columnspan=2, row=1, padx=10, pady=5)
+    self.lbl_frameF2.grid(sticky="esw", columnspan=2, row=1, padx=10, pady=10)
     self.McampH2 = ttk.StringVar(self.lbl_frameF2, "balaklava")
 
     self.lbl_frame8 = ttk.Labelframe(lframe4, text="Move To OU")
-    self.lbl_frame8.grid(column=0, columnspan=2, sticky="new", padx=10, pady=5)
+    self.lbl_frame8.grid(column=0, columnspan=2, sticky="new", padx=10)
 
     # self.move_btn = ttk.Button(
     #     lframe4, text="Move User", width=20, command=self.moveUser
@@ -515,11 +515,11 @@ def Tab5(self, tab5):
     self.entSamname = ttk.Entry(lbl_frame11, width=20)
     self.entSamname.grid(sticky="sew", column=0, row=1, padx=10, pady=5)
 
-    lbltitle = ttk.Label(lbl_frame11, text="Title")
-    lbltitle.grid(sticky="nw", column=1, row=1, padx=10, pady=5)
+    lbllPass = ttk.Label(lbl_frame11, text="Password")
+    lbllPass.grid(sticky="nw", column=1, row=1, padx=10, pady=5)
 
-    self.entJobTitle = ttk.Entry(lbl_frame11, width=24)
-    self.entJobTitle.grid(sticky="sew", column=1, row=1, padx=10, pady=5)
+    self.entPass = ttk.Entry(lbl_frame11, width=24)
+    self.entPass.grid(sticky="sew", column=1, row=1, padx=10, pady=5)
 
     lbllDesc = ttk.Label(lbl_frame11, text="Description")
     lbllDesc.grid(sticky="nw", column=2, row=1, padx=10, pady=5)
@@ -527,8 +527,16 @@ def Tab5(self, tab5):
     self.entDesc = ttk.Entry(lbl_frame11, width=24)
     self.entDesc.grid(sticky="sew", column=2, row=1, padx=10, pady=5)
 
-    lbllPass = ttk.Label(lbl_frame11, text="Password")
-    lbllPass.grid(sticky="nw", column=0, row=2, padx=10, pady=5)
+    # lbl_frame11.rowconfigure(2, weight=1)
 
-    self.entPass = ttk.Entry(lbl_frame11, width=20)
-    self.entPass.grid(sticky="sew", column=0, row=2, padx=10, pady=5)
+    lbltitle = ttk.Label(lbl_frame11, text="Title (Signature)")
+    lbltitle.grid(sticky="nw", column=0, row=2, padx=10, pady=5)
+
+    self.entJobTitle = ttk.Entry(lbl_frame11)
+    self.entJobTitle.grid(sticky="sew", column=0, row=2, columnspan=2, padx=10, pady=5)
+
+    lbldep = ttk.Label(lbl_frame11, text="Department (Signature sub title)")
+    lbldep.grid(sticky="nw", column=2, row=2, padx=10, pady=5)
+
+    self.entDep = ttk.Entry(lbl_frame11)
+    self.entDep.grid(sticky="sew", column=2, row=2, columnspan=2, padx=10, pady=5)
