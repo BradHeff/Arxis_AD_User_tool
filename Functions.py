@@ -15,8 +15,8 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
 )
 
 DEBUG = False
-Version = "v2.0.8.6"
-key = b'\xa5`\xd33\xd19\x92\x9fw\xca)\xa1\x8c\xb0\x1d\xd5CLh\x98Yr;\xe2\xf6 Ic\x83\x1c\xc2\x15'
+Version = "v2.0.8.7"
+key = b'\xccK\xab\xfd\xd2\xc0\xe4h\xc9\xfc\xf9\xc4|\x16\x92\x83\x9c\x8fr\r\xd4\xf6M\x07X\x88\x9fs\x9a!\x06\x1a'
 settings_file = "Settings.dat"
 UAC = 32 + 65536
 tls_configuration = Tls(
@@ -28,7 +28,7 @@ else:
     exe_dir = str(Path(__file__).parents[0])
 
 settings_dir = "".join([exe_dir, "\\Settings\\"])
-# data_dir = ''.join([exe_dir, '\\Data\\'])
+temp_dir = "".join([exe_dir, "\\Tmp\\"])
 
 
 def Toast(title, message, types="happy"):

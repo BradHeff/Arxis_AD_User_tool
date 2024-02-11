@@ -6,4 +6,6 @@
 /Settings/Settings.ini
 /Settings/Config.ini
 /scrap
+/Upload
+/Tmp
 *.spec
