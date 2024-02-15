@@ -961,7 +961,7 @@ class ADUnlocker(ttk.Window):
                     if (
                         "Select" in self.primary_domain.get()
                         or "Select" in self.hdrive.get()
-                        or self.homePath.get().__len__() <= 0
+                        or self.paths.get().__len__() <= 0
                     ):
                         f.widgetStatus(self, ttk.NORMAL)
                         self.status["text"] = "Idle..."
@@ -1005,7 +1005,7 @@ class ADUnlocker(ttk.Window):
                     data["domain"] = self.primary_domain.get()
                     data["proxy"] = self.domains["Secondary"]
                     data["groups"] = groups
-                    data["homeDirectory"] = self.homePath.get() + "\\" + samname.lower()
+                    data["homeDirectory"] = self.paths.get() + "\\" + samname.lower()
                     data["homeDrive"] = self.hdrive.get() + ":"
                     data["description"] = self.desc.get()
                     data["title"] = self.jobTitleEnt.get()

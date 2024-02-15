@@ -14,7 +14,7 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
 
-DEBUG = False
+DEBUG = True
 Version = "v2.0.8.8"
 key = b"s\xe8\x81\xb1d.\x99\xeb\xa4\x03\xed\xd7\xc1\xe3n\xe6&\xe3\xbc\xd1\xb1\xc6QAf>\xba^w\x96H\xf7"
 settings_file = "Settings.dat"
@@ -488,94 +488,96 @@ def update_user(self, data):
 
 def createUser(self, data):
     # pythoncom.CoInitialize()
-    try:
-        self.status["text"] = "".join(["Creating ", data["first"], " ", data["last"]])
+    # try:
+    self.status["text"] = "".join(["Creating ", data["first"], " ", data["last"]])
 
-        with ldap_connection(self) as c:
-            attributes = {
-                "SAMAccountName": data["login"],
-                "givenName": data["first"],
-                "userPrincipalName": "".join([data["login"], "@", data["domain"]]),
-                "DisplayName": "".join([data["first"], " ", data["last"]]),
-                "sn": data["last"],
-                "mail": "".join([data["login"], "@", data["domain"]]),
-                "proxyAddresses": [
-                    "".join(["SMTP:", data["login"], "@", data["domain"]]),
-                    "".join(["smtp:", data["login"], "@", data["proxy"]]),
-                ],
-                "HomeDirectory": data["homeDirectory"],
-                "HomeDrive": data["homeDrive"],
-                "title": data["title"],
-                "description": data["description"],
-                "department": data["department"],
-                "company": data["company"],
-                "pwdLastSet": 0,
-            }
-            user_dn = "".join(
-                ["CN=", data["first"], " ", data["last"], ",", self.posOU]
+    with ldap_connection(self) as c:
+        attributes = {
+            "SAMAccountName": data["login"],
+            "givenName": data["first"],
+            "userPrincipalName": "".join([data["login"], "@", data["domain"]]),
+            "DisplayName": "".join([data["first"], " ", data["last"]]),
+            "sn": data["last"],
+            "mail": "".join([data["login"], "@", data["domain"]]),
+            "proxyAddresses": [
+                "".join(["SMTP:", data["login"], "@", data["domain"]]),
+                "".join(["smtp:", data["login"], "@", data["proxy"]]),
+            ],
+            "HomeDirectory": data["homeDirectory"],
+            "HomeDrive": data["homeDrive"],
+            "title": data["title"],
+            "description": data["description"],
+            "department": data["department"],
+            "company": data["company"],
+            "pwdLastSet": 0,
+        }
+        user_dn = "".join(["CN=", data["first"], " ", data["last"], ",", self.posOU])
+        result = c.add(
+            dn=user_dn,
+            object_class=["top", "person", "organizationalPerson", "user"],
+            attributes=attributes,
+        )
+        if not result:
+            msg = "ERROR: User '{0}' was not created: {1}".format(
+                "".join([data["first"], " ", data["last"]]),
+                c.result.get("description"),
             )
-            result = c.add(
-                dn=user_dn,
-                object_class=["top", "person", "organizationalPerson", "user"],
-                attributes=attributes,
-            )
-            if not result:
-                msg = "ERROR: User '{0}' was not created: {1}".format(
-                    "".join([data["first"], " ", data["last"]]),
-                    c.result.get("description"),
-                )
-                raise Exception(msg)
+            raise Exception(msg)
 
-        self.progress["value"] = 30
-        c.extend.microsoft.unlock_account(user=user_dn)
-        c.extend.microsoft.modify_password(
-            user=user_dn, new_password=data["password"], old_password=None
-        )
-        # Enable account - must happen after user password is set
-        # newuser.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
-        # newuser.set_user_account_control_setting("PASSWD_NOTREQD", False)
-        enable_account = {"userAccountControl": (MODIFY_REPLACE, [UAC])}
-        c.modify(user_dn, changes=enable_account)
+    self.progress["value"] = 30
+    c.extend.microsoft.unlock_account(user=user_dn)
+    c.extend.microsoft.modify_password(
+        user=user_dn, new_password=data["password"], old_password=None
+    )
+    # Enable account - must happen after user password is set
+    # newuser.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
+    # newuser.set_user_account_control_setting("PASSWD_NOTREQD", False)
+    enable_account = {"userAccountControl": (MODIFY_REPLACE, [UAC])}
+    c.modify(user_dn, changes=enable_account)
 
-        self.progress["value"] = 50
-        self.status["text"] = "".join(
-            ["Adding ", data["first"], " ", data["last"], " to groups"]
-        )
-        # print(data["groups"])
-        c.extend.microsoft.add_members_to_groups([user_dn], data["groups"])
-        # for gp in data["groups"]:
-        #     newgroup = pyad_Trinity.adgroup.ADGroup.from_cn(gp)
-        #     newuser.add_to_group(newgroup)
-        self.progress["value"] = 80
-        self.status["text"] = "".join(
-            ["Creating ", data["first"], " ", data["last"], " home directory"]
-        )
-        createHomeDir(
-            data["login"],
-            data["homeDirectory"],
-            base64.b64decode(self.domainName).decode("UTF-8").strip(),
-        )
-        self.progress["value"] = 100
-        widgetStatus(self, NORMAL)
-        self.status["text"] = "Idle..."
-        # self.messageBox("SUCCESS!!", "User Created!")
-        Toast("SUCCESS!!", "User Created!", "happy")
-        self.progress["value"] = 0
-    except Exception as e:
-        self.status["text"] = "Idle..."
-        widgetStatus(self, NORMAL)
-        self.progress["value"] = 0
-        Toast("ERROR!!", "An error has occured!", "angry")
-        self.messageBox("ERROR!!", e)
+    self.progress["value"] = 50
+    self.status["text"] = "".join(
+        ["Adding ", data["first"], " ", data["last"], " to groups"]
+    )
+    # print(data["groups"])
+    c.extend.microsoft.add_members_to_groups([user_dn], data["groups"])
+    # for gp in data["groups"]:
+    #     newgroup = pyad_Trinity.adgroup.ADGroup.from_cn(gp)
+    #     newuser.add_to_group(newgroup)
+    self.progress["value"] = 80
+    self.status["text"] = "".join(
+        ["Creating ", data["first"], " ", data["last"], " home directory"]
+    )
+    print(data["homeDirectory"])
+    nHomeDir = checkNetworkAccess(self, data["homeDirectory"], data["login"])
+    createHomeDir(
+        data["login"],
+        nHomeDir,
+        base64.b64decode(self.domainName).decode("UTF-8").strip(),
+    )
+    self.progress["value"] = 100
+    widgetStatus(self, NORMAL)
+    self.status["text"] = "Idle..."
+    # self.messageBox("SUCCESS!!", "User Created!")
+    Toast("SUCCESS!!", "User Created!", "happy")
+    self.progress["value"] = 0
+    # except Exception as e:
+    #     self.status["text"] = "Idle..."
+    #     widgetStatus(self, NORMAL)
+    #     self.progress["value"] = 0
+    #     Toast("ERROR!!", "An error has occured!", "angry")
+    #     self.messageBox("ERROR!!", e)
 
 
 def createHomeDir(username, homeDir, domainName):
+    print(homeDir)
     if path.exists(homeDir) is False:
         mkdir(homeDir)
 
-        user, domain, type = win32security.LookupAccountName(
-            "", domainName + "\\" + username
-        )
+        # user, domain, type = win32security.LookupAccountName(
+        #     "", domainName + "\\" + username
+        # )
+        user, domain, type = win32security.LookupAccountName(domainName, username)
         sd = win32security.GetFileSecurity(
             homeDir, win32security.DACL_SECURITY_INFORMATION
         )
@@ -583,9 +585,28 @@ def createHomeDir(username, homeDir, domainName):
         dacl = sd.GetSecurityDescriptorDacl()
         dacl.AddAccessAllowedAceEx(win32security.ACL_REVISION, 3, 2032127, user)
 
-        sd.SetSecurityDescriptorDacl(1, dacl, 0)
+        # sd.SetSecurityDescriptorDacl(1, dacl, 0)
+        sd.SetSecurityDescriptorDacl(dacl[0], True)
         win32security.SetFileSecurity(
             homeDir, win32security.DACL_SECURITY_INFORMATION, sd
+        )
+
+
+def checkNetworkAccess(self, homeDir, username):
+    try:
+        if path.exists(self.paths.get()):
+            print(homeDir)
+            return homeDir
+        else:
+            print(self.paths.get().replace("HCS-FS01", "192.168.3.35"))
+            return "".join(
+                [self.paths.get().replace("HCS-FS01", "192.168.3.35"), "\\", username]
+            )
+    except Exception as e:
+        print(self.paths.get().replace("HCS-FS01", "192.168.3.35"))
+        print(e)
+        return "".join(
+            [self.paths.get().replace("HCS-FS01", "192.168.3.35"), "\\", username]
         )
 
 
