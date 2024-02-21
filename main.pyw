@@ -187,14 +187,14 @@ class ADUnlocker(ttk.Window):
                     else:
                         if self.state:
                             f.widgetStatusFailed(self, True)
-            # case 2:
-            #     self.btn_unlockAll.configure(text="Remove Groups")
-            #     if not self.compFail:
-            #         pass
-            #     else:
-            #         if self.state:
-            #             f.widgetStatusFailed(self, True)
             case 2:
+                self.btn_unlockAll.configure(text="Remove Groups")
+                if not self.compFail:
+                    pass
+                else:
+                    if self.state:
+                        f.widgetStatusFailed(self, True)
+            case 3:
                 self.btn_unlockAll.configure(text="Move User", state=ttk.NORMAL)
 
                 if not self.compFail:
@@ -202,7 +202,7 @@ class ADUnlocker(ttk.Window):
                 else:
                     if self.state:
                         f.widgetStatusFailed(self, True)
-            case 3:
+            case 4:
                 self.btn_unlockAll.configure(text="Update User", state=ttk.NORMAL)
                 if not self.compFail:
                     pass

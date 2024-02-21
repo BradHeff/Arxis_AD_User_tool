@@ -70,7 +70,7 @@ def baseGUI(self):
 
     tab1 = ttk.Frame(self.tabControl)
     self.tab2 = ttk.Frame(self.tabControl)
-    # tab3 = ttk.Frame(self.tabControl)
+    tab3 = ttk.Frame(self.tabControl)
     tab4 = ttk.Frame(self.tabControl)
     tab5 = ttk.Frame(self.tabControl)
 
@@ -82,8 +82,8 @@ def baseGUI(self):
     tab1.rowconfigure(1, weight=1)
     tab1.columnconfigure(0, weight=1)
 
-    # tab3.rowconfigure(5, weight=1)
-    # tab3.columnconfigure(0, weight=1)
+    tab3.rowconfigure(5, weight=1)
+    tab3.columnconfigure(0, weight=1)
 
     tab4.rowconfigure(4, weight=1)
     tab4.columnconfigure(0, weight=1)
@@ -99,7 +99,7 @@ def baseGUI(self):
 
     self.tabControl.add(tab1, text="Lock", compound="top")
     self.tabControl.add(self.tab2, text="New Users")
-    # self.tabControl.add(tab3, text ='Disabled User')
+    self.tabControl.add(tab3, text="Disabled User")
     self.tabControl.add(tab4, text="Move User")
     self.tabControl.add(tab5, text="Edit User")
     self.tabControl.bind("<<NotebookTabChanged>>", self.alterButton)
@@ -107,7 +107,7 @@ def baseGUI(self):
 
     Tab1(self, tab1)
     Tab2(self, self.tab2)
-    # Tab3(self, tab3)
+    Tab3(self, tab3)
     Tab4(self, tab4)
     Tab5(self, tab5)
 
@@ -363,7 +363,7 @@ def Tab2(self, tab2):
 
 
 def Tab3(self, tab3):
-    lbl_title = ttk.Label(tab3, text="Disabled User Group Cleanup")
+    lbl_title = ttk.Label(tab3, text="Disabled Users Group Cleanup")
     lbl_title.grid(sticky="n", columnspan=4, padx=10, pady=5)
 
     self.lbl_frame5 = ttk.Labelframe(tab3, text="Disabled User OU's")
