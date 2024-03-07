@@ -5,6 +5,7 @@ flask
 pyOpenSSL
 configparser_crypt
 pywin32
+requests
 tinyaes
 tkthread
 git+https://github.com/psf/black
