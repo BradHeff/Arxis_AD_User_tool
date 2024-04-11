@@ -2,9 +2,12 @@ import base64
 import sys
 import configparser_crypt as cCrypt
 import OpenSSL
-import win32security
+from os import mkdir, path, removedirs, system, name  # noqa
 
-from os import mkdir, path, removedirs, system
+if name == "nt":
+    import win32security
+
+
 from pathlib import Path
 from ttkbootstrap import DISABLED, NORMAL
 from ttkbootstrap.toast import ToastNotification
@@ -577,19 +580,20 @@ def createHomeDir(username, homeDir, domainName):
         # user, domain, type = win32security.LookupAccountName(
         #     "", domainName + "\\" + username
         # )
-        user, domain, type = win32security.LookupAccountName(domainName, username)
-        sd = win32security.GetFileSecurity(
-            homeDir, win32security.DACL_SECURITY_INFORMATION
-        )
+        if name == "nt":
+            user, domain, type = win32security.LookupAccountName(domainName, username)
+            sd = win32security.GetFileSecurity(
+                homeDir, win32security.DACL_SECURITY_INFORMATION
+            )
 
-        dacl = sd.GetSecurityDescriptorDacl()
-        dacl.AddAccessAllowedAceEx(win32security.ACL_REVISION, 3, 2032127, user)
+            dacl = sd.GetSecurityDescriptorDacl()
+            dacl.AddAccessAllowedAceEx(win32security.ACL_REVISION, 3, 2032127, user)
 
-        # sd.SetSecurityDescriptorDacl(1, dacl, 0)
-        sd.SetSecurityDescriptorDacl(dacl[0], True)
-        win32security.SetFileSecurity(
-            homeDir, win32security.DACL_SECURITY_INFORMATION, sd
-        )
+            # sd.SetSecurityDescriptorDacl(1, dacl, 0)
+            sd.SetSecurityDescriptorDacl(dacl[0], True)
+            win32security.SetFileSecurity(
+                homeDir, win32security.DACL_SECURITY_INFORMATION, sd
+            )
 
 
 def checkNetworkAccess(self, homeDir, username):

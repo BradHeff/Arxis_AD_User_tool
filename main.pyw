@@ -19,6 +19,7 @@ class ADUnlocker(ttk.Window):
         signal(SIGINT, lambda x, y: print("") or self.handler())
         # self.after(500, self.check)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
+
         splash.Splash(self)
 
         self.data = dict()

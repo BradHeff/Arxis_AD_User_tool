@@ -61,9 +61,12 @@ class Splash(ttk.Toplevel):
         center_y = int(screen_height / 2 - H / 2)
         self.geometry(f"{W}x{H}+{center_x}+{center_y}")
         self.attributes("-fullscreen", False)
-        self.attributes("-toolwindow", True)
         self.attributes("-topmost", True)
-        self.attributes("-transparentcolor", "grey15")
+
+        if fn.name == "nt":
+            self.attributes("-toolwindow", True)
+            self.attributes("-transparentcolor", "grey15")
+
         self.overrideredirect(True)
 
         canvas = ttk.Canvas(

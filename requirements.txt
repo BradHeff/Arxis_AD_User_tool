@@ -1,10 +1,10 @@
+pywin32; platform_system=="Windows"
 pillow==9.5.0
 ttkbootstrap
 ldap3
 flask
 pyOpenSSL
 configparser_crypt
-pywin32
 requests
 tinyaes
 tkthread
