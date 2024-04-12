@@ -1,13 +1,16 @@
 # import sys
 import base64
 from pathlib import Path
-
+import os
 from configparser_crypt import ConfigParserCrypt
 
 exe_dir = str(Path(__file__).parents[0])
 
 settings_file = "Settings.dat"
-settings_dir = "".join([exe_dir, "\\Settings\\"])
+if os.name == "nt":
+    settings_dir = "".join([exe_dir, "\\Settings\\"])
+else:
+    settings_dir = "".join([exe_dir, "/Settings/"])
 
 
 class MakeConf:
@@ -28,21 +31,38 @@ class MakeConf:
         return position
 
     def readLines(self):
-        with open(exe_dir + "\\Functions.py", "r") as f:
-            self.lines = f.readlines()
-            pos = self._getPosition(self.lines, "key = ")
-            line = self.lines[pos]
-            self.old = line.split(" = ")[1].strip()
-            f.close()
+        if os.name == "nt":
+            with open(exe_dir + "\\Functions.py", "r") as f:
+                self.lines = f.readlines()
+                pos = self._getPosition(self.lines, "key = ")
+                line = self.lines[pos]
+                self.old = line.split(" = ")[1].strip()
+                f.close()
+        else:
+            with open(exe_dir + "/Functions.py", "r") as f:
+                self.lines = f.readlines()
+                pos = self._getPosition(self.lines, "key = ")
+                line = self.lines[pos]
+                self.old = line.split(" = ")[1].strip()
+                f.close()
 
     def writeLines(self):
-        with open(exe_dir + "\\Functions.py", "w") as w:
-            pos = self._getPosition(self.lines, "key = ")
+        if os.name == "nt":
+            with open(exe_dir + "\\Functions.py", "w") as w:
+                pos = self._getPosition(self.lines, "key = ")
 
-            self.lines[pos] = self.lines[pos].replace(self.old, str(self.key))
+                self.lines[pos] = self.lines[pos].replace(self.old, str(self.key))
 
-            w.writelines(self.lines)
-            w.close()
+                w.writelines(self.lines)
+                w.close()
+        else:
+            with open(exe_dir + "/Functions.py", "w") as w:
+                pos = self._getPosition(self.lines, "key = ")
+
+                self.lines[pos] = self.lines[pos].replace(self.old, str(self.key))
+
+                w.writelines(self.lines)
+                w.close()
 
     def writeConfig(self):
         conf_file = ConfigParserCrypt()

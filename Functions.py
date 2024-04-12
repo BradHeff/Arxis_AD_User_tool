@@ -19,7 +19,7 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
 
 DEBUG = True
 Version = "v2.0.8.8"
-key = b"s\xe8\x81\xb1d.\x99\xeb\xa4\x03\xed\xd7\xc1\xe3n\xe6&\xe3\xbc\xd1\xb1\xc6QAf>\xba^w\x96H\xf7"
+key = b"\xccH\x89\x91\x14\x89\xcd\xfb\x98\x91\xa6\r\xc4\xc35y\xe3/\xbc\xe9\xf9\xdfO\xb75\x11V#\xc9I\xa1\xfc"
 settings_file = "Settings.dat"
 UAC = 32 + 65536
 tls_configuration = Tls(
@@ -30,8 +30,12 @@ if not DEBUG:
 else:
     exe_dir = str(Path(__file__).parents[0])
 
-settings_dir = "".join([exe_dir, "\\Settings\\"])
-temp_dir = "".join([exe_dir, "\\Tmp\\"])
+if name == "nt":
+    settings_dir = "".join([exe_dir, "\\Settings\\"])
+    temp_dir = "".join([exe_dir, "\\Tmp\\"])
+else:
+    settings_dir = "".join([exe_dir, "/Settings/"])
+    temp_dir = "".join([exe_dir, "/Tmp/"])
 
 
 def Toast(title, message, types="happy"):
@@ -272,7 +276,7 @@ def getConfig(self, section):  # noqa
         # ===================HOME DIRECTORIES================================
         if parser.has_option(section, "campus"):
             self.campus = parser.get(section, "campus")
-            # print(base64.b64decode(self.campus).decode("UTF-8").split(","))
+            print(base64.b64decode(self.campus).decode("UTF-8").split(","))
             if (
                 not base64.b64decode(self.campus).decode("UTF-8").split(",").__len__()
                 > 0

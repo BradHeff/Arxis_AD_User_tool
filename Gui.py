@@ -7,7 +7,7 @@ from icon import himage
 
 
 def Window(self):
-    self.W, self.H = 1190, 630
+    self.W, self.H = 1320, 630
     screen_width = self.winfo_screenwidth()
     screen_height = self.winfo_screenheight()
     center_x = int(screen_width / 2 - self.W / 2)

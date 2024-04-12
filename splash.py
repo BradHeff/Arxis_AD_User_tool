@@ -54,21 +54,21 @@ class Splash(ttk.Toplevel):
         signal(SIGINT, lambda x, y: print("") or self.handler())
         self.original_frame = original
         self.original_frame.hide()
-        W, H = 504, 250
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-        center_x = int(screen_width / 2 - W / 2)
-        center_y = int(screen_height / 2 - H / 2)
-        self.geometry(f"{W}x{H}+{center_x}+{center_y}")
+        # self.withdraw()
+        W, H = 804, 250
+        x, y = self.centerWindow(W, H)
+        self.geometry("%dx%d%+d%+d" % (W, H, x, y))
         self.attributes("-fullscreen", False)
         self.attributes("-topmost", True)
 
         if fn.name == "nt":
             self.attributes("-toolwindow", True)
             self.attributes("-transparentcolor", "grey15")
+        else:
+            self.attributes("-type", "splash")
 
         self.overrideredirect(True)
-
+        self.update()
         canvas = ttk.Canvas(
             self,
             bg="grey15",
@@ -97,6 +97,13 @@ class Splash(ttk.Toplevel):
         t = threading.Thread(target=self.checkUpdate)
         t.daemon = True
         t.start()
+
+    def centerWindow(self, width, height):  # Return 4 values needed to center Window
+        screen_width = self.winfo_screenwidth()  # Width of the screen
+        screen_height = self.winfo_screenheight()  # Height of the screen
+        x = (screen_width / 2) - (width / 2)
+        y = (screen_height / 2) - (height / 2)
+        return int(x), int(y)
 
     def checkUpdate(self):
         try:
