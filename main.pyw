@@ -785,6 +785,7 @@ class ADUnlocker(ttk.Window):
         #             prog += 1
         #     except:
         #         pass
+        print(self.domains["Primary"])
         if not self.domains["Primary"].__len__() <= 0:
             try:
                 self.progress["value"] = 60

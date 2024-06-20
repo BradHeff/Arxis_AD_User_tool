@@ -3,6 +3,7 @@ import sys
 import configparser_crypt as cCrypt
 import OpenSSL
 from os import mkdir, path, removedirs, system, name  # noqa
+import json
 
 if name == "nt":
     import win32security
@@ -11,7 +12,8 @@ if name == "nt":
 from pathlib import Path
 from ttkbootstrap import DISABLED, NORMAL
 from ttkbootstrap.toast import ToastNotification
-from flask import json
+
+# from flask import json
 from ldap3 import Connection, Server, MODIFY_REPLACE, SAFE_SYNC, SUBTREE, Tls
 from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
@@ -19,7 +21,7 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
 
 DEBUG = True
 Version = "v2.0.8.8"
-key = b"\xccH\x89\x91\x14\x89\xcd\xfb\x98\x91\xa6\r\xc4\xc35y\xe3/\xbc\xe9\xf9\xdfO\xb75\x11V#\xc9I\xa1\xfc"
+key = b"\xee\x11\xe5\xc7U\x9a\x04\xdf\xc6 @\xd3\xf9\xb5\x80\xac\x9e\xddS\x05\x1c\xe3y4\x0e\x0c^\xa2\xea\x16qs"
 settings_file = "Settings.dat"
 UAC = 32 + 65536
 tls_configuration = Tls(
@@ -218,6 +220,7 @@ def getConfig(self, section):  # noqa
         # ===================POSITIONS================================
         if parser.has_option(section, "positions"):
             JSON1 = base64.b64decode(parser.get(section, "positions")).decode("UTF-8")
+            JSON1 = JSON1.replace("'", '"')
             self.positions = json.loads(JSON1)
             if self.positions.__len__() <= 3:
                 self.state = True
@@ -225,6 +228,7 @@ def getConfig(self, section):  # noqa
         # ===================GROUPS================================
         if parser.has_option(section, "groups"):
             JSON2 = base64.b64decode(parser.get(section, "groups")).decode("UTF-8")
+            JSON2 = JSON2.replace("'", '"')
             self.groupPos = json.loads(JSON2)
             if self.groupPos.__len__() <= 3:
                 self.state = True
@@ -232,6 +236,7 @@ def getConfig(self, section):  # noqa
         # ===================POSITIONS OU================================
         if parser.has_option(section, "positionsou"):
             JSON3 = base64.b64decode(parser.get(section, "positionsou")).decode("UTF-8")
+            JSON3 = JSON3.replace("'", '"')
             self.positionsOU = json.loads(JSON3)
             if self.positionsOU.__len__() <= 3:
                 self.state = True
@@ -239,6 +244,7 @@ def getConfig(self, section):  # noqa
         # ===================EXPIRED OU================================
         if parser.has_option(section, "expiredous"):
             JSON4 = base64.b64decode(parser.get(section, "expiredous")).decode("UTF-8")
+            JSON4 = JSON4.replace("'", '"')
             self.expiredOUs = json.loads(JSON4)
             if self.expiredOUs.__len__() <= 3:
                 self.state = True
@@ -253,6 +259,7 @@ def getConfig(self, section):  # noqa
         # ===================DOMAINS================================
         if parser.has_option(section, "domains"):
             JSON5 = base64.b64decode(parser.get(section, "domains")).decode("UTF-8")
+            JSON5 = JSON5.replace("'", '"')
             self.domains = json.loads(JSON5)
             if self.domains.__len__() <= 3:
                 self.state = True
@@ -269,6 +276,7 @@ def getConfig(self, section):  # noqa
         # ===================TITLES================================
         if parser.has_option(section, "title"):
             JSON6 = base64.b64decode(parser.get(section, "title")).decode("UTF-8")
+            JSON6 = JSON6.replace("'", '"')
             self.jobTitle = json.loads(JSON6)
             if self.jobTitle.__len__() <= 3:
                 self.state = True
@@ -276,7 +284,7 @@ def getConfig(self, section):  # noqa
         # ===================HOME DIRECTORIES================================
         if parser.has_option(section, "campus"):
             self.campus = parser.get(section, "campus")
-            print(base64.b64decode(self.campus).decode("UTF-8").split(","))
+            # print(base64.b64decode(self.campus).decode("UTF-8").split(","))
             if (
                 not base64.b64decode(self.campus).decode("UTF-8").split(",").__len__()
                 > 0
@@ -555,7 +563,7 @@ def createUser(self, data):
     self.status["text"] = "".join(
         ["Creating ", data["first"], " ", data["last"], " home directory"]
     )
-    print(data["homeDirectory"])
+    # print(data["homeDirectory"])
     nHomeDir = checkNetworkAccess(self, data["homeDirectory"], data["login"])
     createHomeDir(
         data["login"],
