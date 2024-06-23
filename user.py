@@ -1,5 +1,5 @@
 USER_THEMES = {
-    "newtheme": {
+    "trinity": {
         "type": "light",
         "colors": {
             "primary": "#4582ec",
@@ -17,8 +17,8 @@ USER_THEMES = {
             "border": "#bfbfbf",
             "inputfg": "#343a40",
             "inputbg": "#fff",
-            "active": "#e5e5e5"
-        }
+            "active": "#e5e5e5",
+        },
     },
     "heffelhoffui": {
         "type": "light",
@@ -38,7 +38,7 @@ USER_THEMES = {
             "border": "#1d966f",
             "inputfg": "#282828",
             "inputbg": "#eeeeee",
-            "active": "#eeeeee"
-        }
-    }
+            "active": "#eeeeee",
+        },
+    },
 }
