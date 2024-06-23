@@ -55,7 +55,7 @@ class Splash(ttk.Toplevel):
         self.original_frame = original
         self.original_frame.hide()
         # self.withdraw()
-        W, H = 804, 250
+        W, H = 504, 250
         x, y = self.centerWindow(W, H)
         self.geometry("%dx%d%+d%+d" % (W, H, x, y))
         self.attributes("-fullscreen", False)
