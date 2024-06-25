@@ -281,7 +281,14 @@ class ADUnlocker(ttk.Window):
         self.clear_group()
         camp = "Balaklava"
         self.dep = "Balaklava Campus"
+        isBalak = False
+
         if "clare" in self.campH.get():
+            isBalak = False
+        else:
+            isBalak = True
+
+        if not isBalak:
             if "Year" in self.var.get() or "Found" in self.var.get():
                 self.posOU = self.positionsOU[self.var.get() + "-Clare"]
             elif "ESO" in self.var.get() or "Student Support" in self.var.get():
@@ -289,7 +296,7 @@ class ADUnlocker(ttk.Window):
             elif "Admin" in self.var.get() and "Temp" not in self.var.get():
                 self.posOU = self.positionsOU[self.var.get() + " Clare"]
             self.groups = self.groupPos[self.var.get()]
-            descDate = "".join([self.date, " Clare"])
+            descDate = f"{self.date} Clare"
             camp = "Clare"
             self.dep = "Clare Campus"
         else:
@@ -297,19 +304,7 @@ class ADUnlocker(ttk.Window):
             if "Year" in self.var.get() or "Found" in self.var.get():
                 self.posOU = self.positionsOU[self.var.get()]
                 self.desc.delete(0, "end")
-                if "Found" in self.var.get():
-                    text = "".join([self.var.get(), " - ", descDate])
-                else:
-                    text = "".join(
-                        [
-                            self.var.get()[0:4],
-                            " ",
-                            self.var.get()[4 : len(self.var.get())],
-                            " - ",
-                            descDate,
-                        ]
-                    )
-                self.desc.insert(0, text)
+                self.desc.insert(0, f"{self.var.get()} - {descDate}")
             else:
                 self.posOU = self.positionsOU[self.var.get()]
                 self.desc.delete(0, "end")
@@ -319,38 +314,36 @@ class ADUnlocker(ttk.Window):
 
         self.checkCount = 0
         self.checkRow = 0
+        print(self.groups)
         for x in self.groups:
             gn = x.split(",")[0].replace("CN=", "")
-            self.chkBtns[gn] = ttk.IntVar(self.lbl_frame2, 1)
-            rbtn = ttk.Checkbutton(
-                self.lbl_frame2,
-                text=gn,
-                variable=self.chkBtns[gn],
-                onvalue=1,
-                offvalue=0,
-            )
-            rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
+            self.chkBtns[gn] = ttk.IntVar()
+            self.chkBtns[gn].set(1)
+
+            #     print(gn)
+            #     print(self.chkBtns[gn])
+            cBtnY = ttk.Label(self.lbl_frame2, text=gn)
+            cBtnY.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
             self.checkCount += 1
-            if self.checkCount > 2:
+            if self.checkCount > 3:
                 self.checkCount = 0
                 self.checkRow += 1
+
         if not self.jobTitle.__len__() <= 3:
             try:
                 self.jobTitleEnt.delete(0, "end")
                 self.jobTitleEnt.insert(0, self.jobTitle[self.var.get()])
             except Exception as e:
                 print(e)
-                pass
 
         if not self.dep.__len__() <= 3:
             try:
                 self.depEnt.delete(0, "end")
-                self.depEnt.insert(0, camp + " Campus")
+                self.depEnt.insert(0, f"{camp} Campus")
                 self.orgCompEnt.delete(0, "end")
-                self.orgCompEnt.insert(0, "Horizon Christian School " + camp)
+                self.orgCompEnt.insert(0, f"Horizon Christian School {camp}")
             except Exception as e:
                 print(e)
-                pass
 
     def editSelect(self, value):
         self.entDomain["state"] = "normal"
