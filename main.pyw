@@ -4,7 +4,7 @@ from signal import SIGINT, signal
 
 import tkthread as tkt
 import ttkbootstrap as ttk
-
+from ttkbootstrap import Style
 import Functions as f
 import Gui
 import splash
@@ -311,7 +311,7 @@ class ADUnlocker(ttk.Window):
                 self.desc.insert(0, descDate)
 
             self.groups = self.groupPos[self.var.get()]
-
+        style = Style()
         self.checkCount = 0
         self.checkRow = 0
         print(self.groups)
@@ -323,6 +323,9 @@ class ADUnlocker(ttk.Window):
             #     print(gn)
             #     print(self.chkBtns[gn])
             cBtnY = ttk.Label(self.lbl_frame2, text=gn)
+            cBtnY.configure(
+                background=style.colors.primary, foreground=style.colors.bg, padding=10
+            )
             cBtnY.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
             self.checkCount += 1
             if self.checkCount > 3:
