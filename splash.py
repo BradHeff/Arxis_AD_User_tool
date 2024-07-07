@@ -51,7 +51,7 @@ class Splash(ttk.Toplevel):
         super().__init__()
         global photo, root
         self.bind_all("<Control-c>", self.handler)
-        signal(SIGINT, lambda x, y: print("") or self.handler())
+        signal(SIGINT, lambda x, y: print("") or self.handler(0))
         self.original_frame = original
         self.original_frame.hide()
         # self.withdraw()
