@@ -73,6 +73,7 @@ def baseGUI(self):
     # tab3 = ttk.Frame(self.tabControl)
     tab4 = ttk.Frame(self.tabControl)
     tab5 = ttk.Frame(self.tabControl)
+    tab6 = ttk.Frame(self.tabControl)
 
     # self.tab2.columnconfigure(0, weight=1)
     # self.tab2.columnconfigure(1, weight=1)
@@ -102,6 +103,7 @@ def baseGUI(self):
     # self.tabControl.add(tab3, text="Disabled User")
     self.tabControl.add(tab4, text="Move User")
     self.tabControl.add(tab5, text="Edit User")
+    self.tabControl.add(tab6, text="???? User")
     self.tabControl.bind("<<NotebookTabChanged>>", self.alterButton)
     self.tabControl.grid(sticky="nsew", columnspan=4, row=0)
 
@@ -110,6 +112,7 @@ def baseGUI(self):
     # Tab3(self, tab3)
     Tab4(self, tab4)
     Tab5(self, tab5)
+    Tab6(self, tab6)
 
     frmbtn = ttk.Frame(self)
     frmbtn.grid(sticky="sew", columnspan=4, row=5)
@@ -545,3 +548,24 @@ def Tab5(self, tab5):
 
     self.entDep = ttk.Entry(lbl_frame11, width=35)
     self.entDep.grid(sticky="sew", column=2, row=2, padx=10, pady=5)
+
+
+def Tab6(self, tab6):
+    lbl_title6 = ttk.Label(tab6, text="Active Directory ??? Users")
+    lbl_title6.grid(sticky="n", columnspan=4, padx=10)
+
+    tab6.columnconfigure(0, weight=1)
+    tab6.columnconfigure(1, weight=1)
+
+    lframe6 = ttk.Frame(tab6)
+    rframe6 = ttk.Frame(tab6)
+
+    rframe6.rowconfigure(0, weight=1)
+    rframe6.rowconfigure(1, weight=1)
+    rframe6.columnconfigure(0, weight=1)
+
+    # lframe5.rowconfigure(0, weight=1)
+    lframe6.columnconfigure(0, weight=1)
+
+    lframe6.grid(sticky="nsew", column=0, row=1, pady=10)
+    rframe6.grid(sticky="nsew", column=1, row=1, pady=10, padx=10)
