@@ -9,7 +9,10 @@ from os import remove, rmdir, mkdir, _exit
 import Functions as fn
 import requests
 from packaging import version
+
 from icon import hsplashbg
+
+# from GifLabel import GifLabel
 
 loadedMain = False
 versionFile = "https://trincloud.cc/programs/hcs_ad_tool.txt"
@@ -77,8 +80,12 @@ class Splash(ttk.Toplevel):
             highlightthickness=0,
         )
         canvas.pack()
-        photo = ttk.PhotoImage(data=hsplashbg)
+        # photo = ttk.PhotoImage(data=hsplashbg)
+        photo = ttk.PhotoImage(file=fn.exe_dir + "\\Updater.Mp4.gif")
         canvas.create_image(1, 1.5, image=photo, anchor="nw")
+        # canvas = GifLabel(self)
+        # canvas.pack()
+        # canvas.load(fn.exe_dir + "\\Updater.Mp4.gif")
 
         self.count = 1
         self.updt = ttk.Label(

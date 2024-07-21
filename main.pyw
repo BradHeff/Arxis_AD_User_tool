@@ -204,7 +204,7 @@ class ADUnlocker(ttk.Window):
                     if self.state:
                         f.widgetStatusFailed(self, True)
             case 4:
-                self.btn_unlockAll.configure(text="???? Users")
+                self.btn_unlockAll.configure(text="????")
                 if not self.compFail:
                     pass
                 else:
