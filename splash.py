@@ -50,7 +50,7 @@ goto :EOF
 class Splash(ttk.Toplevel):
     """Splash Screen displayed before the program starts"""
 
-    def __init__(self, original, themename="heffelhoffui"):
+    def __init__(self, original, themename="trinity-dark"):
         super().__init__()
         global photo, root
         self.bind_all("<Control-c>", self.handler)

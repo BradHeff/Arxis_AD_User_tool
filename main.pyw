@@ -14,7 +14,7 @@ class ADUnlocker(ttk.Window):
     """Main Class for AD Unlocker"""
 
     def __init__(self):
-        super(ADUnlocker, self).__init__(themename="heffelhoffui")
+        super(ADUnlocker, self).__init__(themename="trinity-dark")
         self.bind_all("<Control-c>", self.handler)
         signal(SIGINT, lambda x, y: print("") or self.handler())
         # self.after(500, self.check)

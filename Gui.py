@@ -29,8 +29,8 @@ def baseGUI(self):
     Window(self)
     Icon(self)
 
-    menubar = ttk.Menu(self)
-    self.file = ttk.Menu(menubar, tearoff=0)
+    menubar = ttk.Menu(self, background="#4a4a59", fg="#ededef")
+    self.file = ttk.Menu(menubar, tearoff=0, background="#4a4a59", fg="#ededef")
     self.file.add_checkbutton(
         label="Auto Load", variable=self.load, command=self.setLoad
     )
@@ -48,7 +48,7 @@ def baseGUI(self):
     #                                                                 "dark"))
 
     menubar.add_cascade(label="File", menu=self.file)
-    self.config(menu=menubar)
+    self.config(menu=menubar, background="#4a4a59")
 
     # b64_create = io.BytesIO(base64.b64decode(CREATE))
     # img_create = Image.open(b64_create, mode='r')
