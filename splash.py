@@ -10,7 +10,7 @@ import Functions as fn
 import requests
 from packaging import version
 
-from icon import hsplashbg
+from icon import loading
 
 # from GifLabel import GifLabel
 
@@ -72,38 +72,51 @@ class Splash(ttk.Toplevel):
 
         self.overrideredirect(True)
         self.update()
-        canvas = ttk.Canvas(
+
+        self.canvas = ttk.Canvas(
             self,
             bg="grey15",
             width=W - 4,
             height=H - 4,
             highlightthickness=0,
         )
-        canvas.pack()
-        # photo = ttk.PhotoImage(data=hsplashbg)
-        photo = ttk.PhotoImage(file=fn.exe_dir + "\\Updater.Mp4.gif")
-        canvas.create_image(1, 1.5, image=photo, anchor="nw")
-        # canvas = GifLabel(self)
-        # canvas.pack()
-        # canvas.load(fn.exe_dir + "\\Updater.Mp4.gif")
+        self.canvas.pack()
+        photo = ttk.PhotoImage(data=loading)
+        self.canvas.create_image(1, 1.5, image=photo, anchor="nw")
 
         self.count = 1
-        self.updt = ttk.Label(
-            self,
+        self.text = self.canvas.create_text(
+            10,
+            216,
             text="Checking for Update...",
-            background="white",
-            foreground="dark green",
+            fill="white",
+            font=("Poppins", 12),
+            anchor="nw",
         )
+        # self.updt = ttk.Label(
+        #     self,
+        #     text="Checking for Update...",
+        #     background="grey15",
+        #     foreground="dark green",
+        # )
 
         self.prog = ttk.Progressbar(self, length=500.5, maximum=100)
         self.prog.place(x=1.5, y=240)
-        self.updt.place(x=1.5, y=224)
+        # self.updt.place(x=1.5, y=224)
         # print(self.ConsoleWelcome())
         self.cleanUpRun()
 
         t = threading.Thread(target=self.checkUpdate)
         t.daemon = True
         t.start()
+
+    def animate(self, frames, gif):
+        ind = 0
+        frame = frames[ind]
+        ind += 1
+        if ind > 78:
+            ind = 0
+        gif.configure(image=frame)
 
     def centerWindow(self, width, height):  # Return 4 values needed to center Window
         screen_width = self.winfo_screenwidth()  # Width of the screen
@@ -122,15 +135,23 @@ class Splash(ttk.Toplevel):
                     str(fn.Version.replace("v", ""))
                 ):
                     # print("New version available")
-                    self.updt["text"] = "Downloading new version v%s" % str(r.text)
+                    self.canvas.itemconfig(
+                        self.text, text="Downloading new version v%s" % str(r.text)
+                    )
+                    # self.updt["text"] = "Downloading new version v%s" % str(r.text)
                     self.cleanUp()
                     t = threading.Thread(target=self.startUpdate, args=(r.text,))
                     t.daemon = True
                     t.start()
                 else:
-                    self.updt["text"] = "You are on the latest version %s" % str(
-                        fn.Version
+                    self.canvas.itemconfig(
+                        self.text,
+                        text="You are on the latest version %s" % str(fn.Version),
                     )
+
+                    # self.updt["text"] = "You are on the latest version %s" % str(
+                    #     fn.Version
+                    # )
                     time.sleep(2)
                     self.cleanUpRun()
                     self.onClose()
@@ -242,10 +263,18 @@ class Splash(ttk.Toplevel):
                         t2 = time.time()
                         tt = t2 - t0
                         speedz = round(5 / tt, 2)
-                        self.updt["text"] = "Downloading... %s MB/s (%.2f%%)" % (
-                            str(speedz),
-                            float(c),
+                        self.canvas.itemconfig(
+                            self.text,
+                            text="Downloading... %s MB/s (%.2f%%)"
+                            % (
+                                str(speedz),
+                                float(c),
+                            ),
                         )
+                        # self.updt["text"] = "Downloading... %s MB/s (%.2f%%)" % (
+                        #     str(speedz),
+                        #     float(c),
+                        # )
 
                         print(
                             "MAX = %s | VAL = %s"
