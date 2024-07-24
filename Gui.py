@@ -68,7 +68,7 @@ def baseGUI(self):
 
     self.tabControl = ttk.Notebook(self)
 
-    tab1 = ttk.Frame(self.tabControl)
+    tab1 = ttk.Frame(self.tabControl, padding=(0, 0, 5, 0))
     self.tab2 = ttk.Frame(self.tabControl)
     # tab3 = ttk.Frame(self.tabControl)
     tab4 = ttk.Frame(self.tabControl)
@@ -149,12 +149,12 @@ def Tab1(self, tab1):
     lbl_title.grid(sticky="n", columnspan=4, padx=10, pady=5)
 
     self.tree = ttk.Treeview(tab1, column=("c1", "c2", "c3"), show="headings")
-    scrollbars = ttk.Scrollbar(tab1, orient=ttk.VERTICAL)
+    scrollbars = ttk.Scrollbar(tab1, orient=ttk.VERTICAL, bootstyle="primary-round")
     scrollbars.config(command=self.tree.yview)
-    scrollbars.grid(sticky=ttk.NSEW, row=1, column=4)
-    scrollbar2s = ttk.Scrollbar(tab1, orient=ttk.HORIZONTAL)
+    scrollbars.grid(sticky=ttk.NSEW, row=1, column=4, pady=5)
+    scrollbar2s = ttk.Scrollbar(tab1, orient=ttk.HORIZONTAL, bootstyle="primary-round")
     scrollbar2s.config(command=self.tree.xview)
-    scrollbar2s.grid(sticky=ttk.EW, row=2, columnspan=4)
+    scrollbar2s.grid(sticky=ttk.EW, row=2, columnspan=4, padx=10)
 
     self.tree.config(yscrollcommand=scrollbars.set, xscrollcommand=scrollbar2s.set)
     self.tree.column("# 1", anchor=ttk.CENTER)
@@ -164,7 +164,7 @@ def Tab1(self, tab1):
     self.tree.column("# 3", anchor=ttk.CENTER)
     self.tree.heading("# 3", text="USER DN")
     self.tree.bind("<ButtonRelease-1>", self.selectItem)
-    self.tree.grid(sticky=ttk.NSEW, row=1, columnspan=4, padx=10)
+    self.tree.grid(sticky=ttk.NSEW, row=1, columnspan=4, padx=8, pady=5)
 
     self.btn_search = ttk.Button(tab1, text="Load", width=20, command=self.loadUsers)
     self.btn_search.grid(sticky="e", row=3, column=3, padx=10, pady=10)
@@ -196,8 +196,8 @@ def Tab2(self, tab2):
     lframe = ttk.Frame(tab2)
     rframe = ttk.Frame(tab2)
 
-    lframe.grid(sticky="nsew", column=0, row=1, pady=10)
-    rframe.grid(sticky="nsw", column=2, row=1, pady=10, padx=5)
+    lframe.grid(sticky="nsew", column=0, row=1, columnspan=2, pady=10)
+    rframe.grid(sticky="nsew", column=2, row=1, columnspan=2, pady=10, padx=5)
 
     # lframe.columnconfigure(0, weight=1)
     # lframe.columnconfigure(1, weight=1)
@@ -207,42 +207,60 @@ def Tab2(self, tab2):
     tab2.columnconfigure(0, weight=1)
     tab2.columnconfigure(2, weight=1)
 
+    tab2.rowconfigure(1, weight=1)
+
     lframe.rowconfigure(1, weight=0, pad=26)
-    lframe.rowconfigure(6, weight=0, pad=26)
+    lframe.columnconfigure(10, weight=1)
 
     rframe.rowconfigure(0, weight=0, pad=26)
+    rframe.columnconfigure(1, weight=1)
 
     lbl_fname = ttk.Label(lframe, text="Firstname:")
     lbl_fname.grid(sticky="wn", column=0, row=1, padx=10, pady=5)
-    self.fname = ttk.Entry(lframe, width=39)
+
+    self.fname = ttk.Entry(lframe, width=42)
     self.fname.grid(sticky="ws", column=0, row=1, padx=10)
+
     lbl_lname = ttk.Label(lframe, text="Lastname:")
     lbl_lname.grid(sticky="wn", column=1, row=1, padx=10, pady=5)
-    self.lname = ttk.Entry(lframe, width=39)
+
+    self.lname = ttk.Entry(lframe, width=42)
     self.lname.grid(sticky="ws", column=1, row=1, padx=10)
 
     self.frame = ttk.Frame(lframe)
-    self.frame.grid(sticky="sew", columnspan=4, row=2, padx=10)
+    self.frame.grid(sticky="ew", column=0, columnspan=4, row=2, padx=10)
     self.frame.columnconfigure(0, weight=1)
 
     self.samFormat = ttk.StringVar(lframe, "flastname")
     f_last = ttk.Radiobutton(
-        self.frame, text="flastname", variable=self.samFormat, value="flastname"
+        self.frame,
+        text="flastname",
+        variable=self.samFormat,
+        value="flastname",
+        bootstyle="primary",
     )
     f_last.grid(sticky="se", row=0, padx=10, pady=10)
 
     f_dot_last = ttk.Radiobutton(
-        self.frame, text="first.last", variable=self.samFormat, value="first.lastname"
+        self.frame,
+        text="first.last",
+        variable=self.samFormat,
+        value="first.lastname",
+        bootstyle="primary",
     )
     f_dot_last.grid(sticky="sn", row=0, padx=10, pady=10)
 
     first_last = ttk.Radiobutton(
-        self.frame, text="firstlast", variable=self.samFormat, value="firstlastname"
+        self.frame,
+        text="firstlast",
+        variable=self.samFormat,
+        value="firstlastname",
+        bootstyle="primary",
     )
     first_last.grid(sticky="sw", row=0, padx=10, pady=10)
 
     self.lbl_frameC = ttk.LabelFrame(lframe, text="Campus")
-    self.lbl_frameC.grid(sticky="ew", columnspan=4, row=3, padx=10, pady=5)
+    self.lbl_frameC.grid(sticky="ew", column=0, columnspan=4, row=3, padx=10, pady=5)
 
     self.lbl_frame = ttk.LabelFrame(lframe, text="Staff Position")
     self.lbl_frame.grid(sticky="ew", columnspan=4, row=4, padx=10, pady=5)
@@ -266,23 +284,23 @@ def Tab2(self, tab2):
 
     self.lbl_frame3 = ttk.LabelFrame(rframe, text="Profile")
     self.lbl_frame3.columnconfigure(2, weight=1)
-    self.lbl_frame3.grid(sticky="ew", columnspan=4, row=1, padx=10, pady=2)
+    self.lbl_frame3.grid(sticky="ew", columnspan=5, row=2, padx=10, pady=2)
 
     self.lbl_frame2 = ttk.LabelFrame(rframe, text="Groups")
-    self.lbl_frame2.grid(sticky="ew", columnspan=4, row=7, padx=10, pady=5)
+    self.lbl_frame2.grid(sticky="ew", columnspan=5, row=7, padx=10, pady=5)
 
     self.lbl_domains = ttk.Label(rframe, text="Domains:")
     self.lbl_domains.grid(sticky="wn", column=0, row=0, padx=10, pady=5)
 
     self.primary_domain = ttk.StringVar(rframe, "Select Domain")
-    self.combo_domain = ttk.Combobox(rframe, textvariable=self.primary_domain, width=27)
+    self.combo_domain = ttk.Combobox(rframe, textvariable=self.primary_domain, width=29)
     self.combo_domain["state"] = "readonly"
     self.combo_domain.grid(sticky="ws", column=0, row=0, padx=10, pady=5)
 
     lbl_dpass = ttk.Label(rframe, text="Password:")
     lbl_dpass.grid(sticky="ne", column=3, row=0, padx=10, pady=5)
 
-    self.dpass = ttk.Entry(rframe, width=40)
+    self.dpass = ttk.Entry(rframe, width=42)
     self.dpass.grid(sticky="se", column=3, row=0, padx=10, pady=5)
 
     lbl_homeDrive = ttk.Label(self.lbl_frame3, text="Home Drive:")
@@ -374,12 +392,12 @@ def Tab3(self, tab3):
     self.lbl_frame5.grid(sticky="new", columnspan=4, row=1, padx=10, pady=5)
 
     self.tree2 = ttk.Treeview(tab3, column=("c1", "c2", "c3"), show="headings")
-    scrollbar = ttk.Scrollbar(tab3)
+    scrollbar = ttk.Scrollbar(tab3, orient=ttk.VERTICAL, bootstyle="primary-round")
     scrollbar.config(command=self.tree2.yview)
-    scrollbar.grid(sticky=ttk.NSEW, row=2, column=4)
-    scrollbar2 = ttk.Scrollbar(tab3)
+    scrollbar.grid(sticky=ttk.NSEW, row=2, column=4, pady=5)
+    scrollbar2 = ttk.Scrollbar(tab3, orient=ttk.HORIZONTAL, bootstyle="primary-round")
     scrollbar2.config(command=self.tree2.xview, orient=ttk.HORIZONTAL)
-    scrollbar2.grid(sticky=ttk.NSEW, row=3, columnspan=4)
+    scrollbar2.grid(sticky=ttk.NSEW, row=3, columnspan=4, padx=10)
 
     self.tree2.column("# 1", anchor=ttk.CENTER)
     self.tree2.heading("# 1", text="USERNAME")
@@ -387,7 +405,7 @@ def Tab3(self, tab3):
     self.tree2.heading("# 2", text="DISPLAY NAME")
     self.tree2.column("# 3", anchor=ttk.CENTER)
     self.tree2.heading("# 3", text="USER DN")
-    self.tree2.grid(sticky="nsew", row=2, columnspan=4, padx=5)
+    self.tree2.grid(sticky="nsew", row=2, columnspan=4, padx=15, pady=5)
 
 
 def Tab4(self, tab4):
@@ -404,7 +422,7 @@ def Tab4(self, tab4):
 
     rframe4.rowconfigure(0, weight=0, pad=26)
 
-    lframe4.grid(sticky=ttk.NSEW, column=0, row=1, pady=10)
+    lframe4.grid(sticky=ttk.NSEW, column=0, row=1, pady=10, padx=10)
     rframe4.grid(sticky=ttk.NSEW, column=2, row=1, pady=10)
 
     self.lbl_frameF = ttk.Labelframe(rframe4, text="Campus")
@@ -425,21 +443,23 @@ def Tab4(self, tab4):
     self.tree3.column("# 3", anchor=ttk.CENTER)
     self.tree3.heading("# 3", text="USER DN")
     self.tree3.bind("<ButtonRelease-1>", self.selectItem2)
-    self.tree3.grid(row=0, columnspan=2, sticky=ttk.NSEW, padx=10, pady=5)
+    self.tree3.grid(row=0, columnspan=2, sticky=ttk.NSEW, padx=7, pady=5)
 
-    scrollbar = ttk.Scrollbar(lframe4)
+    scrollbar = ttk.Scrollbar(lframe4, orient=ttk.VERTICAL, bootstyle="primary-round")
     scrollbar.config(command=self.tree3.yview)
-    scrollbar.grid(row=0, column=2, sticky="nsw")
-    scrollbar2 = ttk.Scrollbar(lframe4, orient=ttk.HORIZONTAL)
+    scrollbar.grid(row=0, column=2, sticky="nsw", pady=5)
+    scrollbar2 = ttk.Scrollbar(
+        lframe4, orient=ttk.HORIZONTAL, bootstyle="primary-round"
+    )
     scrollbar2.config(command=self.tree3.xview)
-    scrollbar2.grid(column=0, columnspan=2, sticky="new")
+    scrollbar2.grid(column=0, columnspan=2, sticky="new", padx=10)
 
     self.lbl_frameF2 = ttk.Labelframe(lframe4, text="Move To Campus")
-    self.lbl_frameF2.grid(sticky="esw", columnspan=2, row=1, padx=10, pady=10)
+    self.lbl_frameF2.grid(sticky="esw", columnspan=2, row=2, padx=10, pady=10)
     self.McampH2 = ttk.StringVar(self.lbl_frameF2, "balaklava")
 
     self.lbl_frame8 = ttk.Labelframe(lframe4, text="Move To OU")
-    self.lbl_frame8.grid(column=0, columnspan=2, sticky="new", padx=10)
+    self.lbl_frame8.grid(column=0, columnspan=2, sticky="new", padx=10, pady=5)
 
     # self.move_btn = ttk.Button(
     #     lframe4, text="Move User", width=20, command=self.moveUser
@@ -483,13 +503,15 @@ def Tab5(self, tab5):
     self.tree4.column("# 2", anchor=ttk.CENTER)
     self.tree4.heading("# 2", text="DISPLAY NAME")
     self.tree4.bind("<ButtonRelease-1>", self.selectItem3)
-    scrollbar = ttk.Scrollbar(rframe5)
+    scrollbar = ttk.Scrollbar(rframe5, orient=ttk.VERTICAL, bootstyle="primary-round")
     scrollbar.config(command=self.tree4.yview)
-    scrollbar.grid(sticky=ttk.NS, row=0, column=2, rowspan=2)
-    scrollbar2 = ttk.Scrollbar(rframe5, orient=ttk.HORIZONTAL)
+    scrollbar.grid(sticky=ttk.NS, row=0, column=2, rowspan=2, pady=5)
+    scrollbar2 = ttk.Scrollbar(
+        rframe5, orient=ttk.HORIZONTAL, bootstyle="primary-round"
+    )
     scrollbar2.config(command=self.tree4.xview)
-    scrollbar2.grid(sticky=ttk.EW, row=2, columnspan=3)
-    self.tree4.grid(sticky=ttk.EW, columnspan=3, row=0, rowspan=2, padx=10)
+    scrollbar2.grid(sticky=ttk.EW, row=2, columnspan=3, padx=15)
+    self.tree4.grid(sticky=ttk.EW, columnspan=3, row=0, rowspan=2, padx=15, pady=5)
 
     lbl_frame11 = ttk.Labelframe(rframe5, text="Attributes")
     lbl_frame11.grid(sticky="new", row=3, columnspan=3, padx=5, pady=5)

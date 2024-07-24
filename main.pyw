@@ -1,13 +1,14 @@
 import datetime
 import threading
 from signal import SIGINT, signal
-
 import tkthread as tkt
+
 import ttkbootstrap as ttk
 from ttkbootstrap import Style
 import Functions as f
 import Gui
-import splash
+
+# import Login
 
 
 class ADUnlocker(ttk.Window):
@@ -20,8 +21,8 @@ class ADUnlocker(ttk.Window):
         # self.after(500, self.check)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        splash.Splash(self)
-
+        # splash.Splash(self)
+        # Login.Login(self)
         self.data = dict()
         self.domains = dict()
         self.chkBtns = dict()
@@ -76,7 +77,7 @@ class ADUnlocker(ttk.Window):
         Gui.baseGUI(self)
 
         self.title(
-            "".join(["Horizon AD User Tool v", f.Version[4 : f.Version.__len__()]])
+            "".join(["TrinityCloud AD User Tool v", f.Version[4 : f.Version.__len__()]])
         )
 
         # self.mainloop()
@@ -96,18 +97,11 @@ class ADUnlocker(ttk.Window):
             self.combobox["state"] = ttk.DISABLED
 
         # self.hide()
-        splash.loadedMain = True
+        # splash.loadedMain = True
 
     def on_closing(self):
         print("Thanks for using Trinity AD User Tool!\n")
-        root.destroy()
-
-    def hide(self):
-        self.withdraw()
-
-    def show(self):
-        self.update()
-        self.deiconify()
+        self.destroy()
 
     def setLoad(self):
         if f.path.isfile(f.settings_dir + "Config.ini"):
@@ -1190,21 +1184,3 @@ class ADUnlocker(ttk.Window):
 
         messages.pack(side="top", fill="x", expand=True, padx=10, pady=10)
         btn.pack(side="bottom", expand=True, padx=10, pady=10)
-
-
-root = ADUnlocker()
-
-
-def thread_run(func):
-    threading.Thread(target=func).start()
-
-
-@thread_run
-def func():
-    @tkt.main(root)
-    @tkt.current(root)
-    def runthread():
-        root.update()
-
-
-root.mainloop()
