@@ -8,6 +8,7 @@ from signal import SIGINT, signal
 from PIL import Image, ImageTk
 from Functions import Version, base64
 from icon import image
+import Main as MainWindow
 
 # import subprocess as sp
 # from os import remove, rmdir, mkdir, _exit
@@ -60,14 +61,23 @@ class Login(ttk.Window):
         lbluser = ttk.Label(self, text="Username:")
         lblpass = ttk.Label(self, text="Password:")
 
-        userBox = ttk.Entry(self)
-        passBox = ttk.Entry(self, show="*")
+        self.userBox = ttk.Entry(self)
+        self.passBox = ttk.Entry(self, show="*")
 
         lbluser.grid(sticky="NW", row=1, column=0, pady=10, padx=20)
-        userBox.grid(sticky="SEW", row=1, column=0, pady=10, padx=20)
+        self.userBox.grid(sticky="SEW", row=1, column=0, pady=10, padx=20)
 
         lblpass.grid(sticky="NW", row=1, column=1, pady=10, padx=20)
-        passBox.grid(sticky="SEW", row=1, column=1, pady=10, padx=20)
+        self.passBox.grid(sticky="SEW", row=1, column=1, pady=10, padx=20)
+
+        loginBtn = ttk.Button(
+            self,
+            text="Login",
+            command=lambda: self.login(self.userBox.get(), self.passBox.get()),
+        )
+        loginBtn.grid(sticky="SE", row=2, columnspan=2, pady=10, padx=10)
+        cancelBtn = ttk.Button(self, text="Cancel", command=self.on_closing)
+        cancelBtn.grid(sticky="SW", row=2, columnspan=2, pady=10, padx=10)
 
         splash.loadedMain = True
 
@@ -76,6 +86,16 @@ class Login(ttk.Window):
         img = Image.open(b64_img, mode="r")
         photo = ImageTk.PhotoImage(image=img)
         self.wm_iconphoto(False, photo)
+
+    def login(self, username, password):
+        print("Username: ", username)
+        print("Password: ", password)
+        self.hide()
+        # Here goes the code to connect to the AD server and perform the login operation
+        # Once the login is successful, show the main window
+        # Otherwise, display an error message
+        # root.mainloop()
+        MainWindow.Main(root)
 
     def centerWindow(self, width, height):  # Return 4 values needed to center Window
         screen_width = self.winfo_screenwidth()  # Width of the screen
