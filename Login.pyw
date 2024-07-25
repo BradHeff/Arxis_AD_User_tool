@@ -1,4 +1,5 @@
 import threading
+import time
 
 # import time
 import tkthread as tkt
@@ -50,9 +51,12 @@ class Login(ttk.Window):
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.Icon()
         self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-        self.rowconfigure(1, weight=0, pad=26)
-        print(f.getSettings(self))
+        self.columnconfigure(2, weight=1)
+        self.rowconfigure(0, weight=0, pad=26)
+        self.rowconfigure(1, weight=0, pad=16)
+        self.rowconfigure(2, weight=0, pad=16)
+        self.rowconfigure(3, weight=1)
+        # print(f.getSettings(self))
         self.company = "Horizon"
         self.server = f.getServer(self, self.company)
         self.title(
@@ -61,7 +65,7 @@ class Login(ttk.Window):
         print(self.company)
         print(self.server)
         lbltitle = ttk.Label(self, text="TrinityCloud AD User Tool")
-        lbltitle.grid(row=0, column=0, columnspan=2, pady=5)
+        lbltitle.grid(row=0, columnspan=4, pady=5)
 
         lbluser = ttk.Label(self, text="Username:")
         lblpass = ttk.Label(self, text="Password:")
@@ -70,19 +74,23 @@ class Login(ttk.Window):
         self.passBox = ttk.Entry(self, show="*")
 
         lbluser.grid(sticky="NW", row=1, column=0, pady=10, padx=20)
-        self.userBox.grid(sticky="SEW", row=1, column=0, pady=10, padx=20)
+        self.userBox.grid(sticky="SEW", row=1, column=0, pady=20, padx=20)
 
-        lblpass.grid(sticky="NW", row=1, column=1, pady=10, padx=20)
-        self.passBox.grid(sticky="SEW", row=1, column=1, pady=10, padx=20)
+        lblpass.grid(sticky="NW", row=1, column=2, pady=10, padx=20)
+        self.passBox.grid(sticky="SEW", row=1, column=2, pady=20, padx=20)
 
         loginBtn = ttk.Button(
             self,
             text="Login",
-            command=lambda: self.login(self.userBox.get(), self.passBox.get()),
+            command=self.loginForm,
+            width=32,
         )
-        loginBtn.grid(sticky="SE", row=2, columnspan=2, pady=10, padx=10)
-        cancelBtn = ttk.Button(self, text="Cancel", command=self.on_closing)
-        cancelBtn.grid(sticky="SW", row=2, columnspan=2, pady=10, padx=10)
+        cancelBtn = ttk.Button(self, text="Cancel", command=self.on_closing, width=32)
+        cancelBtn.grid(sticky="W", row=2, column=0, columnspan=2, padx=20)
+        loginBtn.grid(sticky="E", row=2, column=2, columnspan=2, padx=20)
+
+        self.lblstatus = ttk.Label(self, text="")
+        self.lblstatus.grid(row=3, columnspan=4, padx=20)
 
         splash.loadedMain = True
 
@@ -92,17 +100,28 @@ class Login(ttk.Window):
         photo = ImageTk.PhotoImage(image=img)
         self.wm_iconphoto(False, photo)
 
+    def loginForm(self):
+        username = self.userBox.get()
+        password = self.passBox.get()
+        self.lblstatus["text"] = "Logging in..."
+        self.login(username, password)
+
     def login(self, username, password):
         print("Username: ", username)
         print("Password: ", password)
         try:
             conn = f.ldap_login(self, username, password)
             if self.company.upper() in conn.extend.standard.who_am_i():
+                self.lblstatus["text"] = "Login Successful"
+                time.sleep(1)
                 self.hide()
                 Main.Main(self)
+
             else:
+                self.lblstatus["text"] = "Login Failed"
                 print("Login Failed")
         except LDAPBindError as e:
+            self.lblstatus["text"] = "Incorrect Username or Password"
             print("Login Failed: ", str(e))
         # self.hide()
         # Main.Main(root)

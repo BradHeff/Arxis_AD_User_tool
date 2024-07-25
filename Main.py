@@ -39,7 +39,8 @@ class Main(ttk.Toplevel):
         self.pdomains = []
         self.homePaths = []
         self.campus = []
-
+        print(original_frame.company)
+        print(original_frame.server)
         self.server = original_frame.server
         self.username = ""
         self.password = ""

@@ -14,7 +14,7 @@ from ttkbootstrap import DISABLED, NORMAL
 from ttkbootstrap.toast import ToastNotification
 
 # from flask import json
-from ldap3 import Connection, Server, MODIFY_REPLACE, SAFE_SYNC, SUBTREE, Tls, NTLM
+from ldap3 import Connection, Server, MODIFY_REPLACE, SAFE_SYNC, SUBTREE, Tls
 from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
