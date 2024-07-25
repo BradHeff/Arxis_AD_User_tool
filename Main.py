@@ -11,11 +11,11 @@ import Gui
 # import Login
 
 
-class Main(ttk.Window):
+class Main(ttk.Toplevel):
     """Main Class for AD Unlocker"""
 
-    def __init__(self, original_frame):
-        super(Main, self).__init__(themename="trinity-dark")
+    def __init__(self, original_frame, themename="trinity-dark"):
+        super().__init__()
         self.bind_all("<Control-c>", self.handler)
         signal(SIGINT, lambda x, y: print("") or self.handler())
         # self.after(500, self.check)
@@ -102,8 +102,8 @@ class Main(ttk.Window):
     def on_closing(self):
         print("Thanks for using Trinity AD User Tool!\n")
         self.Login.destroy()
-        self.destroy()
-        self.quit()
+        # self.destroy()
+        # self.quit()
 
     def show(self):
         self.update()

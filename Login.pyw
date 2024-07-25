@@ -8,13 +8,13 @@ from signal import SIGINT, signal
 from PIL import Image, ImageTk
 from Functions import Version, base64
 from icon import image
-import Main as MainWindow
 
 # import subprocess as sp
 # from os import remove, rmdir, mkdir, _exit
 # import Functions as fn
 
 import splash
+import Main
 
 
 class Login(ttk.Window):
@@ -95,7 +95,7 @@ class Login(ttk.Window):
         # Once the login is successful, show the main window
         # Otherwise, display an error message
         # root.mainloop()
-        MainWindow.Main(root)
+        Main.Main(root)
 
     def centerWindow(self, width, height):  # Return 4 values needed to center Window
         screen_width = self.winfo_screenwidth()  # Width of the screen
