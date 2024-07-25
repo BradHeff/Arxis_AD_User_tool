@@ -4,10 +4,12 @@ import threading
 import tkthread as tkt
 import io
 import ttkbootstrap as ttk
+import Functions as f
 from signal import SIGINT, signal
 from PIL import Image, ImageTk
 from Functions import Version, base64
 from icon import image
+from ldap3.core.exceptions import LDAPBindError
 
 # import subprocess as sp
 # from os import remove, rmdir, mkdir, _exit
@@ -50,11 +52,14 @@ class Login(ttk.Window):
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(1, weight=0, pad=26)
-
+        print(f.getSettings(self))
+        self.company = "Horizon"
+        self.server = f.getServer(self, self.company)
         self.title(
             "".join(["TrinityCloud AD User Tool v", Version[4 : Version.__len__()]])
         )
-
+        print(self.company)
+        print(self.server)
         lbltitle = ttk.Label(self, text="TrinityCloud AD User Tool")
         lbltitle.grid(row=0, column=0, columnspan=2, pady=5)
 
@@ -90,12 +95,17 @@ class Login(ttk.Window):
     def login(self, username, password):
         print("Username: ", username)
         print("Password: ", password)
-        self.hide()
-        # Here goes the code to connect to the AD server and perform the login operation
-        # Once the login is successful, show the main window
-        # Otherwise, display an error message
-        # root.mainloop()
-        Main.Main(root)
+        try:
+            conn = f.ldap_login(self, username, password)
+            if self.company.upper() in conn.extend.standard.who_am_i():
+                self.hide()
+                Main.Main(self)
+            else:
+                print("Login Failed")
+        except LDAPBindError as e:
+            print("Login Failed: ", str(e))
+        # self.hide()
+        # Main.Main(root)
 
     def centerWindow(self, width, height):  # Return 4 values needed to center Window
         screen_width = self.winfo_screenwidth()  # Width of the screen

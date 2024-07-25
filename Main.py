@@ -40,13 +40,13 @@ class Main(ttk.Toplevel):
         self.homePaths = []
         self.campus = []
 
-        self.server = ""
+        self.server = original_frame.server
         self.username = ""
         self.password = ""
         self.ou = ""
         self.posOU = ""
         self.domainName = ""
-        self.company = ""
+        self.company = original_frame.company
         self.samFormat = ""
         self.groupPos = ""
         self.editPosOU = ""
@@ -70,7 +70,7 @@ class Main(ttk.Toplevel):
         date = currentDateTime.date()
         self.date = date.strftime("%Y")
 
-        f.getSettings(self)
+        # f.getSettings(self)
 
         self.error = f.checkSettings(self)
 

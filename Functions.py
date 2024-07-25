@@ -14,14 +14,14 @@ from ttkbootstrap import DISABLED, NORMAL
 from ttkbootstrap.toast import ToastNotification
 
 # from flask import json
-from ldap3 import Connection, Server, MODIFY_REPLACE, SAFE_SYNC, SUBTREE, Tls
+from ldap3 import Connection, Server, MODIFY_REPLACE, SAFE_SYNC, SUBTREE, Tls, NTLM
 from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
 
 DEBUG = True
 Version = "v2.0.9.8"
-key = b"\x9a\xd0\xed#\xcd{\x033\x92\xf9G\xe3(\x9e\x11'\xcb\x92o\xa8w\xd3u*\x07\x18\xbdiR\xab2*"
+key = b'\xc2\x04_\x8e\xd2\xed7H\x0e\x9b,m\xc1pE\xe9\xdd$\xa9\xdb\x83\x06\xe5l#d\x13"o\x00tc'
 settings_file = "Settings.dat"
 UAC = 32 + 65536
 tls_configuration = Tls(
@@ -84,10 +84,26 @@ def ldap_connection(self):
         use_ssl=True,
         tls=tls_configuration,
     )
+
     return Connection(
         server,
         base64.b64decode(self.username).decode("UTF-8").strip(),
         base64.b64decode(self.password).decode("UTF-8").strip(),
+        client_strategy=SAFE_SYNC,
+        auto_bind=True,
+    )
+
+
+def ldap_login(self, username, password):
+    server = Server(
+        base64.b64decode(self.server).decode("UTF-8").strip(),
+        use_ssl=True,
+        tls=tls_configuration,
+    )
+    return Connection(
+        server,
+        "".join([self.company, "\\", username.strip()]),
+        password.strip(),
         client_strategy=SAFE_SYNC,
         auto_bind=True,
     )
@@ -154,12 +170,26 @@ def loadConfig(self, check=False):
             # self.comboLoad()
 
 
+def getServer(self, section):  # noqa
+    parser = cCrypt.ConfigParserCrypt()
+    parser.aes_key = key
+    parser.read_encrypted(settings_dir + settings_file)
+    if parser.has_section(section):
+        if parser.has_option(section, "server"):
+            return parser.get(section, "server")
+            # print(base64.b64decode(self.server).decode("UTF-8"))
+            if not base64.b64decode(self.server).decode("UTF-8").__len__() <= 3:
+                return False
+            else:
+                return False
+
+
 def getSettings(self):
     parser = cCrypt.ConfigParserCrypt()
     parser.aes_key = key
     parser.read_encrypted(settings_dir + settings_file)
     if parser.has_section("Settings"):
-        self.company = parser.get("Settings", "company")
+        return parser.get("Settings", "company")
 
 
 def getConfig(self, section):  # noqa
