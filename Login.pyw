@@ -1,5 +1,5 @@
-# import threading
-# import time
+import threading
+import time
 
 # import time
 # import tkthread as tkt
@@ -43,8 +43,7 @@ class Login(ttk.Toplevel):
         # self.MainFrame.hide()
         # splash.Splash(self)
         W, H = 504, 250
-        x, y = self.centerWindow(W, H)
-        self.geometry("%dx%d%+d%+d" % (W, H, x, y))
+
         self.attributes("-fullscreen", False)
         self.attributes("-topmost", True)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -90,6 +89,9 @@ class Login(ttk.Toplevel):
         self.lblstatus = ttk.Label(self, text="")
         self.lblstatus.grid(row=3, columnspan=4, padx=20)
 
+        x, y = self.centerWindow(W, H)
+        self.geometry("%dx%d%+d%+d" % (W, H, x, y))
+
     def Icon(self):
         b64_img = io.BytesIO(base64.b64decode(image))
         img = Image.open(b64_img, mode="r")
@@ -109,12 +111,20 @@ class Login(ttk.Toplevel):
         try:
             conn = f.ldap_login(self.MainFrame, username, password)
             if self.MainFrame.company.upper() in conn.extend.standard.who_am_i():
-                self.lblstatus.config(bootstyle="success", font=("Poppins", 14))
-                self.lblstatus["text"] = "Login Successful"
-                # time.sleep(1)
-                self.destroy()
-                self.MainFrame.show()
+                if (
+                    username in f.ICT_Admins["IT"]
+                    or username in f.ICT_Admins["Management"]
+                ):
+                    self.lblstatus.config(bootstyle="success", font=("Poppins", 14))
+                    self.lblstatus["text"] = "Login Successful"
+                    # time.sleep(1)
+                    t = threading.Thread(target=self.showMain)
+                    t.daemon = True
+                    t.start()
 
+                else:
+                    self.lblstatus.config(bootstyle="danger", font=("Poppins", 14))
+                    self.lblstatus["text"] = "Not Authorized to access this system"
             else:
                 self.lblstatus.config(bootstyle="danger", font=("Poppins", 14))
                 self.lblstatus["text"] = "Login Failed"
@@ -129,6 +139,11 @@ class Login(ttk.Toplevel):
             self.lblstatus["text"] = "Login Failed: Password is mandatory"
         # self.hide()
         # Main.Main(root)
+
+    def showMain(self):
+        time.sleep(3)
+        self.destroy()
+        self.MainFrame.show()
 
     def centerWindow(self, width, height):  # Return 4 values needed to center Window
         screen_width = self.winfo_screenwidth()  # Width of the screen

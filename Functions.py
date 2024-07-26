@@ -24,6 +24,11 @@ Version = "v2.0.9.8"
 key = b'\xc2\x04_\x8e\xd2\xed7H\x0e\x9b,m\xc1pE\xe9\xdd$\xa9\xdb\x83\x06\xe5l#d\x13"o\x00tc'
 settings_file = "Settings.dat"
 UAC = 32 + 65536
+ICT_Admins = {
+    "IT": ["bheffernan"],
+    "Management": ["djohnson", "dan.desktop"],
+}
+
 tls_configuration = Tls(
     validate=OpenSSL.SSL.VERIFY_NONE, version=OpenSSL.SSL.TLSv1_1_METHOD
 )
