@@ -53,6 +53,8 @@ class Splash(ttk.Toplevel):
     def __init__(self, original, themename="trinity-dark"):
         super().__init__()
         global photo, root
+        # self.bind("<B1-Motion>", move_window)
+
         self.bind_all("<Control-c>", self.handler)
         signal(SIGINT, lambda x, y: print("") or self.handler(0))
         self.original_frame = original
@@ -66,24 +68,31 @@ class Splash(ttk.Toplevel):
 
         if fn.name == "nt":
             self.attributes("-toolwindow", True)
-            self.attributes("-transparentcolor", "grey15")
+            self.attributes("-transparentcolor", "grey")
+            # self.wm_attributes("-alpha", 0.7)
         else:
             self.attributes("-type", "splash")
-
+        self.configure(background="grey")
         self.overrideredirect(True)
         self.update()
 
         self.canvas = ttk.Canvas(
             self,
-            bg="grey15",
+            bg="grey",
             width=W - 4,
             height=H - 4,
             highlightthickness=0,
         )
-        self.canvas.pack()
+        self.canvas.pack(fill="both", expand=True)
+
+        # self.updt = ttk.Label(
+        #     self,
+        #     text="Checking for Update...",
+        #     background="grey15",
+        #     foreground="dark green",
+        # )
         photo = ttk.PhotoImage(data=loading)
         self.canvas.create_image(1, 1.5, image=photo, anchor="nw")
-
         self.count = 1
         self.text = self.canvas.create_text(
             10,
@@ -93,13 +102,6 @@ class Splash(ttk.Toplevel):
             font=("Poppins", 12),
             anchor="nw",
         )
-        # self.updt = ttk.Label(
-        #     self,
-        #     text="Checking for Update...",
-        #     background="grey15",
-        #     foreground="dark green",
-        # )
-
         self.prog = ttk.Progressbar(self, length=500.5, maximum=100)
         self.prog.place(x=1.5, y=240)
         # self.updt.place(x=1.5, y=224)

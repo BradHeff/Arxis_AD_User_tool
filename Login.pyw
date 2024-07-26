@@ -6,6 +6,7 @@ import time
 import io
 import ttkbootstrap as ttk
 import Functions as f
+import tkthread as tkt
 
 # from signal import SIGINT, signal
 from PIL import Image, ImageTk
@@ -42,7 +43,7 @@ class Login(ttk.Toplevel):
         self.MainFrame = original
         # self.MainFrame.hide()
         # splash.Splash(self)
-        W, H = 504, 250
+        W, H = 504, 240
 
         self.attributes("-fullscreen", False)
         self.attributes("-topmost", True)
@@ -54,6 +55,7 @@ class Login(ttk.Toplevel):
         self.rowconfigure(1, weight=0, pad=16)
         self.rowconfigure(2, weight=0, pad=16)
         self.rowconfigure(3, weight=1)
+        self.resizable(False, False)
         # print(f.getSettings(self))
 
         self.title(
@@ -76,21 +78,29 @@ class Login(ttk.Toplevel):
         lblpass.grid(sticky="NW", row=1, column=2, pady=10, padx=20)
         self.passBox.grid(sticky="SEW", row=1, column=2, pady=20, padx=20)
 
-        loginBtn = ttk.Button(
+        self.loginBtn = ttk.Button(
             self,
             text="Login",
             command=self.loginForm,
-            width=32,
+            width=22,
         )
-        cancelBtn = ttk.Button(self, text="Cancel", command=self.on_closing, width=32)
-        cancelBtn.grid(sticky="W", row=2, column=0, columnspan=2, padx=20)
-        loginBtn.grid(sticky="E", row=2, column=2, columnspan=2, padx=20)
+        self.cancelBtn = ttk.Button(
+            self, text="Cancel", command=self.on_closing, width=22
+        )
+        self.cancelBtn.grid(row=2, column=0, columnspan=2, padx=20)
+        self.loginBtn.grid(row=2, column=2, columnspan=2, padx=20)
 
         self.lblstatus = ttk.Label(self, text="")
         self.lblstatus.grid(row=3, columnspan=4, padx=20)
 
         x, y = self.centerWindow(W, H)
         self.geometry("%dx%d%+d%+d" % (W, H, x, y))
+
+    def disElements(self, state):
+        self.userBox["state"] = state
+        self.passBox["state"] = state
+        self.loginBtn["state"] = state
+        self.cancelBtn["state"] = state
 
     def Icon(self):
         b64_img = io.BytesIO(base64.b64decode(image))
@@ -103,7 +113,10 @@ class Login(ttk.Toplevel):
         password = self.passBox.get()
         self.lblstatus.config(bootstyle="warning", font=("Poppins", 14))
         self.lblstatus["text"] = "Logging in..."
-        self.login(username, password)
+        self.disElements(ttk.DISABLED)
+        tt = threading.Thread(target=self.login, args=(username, password))
+        tt.daemon = True
+        tt.start()
 
     def login(self, username, password):
         print("Username: ", username)
@@ -115,35 +128,52 @@ class Login(ttk.Toplevel):
                     username in f.ICT_Admins["IT"]
                     or username in f.ICT_Admins["Management"]
                 ):
-                    self.lblstatus.config(bootstyle="success", font=("Poppins", 14))
-                    self.lblstatus["text"] = "Login Successful"
-                    # time.sleep(1)
-                    t = threading.Thread(target=self.showMain)
-                    t.daemon = True
-                    t.start()
-
+                    tkt.call_nosync(
+                        self.lblstatus.config,
+                        bootstyle="success",
+                        font=("Poppins", 14),
+                        text="Login Success",
+                    )
+                    time.sleep(2)
+                    self.destroy()
+                    self.MainFrame.show()
                 else:
-                    self.lblstatus.config(bootstyle="danger", font=("Poppins", 14))
-                    self.lblstatus["text"] = "Not Authorized to access this system"
+                    tkt.call_nosync(
+                        self.lblstatus.config,
+                        bootstyle="danger",
+                        font=("Poppins", 14),
+                        text="Not Authorized to access this system",
+                    )
+                    tkt.call_nosync(self.disElements, ttk.NORMAL)
             else:
-                self.lblstatus.config(bootstyle="danger", font=("Poppins", 14))
-                self.lblstatus["text"] = "Login Failed"
+                tkt.call_nosync(
+                    self.lblstatus.config,
+                    bootstyle="danger",
+                    font=("Poppins", 14),
+                    text="Login Failed",
+                )
+                tkt.call_nosync(self.disElements, ttk.NORMAL)
                 print("Login Failed")
         except LDAPBindError as e:
-            self.lblstatus.config(bootstyle="danger", font=("Poppins", 14))
-            self.lblstatus["text"] = "Incorrect Username or Password"
+            tkt.call_nosync(
+                self.lblstatus.config,
+                bootstyle="danger",
+                font=("Poppins", 14),
+                text="Incorrect Username or Password",
+            )
+            tkt.call_nosync(self.disElements, ttk.NORMAL)
             print("Login Failed: ", str(e))
         except LDAPPasswordIsMandatoryError as e:
             print("Login Failed: ", str(e))
-            self.lblstatus.config(bootstyle="danger", font=("Poppins", 14))
-            self.lblstatus["text"] = "Login Failed: Password is mandatory"
+            tkt.call_nosync(
+                self.lblstatus.config,
+                bootstyle="danger",
+                font=("Poppins", 14),
+                text="Login Failed: Password is mandatory",
+            )
+            tkt.call_nosync(self.disElements, ttk.NORMAL)
         # self.hide()
         # Main.Main(root)
-
-    def showMain(self):
-        time.sleep(3)
-        self.destroy()
-        self.MainFrame.show()
 
     def centerWindow(self, width, height):  # Return 4 values needed to center Window
         screen_width = self.winfo_screenwidth()  # Width of the screen
