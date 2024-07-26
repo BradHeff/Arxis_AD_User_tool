@@ -20,6 +20,27 @@ USER_THEMES = {
             "active": "#4a4a59",
         },
     },
+    "trinity-light": {
+        "type": "light",
+        "colors": {
+            "primary": "#3998e7",
+            "secondary": "#446488",
+            "success": "#02b875",
+            "info": "#17a2b8",
+            "warning": "#f0ad4e",
+            "danger": "#d9534f",
+            "light": "#ededef",
+            "dark": "#4a4a59",
+            "bg": "#ededef",
+            "fg": "#282828",
+            "selectbg": "#3998e7",
+            "selectfg": "#ededef",
+            "border": "#3f7eb8",
+            "inputfg": "#4a4a59",
+            "inputbg": "#f1f1f3",
+            "active": "#e5e5e5",
+        },
+    },
     "heffelhoffui": {
         "type": "light",
         "colors": {

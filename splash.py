@@ -53,23 +53,21 @@ class Splash(ttk.Toplevel):
     def __init__(self, original, themename="trinity-dark"):
         super().__init__()
         global photo, root
-        # self.bind("<B1-Motion>", move_window)
 
         self.bind_all("<Control-c>", self.handler)
         signal(SIGINT, lambda x, y: print("") or self.handler(0))
         self.original_frame = original
         self.original_frame.hide()
-        # self.withdraw()
         W, H = 504, 250
         x, y = self.centerWindow(W, H)
         self.geometry("%dx%d%+d%+d" % (W, H, x, y))
         self.attributes("-fullscreen", False)
         self.attributes("-topmost", True)
+        self.resizable(False, False)
 
         if fn.name == "nt":
             self.attributes("-toolwindow", True)
             self.attributes("-transparentcolor", "grey")
-            # self.wm_attributes("-alpha", 0.7)
         else:
             self.attributes("-type", "splash")
         self.configure(background="grey")
@@ -85,12 +83,6 @@ class Splash(ttk.Toplevel):
         )
         self.canvas.pack(fill="both", expand=True)
 
-        # self.updt = ttk.Label(
-        #     self,
-        #     text="Checking for Update...",
-        #     background="grey15",
-        #     foreground="dark green",
-        # )
         photo = ttk.PhotoImage(data=loading)
         self.canvas.create_image(1, 1.5, image=photo, anchor="nw")
         self.count = 1
@@ -104,8 +96,6 @@ class Splash(ttk.Toplevel):
         )
         self.prog = ttk.Progressbar(self, length=500.5, maximum=100)
         self.prog.place(x=1.5, y=240)
-        # self.updt.place(x=1.5, y=224)
-        # print(self.ConsoleWelcome())
         self.cleanUpRun()
 
         t = threading.Thread(target=self.checkUpdate)
@@ -136,11 +126,9 @@ class Splash(ttk.Toplevel):
                 if version.parse(str(r.text)) > version.parse(
                     str(fn.Version.replace("v", ""))
                 ):
-                    # print("New version available")
                     self.canvas.itemconfig(
                         self.text, text="Downloading new version v%s" % str(r.text)
                     )
-                    # self.updt["text"] = "Downloading new version v%s" % str(r.text)
                     self.cleanUp()
                     t = threading.Thread(target=self.startUpdate, args=(r.text,))
                     t.daemon = True
@@ -151,9 +139,6 @@ class Splash(ttk.Toplevel):
                         text="You are on the latest version %s" % str(fn.Version),
                     )
 
-                    # self.updt["text"] = "You are on the latest version %s" % str(
-                    #     fn.Version
-                    # )
                     time.sleep(2)
                     self.cleanUpRun()
                     self.onClose()
@@ -233,8 +218,6 @@ class Splash(ttk.Toplevel):
         with open("".join([fn.temp_dir, "updater.bat"]), "w") as batch:
             batch.write(dwnld)
             batch.close()
-        # start = time.perf_counter()
-        # print("".join([newProg, "-", versionz, ".zip"]))
         with requests.get(
             "".join([newProg, "-", versionz, ".zip"]),
             stream=True,
@@ -254,8 +237,6 @@ class Splash(ttk.Toplevel):
                     j = 0
                     # dl = 0
                     for i, chunk in enumerate(r.iter_content(chunk_size=chunk_size)):
-                        # for chunk in response.iter_content(chunk_size=1024):
-                        # dl += len(chunk)
                         tsize += len(chunk)
                         c = i * tsize / total_size * 100
                         obj.extend(chunk)
@@ -273,10 +254,6 @@ class Splash(ttk.Toplevel):
                                 float(c),
                             ),
                         )
-                        # self.updt["text"] = "Downloading... %s MB/s (%.2f%%)" % (
-                        #     str(speedz),
-                        #     float(c),
-                        # )
 
                         print(
                             "MAX = %s | VAL = %s"
@@ -287,8 +264,6 @@ class Splash(ttk.Toplevel):
                         )
                         if tsize > chunk_size:
                             j += 1
-                            ## Calculate the speed.. this is in MB/s,
-                            ## but you can easily change to KB/s, or Blocks/s
                             t1 = time.time()
                             t = t1 - t0
                             speed = round(5 / t, 2)
@@ -311,14 +286,11 @@ class Splash(ttk.Toplevel):
         subprocess_pid = process.pid
         print(subprocess_pid)
         _exit(0)
-        # self.destroy()
-        # self.original_frame.destroy()
 
     def onClose(self):
         self.cleanUpRun()
         self.destroy()
         Login.Login(self.original_frame)
-        # self.original_frame.show()
 
     def handler(self, handle):
         msg = "Ctrl-c was pressed. Exiting now... "

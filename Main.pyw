@@ -23,7 +23,6 @@ class Main(ttk.Window):
         self.company = "Horizon"
         self.server = f.getServer(self, self.company)
         splash.Splash(self)
-        # Login.Login(self)
         self.data = dict()
         self.domains = dict()
         self.chkBtns = dict()
@@ -59,8 +58,7 @@ class Main(ttk.Window):
 
         self.checkCount = 0
         self.checkRow = 0
-        # username = "CN=SOMEONE SPECIAL,OU=Primary Teachers,OU=Teachers,OU=Staff,OU=Users,OU=Horizon,DC=HORIZON,DC=local".split(",")[0]
-        # print(username)
+
         self.load = ttk.BooleanVar(self, False)
         self.comp = "Select Company"
 
@@ -68,33 +66,20 @@ class Main(ttk.Window):
         date = currentDateTime.date()
         self.date = date.strftime("%Y")
 
-        # f.getSettings(self)
-
-        # self.error = f.checkSettings(self, self.company)
-
         Gui.baseGUI(self)
 
         self.title(
             "".join(["TrinityCloud AD User Tool v", f.Version[4 : f.Version.__len__()]])
         )
 
-        # self.mainloop()
-
-        # if self.error:
-        #     self.destroy()
-        #     tkt.call_nosync(
-        #         self.messageBox, "ERROR!!", "company settings is incomplete"
-        #     )
-
         self.options.set("Horizon")
         self.comboSelect("", "H")
 
         self.combobox["state"] = ttk.NORMAL
-        # Gui.print_icon("open_lock.png")
+
         if not f.DEBUG:
             self.combobox["state"] = ttk.DISABLED
 
-        # self.hide()
         splash.loadedMain = True
 
     def on_closing(self):
@@ -118,34 +103,6 @@ class Main(ttk.Window):
                 parser.write(w)
         else:
             f.saveConfig(self)
-
-    # def addToGroups(self):
-    #     if "Select" in self.add_groups.get():
-    #         return
-    #     if self.var.get() == "1":
-    #         return
-    #     p = self.lbl_frame2.grid_slaves()
-    #     cont = True
-    #     for y in p:
-    #         if self.add_groups.get() == y["text"]:
-    #             cont = False
-    #     if cont:
-    #         if self.checkCount > 2:
-    #             self.checkCount = 0
-    #             self.checkRow += 1
-    #         self.chkBtns[self.add_groups.get()] = ttk.IntVar(self.lbl_frame2, 1)
-    #         # print([x for x in self.chkBtns])
-    #         rbtn = ttk.Checkbutton(
-    #             self.lbl_frame2, bootstyle="round-toggle",
-    #             text=self.add_groups.get(),
-    #             variable=self.chkBtns[self.add_groups.get()],
-    #             onvalue=1,
-    #             offvalue=0,
-    #         )
-    #         rbtn.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
-    #         self.checkCount += 1
-    #     else:
-    #         tkt.call_nosync(self.messageBox, "ERROR!!!", "That group already exists!")
 
     def alterButton(self, widget):
         match self.tabControl.index(self.tabControl.select()):
@@ -235,7 +192,6 @@ class Main(ttk.Window):
         self.entDomain.delete(0, "end")
         self.lname_entry.delete(0, "end")
         self.fname_entry.delete(0, "end")
-        # print(self.updateList[self.selItem3[0]]['proxyAddresses'])
         try:
             domain = str(self.updateList[self.selItem3[0]]["userPrincipalName"])
             domain = domain.split("@")[1].strip()
@@ -272,7 +228,6 @@ class Main(ttk.Window):
         self.entDomain["state"] = "readonly"
 
     def getCheck(self):
-        # print(self.var.get())
         grp = []
         for x in self.groups:
             grp.append(x)
@@ -321,8 +276,6 @@ class Main(ttk.Window):
             self.chkBtns[gn] = ttk.IntVar()
             self.chkBtns[gn].set(1)
 
-            #     print(gn)
-            #     print(self.chkBtns[gn])
             cBtnY = ttk.Label(self.lbl_frame2, text=gn)
             cBtnY.configure(
                 background=style.colors.primary, foreground=style.colors.bg, padding=10
@@ -537,11 +490,8 @@ class Main(ttk.Window):
         self.tree2.delete(*self.tree2.get_children())
 
     def comboSelect(self, widget, value="H"):
-        # print(self.winfo_width())
         if "camp" not in str(widget):
             f.getConfig(self, self.options.get())
-            # print(self.compFail)
-            # print(self.servs)
             self.clear_campus()
             if (
                 not f.base64.b64decode(self.campus)
@@ -608,7 +558,6 @@ class Main(ttk.Window):
         t = threading.Thread(target=self.comboLoad, args=(value))
         t.daemon = True
         t.start()
-        # t.join()
 
     def comboLoad(self, value):  # noqa
         # print(self.positions)
@@ -809,29 +758,8 @@ class Main(ttk.Window):
                 print(e)
                 pass
         if not f.base64.b64decode(self.groupOU).decode("UTF-8").__len__() <= 3:
-            # try:
-            # print(f.base64.b64decode(self.username).decode("UTF-8"))
             self.progress["value"] = 80
-            # print("START GROUPS SEARCH")
-            # print(f.base64.b64decode(self.groupOU).decode("UTF-8"))
-
-            # self.fullGroups = f.listGroups(
-            #     self, f.base64.b64decode(self.groupOU).decode("UTF-8")
-            # )
-            # print(self.fullGroups)
-            # groups = []
-            # self.progress["maximum"] = float(self.fullGroups.__len__())
-            # print(self.progress["maximum"])
             prog = 1
-            # for x in self.fullGroups:
-            #     groups.append(x)
-            #     self.progress["value"] = prog
-            #     prog += 1
-            # self.ex_groups["values"] = groups
-            # except Exception as e:
-            #     print("ERROR END")
-            #     print(e)
-            #     pass
         self.progress["value"] = 0
         self.status["text"] = "Idle..."
         if f.path.isfile(f.settings_dir + "Config.ini") and not self.loaded:
@@ -872,7 +800,6 @@ class Main(ttk.Window):
             if locked.__len__() <= 0:
                 f.widgetStatus(self, ttk.NORMAL)
                 self.status["text"] = "Idle..."
-                # tkt.call_nosync(self.messageBox, "SUCCESS!!", "No Locked Users!")
                 tkt.call_nosync(f.Toast, "COMPLETE!", "No Locked Users!", "happy")
                 return
             else:
@@ -910,7 +837,6 @@ class Main(ttk.Window):
         self.selItem = []
         self.status["text"] = "Idle..."
         tkt.call_nosync(f.Toast, "COMPLETE!", "Users Unlocked!", "happy")
-        # tkt.call_nosync(self.messageBox, "SUCCESS!!", "Unlock Complete!")
 
     def unlockAll(self):
         f.widgetStatus(self, ttk.DISABLED)

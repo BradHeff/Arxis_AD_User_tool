@@ -13,9 +13,9 @@ def Window(self):
     center_x = int(screen_width / 2 - self.W / 2)
     center_y = int(screen_height / 2 - self.H / 2)
     self.geometry(f"{self.W}x{self.H}+{center_x}+{center_y}")
-    # self.resizable(0, 0)
     self.minsize(1240, 710)
     self.attributes("-fullscreen", False)
+    self.resizable(False, False)
 
 
 def Icon(self):
@@ -37,34 +37,10 @@ def baseGUI(self):
     self.file.add_command(label="Load", command=lambda: loadConfig(self, True))
     self.file.add_command(label="Save", command=lambda: saveConfig(self))
     self.file.add_separator()
-    # # self.file.add_command(label="Import", command=self.importConfig,
-    #                         state=ttk.DISABLED)
-    # self.file.add_separator()
     self.file.add_command(label="Exit", command=self.quit)
-    # # self.theme = tk.Menu(menubar, tearoff=0)
-    # # self.theme.add_command(label="Light",command=lambda: setTheme(self,
-    #                                                                 "light"))
-    # # self.theme.add_command(label="Dark", command=lambda: setTheme(self,
-    #                                                                 "dark"))
 
     menubar.add_cascade(label="File", menu=self.file)
     self.config(menu=menubar, background="#4a4a59")
-
-    # b64_create = io.BytesIO(base64.b64decode(CREATE))
-    # img_create = Image.open(b64_create, mode='r')
-    # create = ImageTk.PhotoImage(image=img_create)
-
-    # b64_move = io.BytesIO(base64.b64decode(MOVE))
-    # img_move = Image.open(b64_move, mode='r')
-    # move = ImageTk.PhotoImage(image=img_move)
-
-    # b64_edit = io.BytesIO(base64.b64decode(EDIT))
-    # img_edit = Image.open(b64_edit, mode="r")
-    # edit = ImageTk.PhotoImage(image=img_edit)
-
-    # b64_lock = io.BytesIO(base64.b64decode(LOCK))
-    # img_lock = Image.open(b64_lock, mode='r')
-    # lock = ImageTk.PhotoImage(image=img_lock)
 
     self.tabControl = ttk.Notebook(self)
 
@@ -75,9 +51,6 @@ def baseGUI(self):
     tab5 = ttk.Frame(self.tabControl)
     tab6 = ttk.Frame(self.tabControl)
 
-    # self.tab2.columnconfigure(0, weight=1)
-    # self.tab2.columnconfigure(1, weight=1)
-    # self.tab2.columnconfigure(2, weight=0)
     self.tab2.rowconfigure(1, weight=0, pad=30)
 
     tab1.rowconfigure(1, weight=1)
@@ -89,10 +62,6 @@ def baseGUI(self):
     tab4.rowconfigure(4, weight=1)
     tab4.columnconfigure(0, weight=1)
     tab4.columnconfigure(2, weight=1)
-
-    # tab5.rowconfigure(4, weight=1)
-    # tab5.columnconfigure(0, weight=1)
-    # tab5.rowconfigure(1, weight=0, pad=25)
 
     self.columnconfigure(1, weight=1)
     self.columnconfigure(0, weight=0, pad=70)
@@ -128,7 +97,6 @@ def baseGUI(self):
     lbl_company.grid(sticky="wns", column=0, row=0, padx=10, pady=5)
 
     self.options = ttk.StringVar(frmbtn)
-    # value = base64.b64decode(self.company).decode("UTF-8").split(",")
     self.combobox = ttk.Combobox(frmbtn, textvariable=self.options, width=32)
     self.combobox["values"] = ["Horizon"]
     self.combobox["state"] = "readonly"
@@ -199,11 +167,6 @@ def Tab2(self, tab2):
     lframe.grid(sticky="nsew", column=0, row=1, columnspan=2, pady=10)
     rframe.grid(sticky="nsew", column=2, row=1, columnspan=2, pady=10, padx=5)
 
-    # lframe.columnconfigure(0, weight=1)
-    # lframe.columnconfigure(1, weight=1)
-    # lframe.columnconfigure(0, weight=0)
-    # lframe.columnconfigure(1, weight=0)
-
     tab2.columnconfigure(0, weight=1)
     tab2.columnconfigure(2, weight=1)
 
@@ -267,20 +230,6 @@ def Tab2(self, tab2):
 
     self.lbl_frame4 = ttk.LabelFrame(lframe, text="Students Position")
     self.lbl_frame4.grid(sticky="ew", columnspan=4, row=5, padx=10, pady=5)
-
-    # lbl_groups = ttk.Label(lframe, text="Add Groups")
-    # lbl_groups.grid(sticky="wn", column=0, row=6, padx=10, pady=5)
-
-    # self.add_groups = ttk.StringVar(lframe, "Select Group")
-    # self.ex_groups = ttk.Combobox(lframe, textvariable=self.add_groups, width=35)
-    # self.ex_groups["state"] = "readonly"
-    # self.ex_groups.grid(sticky="ws", column=0, row=6, padx=10, pady=5)
-
-    # self.addGroup = ttk.Button(
-    #     lframe, text="Add Group", width=20, command=self.addToGroups
-    # )
-    # self.addGroup["state"] = ttk.DISABLED
-    # self.addGroup.grid(sticky="e", column=1, row=6, padx=10, pady=5)
 
     self.lbl_frame3 = ttk.LabelFrame(rframe, text="Profile")
     self.lbl_frame3.columnconfigure(2, weight=1)
@@ -377,12 +326,6 @@ def Tab2(self, tab2):
 
     self.campH = ttk.StringVar(self.lbl_frameC, "balaklava")
 
-    # clare = tk.Radiobutton(self.lbl_frameC, text="Clare",
-    #                        variable=self.campH, value=0,
-    #                        command=lambda:self.comboSelect(""))
-    # balak.pack(side="left", fill=ttk.BOTH, expand=True)
-    # clare.pack(side="right", fill=ttk.BOTH, expand=True)
-
 
 def Tab3(self, tab3):
     lbl_title = ttk.Label(tab3, text="Disabled Users Group Cleanup")
@@ -461,12 +404,6 @@ def Tab4(self, tab4):
     self.lbl_frame8 = ttk.Labelframe(lframe4, text="Move To OU")
     self.lbl_frame8.grid(column=0, columnspan=2, sticky="new", padx=10, pady=5)
 
-    # self.move_btn = ttk.Button(
-    #     lframe4, text="Move User", width=20, command=self.moveUser
-    # )
-    # self.move_btn.configure(state=ttk.DISABLED)
-    # self.move_btn.grid(column=1, sticky=ttk.SE)
-
 
 def Tab5(self, tab5):
     lbl_title5 = ttk.Label(tab5, text="Active Directory Edit Users")
@@ -482,7 +419,6 @@ def Tab5(self, tab5):
     rframe5.rowconfigure(1, weight=1)
     rframe5.columnconfigure(0, weight=1)
 
-    # lframe5.rowconfigure(0, weight=1)
     lframe5.columnconfigure(0, weight=1)
 
     lframe5.grid(sticky="nsew", column=0, row=1, pady=10)
@@ -557,8 +493,6 @@ def Tab5(self, tab5):
     self.entDesc = ttk.Entry(lbl_frame11, width=35)
     self.entDesc.grid(sticky="sew", column=2, row=1, padx=10, pady=5)
 
-    # lbl_frame11.rowconfigure(2, weight=1)
-
     lbltitle = ttk.Label(lbl_frame11, text="Title (Signature)")
     lbltitle.grid(sticky="nw", column=0, row=2, padx=10, pady=5)
 
@@ -586,7 +520,6 @@ def Tab6(self, tab6):
     rframe6.rowconfigure(1, weight=1)
     rframe6.columnconfigure(0, weight=1)
 
-    # lframe5.rowconfigure(0, weight=1)
     lframe6.columnconfigure(0, weight=1)
 
     lframe6.grid(sticky="nsew", column=0, row=1, pady=10)

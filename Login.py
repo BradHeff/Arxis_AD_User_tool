@@ -1,48 +1,25 @@
 import threading
 import time
 
-# import time
-# import tkthread as tkt
 import io
 import ttkbootstrap as ttk
 import Functions as f
 import tkthread as tkt
 
-# from signal import SIGINT, signal
 from PIL import Image, ImageTk
 from Functions import Version, base64
 from icon import image
 from ldap3.core.exceptions import LDAPBindError, LDAPPasswordIsMandatoryError
 
-# import subprocess as sp
-# from os import remove, rmdir, mkdir, _exit
-# import Functions as fn
-
 
 class Login(ttk.Toplevel):
     """
     A class to represent the login window of the Trinity AD User Tool.
-
-    Attributes:
-    - themename: The theme name for the window.
-    - handle: The handle for the Ctrl-c signal.
-
-    Methods:
-    - __init__(): Initializes the login window.
-    - centerWindow(width, height): Calculates the coordinates to center the window.
-    - on_closing(): Handles the closing event of the window.
-    - handler(handle): Handles the Ctrl-c signal.
-    - hide(): Hides the window.
-    - show(): Shows the window.
     """
 
     def __init__(self, original, themename="trinity-dark"):
         super().__init__()
-        # self.bind_all("<Control-c>", self.handler)
-        # signal(SIGINT, lambda x, y: print("") or self.handler(0))
         self.MainFrame = original
-        # self.MainFrame.hide()
-        # splash.Splash(self)
         W, H = 504, 240
 
         self.attributes("-fullscreen", False)
@@ -56,7 +33,6 @@ class Login(ttk.Toplevel):
         self.rowconfigure(2, weight=0, pad=16)
         self.rowconfigure(3, weight=1)
         self.resizable(False, False)
-        # print(f.getSettings(self))
 
         self.title(
             "".join(["TrinityCloud AD User Tool v", Version[4 : Version.__len__()]])
@@ -71,7 +47,8 @@ class Login(ttk.Toplevel):
 
         self.userBox = ttk.Entry(self)
         self.passBox = ttk.Entry(self, show="*")
-
+        self.userBox.bind("<Return>", self.loginForm)
+        self.passBox.bind("<Return>", self.loginForm)
         lbluser.grid(sticky="NW", row=1, column=0, pady=10, padx=20)
         self.userBox.grid(sticky="SEW", row=1, column=0, pady=20, padx=20)
 
@@ -108,7 +85,7 @@ class Login(ttk.Toplevel):
         photo = ImageTk.PhotoImage(image=img)
         self.wm_iconphoto(False, photo)
 
-    def loginForm(self):
+    def loginForm(self, optional=None):
         username = self.userBox.get()
         password = self.passBox.get()
         self.lblstatus.config(bootstyle="warning", font=("Poppins", 14))
@@ -172,8 +149,6 @@ class Login(ttk.Toplevel):
                 text="Login Failed: Password is mandatory",
             )
             tkt.call_nosync(self.disElements, ttk.NORMAL)
-        # self.hide()
-        # Main.Main(root)
 
     def centerWindow(self, width, height):  # Return 4 values needed to center Window
         screen_width = self.winfo_screenwidth()  # Width of the screen

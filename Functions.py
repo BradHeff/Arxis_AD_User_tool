@@ -13,7 +13,6 @@ from pathlib import Path
 from ttkbootstrap import DISABLED, NORMAL
 from ttkbootstrap.toast import ToastNotification
 
-# from flask import json
 from ldap3 import Connection, Server, MODIFY_REPLACE, SAFE_SYNC, SUBTREE, Tls
 from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
@@ -43,23 +42,6 @@ if name == "nt":
 else:
     settings_dir = "".join([exe_dir, "/Settings/"])
     temp_dir = "".join([exe_dir, "/Tmp/"])
-
-
-def rounded_rect(canvas, x, y, w, h, c):
-    canvas.create_arc(x, y, x + 2 * c, y + 2 * c, start=90, extent=90, style="arc")
-    canvas.create_arc(
-        x + w - 2 * c, y + h - 2 * c, x + w, y + h, start=270, extent=90, style="arc"
-    )
-    canvas.create_arc(
-        x + w - 2 * c, y, x + w, y + 2 * c, start=0, extent=90, style="arc"
-    )
-    canvas.create_arc(
-        x, y + h - 2 * c, x + 2 * c, y + h, start=180, extent=90, style="arc"
-    )
-    canvas.create_line(x + c, y, x + w - c, y)
-    canvas.create_line(x + c, y + h, x + w - c, y + h)
-    canvas.create_line(x, y + c, x, y + h - c)
-    canvas.create_line(x + w, y + c, x + w, y + h - c)
 
 
 def Toast(title, message, types="happy"):
@@ -189,7 +171,6 @@ def loadConfig(self, check=False):
             self.desc.insert(0, parser.get("newuser", "desc"))
             self.jobTitleEnt.insert(0, parser.get("newuser", "title"))
             self.loaded = True
-            # self.comboLoad()
 
 
 def getServer(self, section):  # noqa
@@ -199,7 +180,6 @@ def getServer(self, section):  # noqa
     if parser.has_section(section):
         if parser.has_option(section, "server"):
             return parser.get(section, "server")
-            # print(base64.b64decode(self.server).decode("UTF-8"))
             if not base64.b64decode(self.server).decode("UTF-8").__len__() <= 3:
                 return False
             else:
@@ -223,7 +203,6 @@ def getConfig(self, section):  # noqa
         # ===================SERVER================================
         if parser.has_option(section, "server"):
             self.server = parser.get(section, "server")
-            # print(base64.b64decode(self.server).decode("UTF-8"))
             if not base64.b64decode(self.server).decode("UTF-8").__len__() <= 3:
                 self.compFail = False
                 self.servs = True
@@ -234,7 +213,6 @@ def getConfig(self, section):  # noqa
         # ===================SERVER USERNAME================================
         if parser.has_option(section, "server_user"):
             self.username = parser.get(section, "server_user")
-            # print(base64.b64decode(self.username).decode("UTF-8"))
             if not base64.b64decode(self.username).decode("UTF-8").__len__() <= 3:
                 self.compFail = False
                 self.servs = True
@@ -245,7 +223,6 @@ def getConfig(self, section):  # noqa
         # ===================SERVER PASSWORD================================
         if parser.has_option(section, "server_pass"):
             self.password = parser.get(section, "server_pass")
-            # print(base64.b64decode(self.password).decode("UTF-8"))
             if not base64.b64decode(self.password).decode("UTF-8").__len__() <= 3:
                 self.compFail = False
                 self.servs = True
@@ -304,7 +281,6 @@ def getConfig(self, section):  # noqa
         # ===================GROUP OU================================
         if parser.has_option(section, "groupsou"):
             self.groupOU = parser.get(section, "groupsou")
-            # print(base64.b64decode(self.groupOU).decode("UTF-8"))
             if base64.b64decode(self.groupOU).decode("UTF-8").__len__() <= 3:
                 self.state = True
 
@@ -336,7 +312,6 @@ def getConfig(self, section):  # noqa
         # ===================HOME DIRECTORIES================================
         if parser.has_option(section, "campus"):
             self.campus = parser.get(section, "campus")
-            # print(base64.b64decode(self.campus).decode("UTF-8").split(","))
             if (
                 not base64.b64decode(self.campus).decode("UTF-8").split(",").__len__()
                 > 0
@@ -376,8 +351,6 @@ def widgetStatus(self, status):
     self.btn_search["state"] = status
     self.btn_userUnlock["state"] = status
     self.btn_reset["state"] = status
-    # self.move_btn["state"] = status
-    # self.addGroup["state"] = status
 
 
 def widgetStatusFailed(self, state):
@@ -386,14 +359,11 @@ def widgetStatusFailed(self, state):
         self.btn_search["state"] = DISABLED
         self.btn_userUnlock["state"] = DISABLED
         self.btn_reset["state"] = DISABLED
-        # self.move_btn["state"] = DISABLED
-        # self.addGroup["state"] = DISABLED
     else:
         self.btn_unlockAll["state"] = NORMAL
         self.btn_search["state"] = NORMAL
         self.btn_userUnlock["state"] = NORMAL
         self.btn_reset["state"] = NORMAL
-        # self.addGroup["state"] = NORMAL
 
 
 def resetPassword(self, ou, newpass):
@@ -416,13 +386,11 @@ def resetPassword(self, ou, newpass):
         self.tree.delete(selected_item)
         self.selItem = []
         widgetStatus(self, NORMAL)
-        # self.messageBox("SUCCESS!!", "Password set and user unlocked!")
         Toast("SUCCESS!!", "Password set and user unlocked!", "happy")
     except:  # noqa
         self.selItem = []
         widgetStatus(self, NORMAL)
         Toast("ERROR!!", "An error has occured!", "angry")
-        # self.messageBox("ERROR!!", "An error has occured!")
 
 
 def unlockUser(self, ou, all=0):
@@ -456,7 +424,6 @@ def unlockAll(self, locked):
     widgetStatus(self, NORMAL)
     self.status["text"] = "Idle..."
     Toast("SUCCESS!!", "Unlock Complete!", "happy")
-    # self.messageBox("SUCCESS!!", "Unlock Complete!")
     self.progress["value"] = 0
 
 
@@ -478,172 +445,158 @@ def listLocked(self):
 
         for x in response:
             res = x["attributes"]
-            # print(res["displayName"])
             users[res["sAMAccountName"]] = {
                 "name": res["displayName"],
                 "ou": res["distinguishedName"],
             }
-    # print(users)
     return users
 
 
 def update_user(self, data):
-    # try:
-    self.status["text"] = "".join(["Updating ", data["first"], " ", data["last"]])
-    with ldap_connection(self) as c:
-        self.progress["value"] = 60
+    try:
+        self.status["text"] = "".join(["Updating ", data["first"], " ", data["last"]])
+        with ldap_connection(self) as c:
+            self.progress["value"] = 60
 
-        if data["proxy"] is None:
-            proxy = "".join(["smtp:", data["login"], "@", self.domains["Secondary"]])
-        else:
-            proxy = "".join(["smtp:", data["login"], "@", data["proxy"]])
+            if data["proxy"] is None:
+                proxy = "".join(
+                    ["smtp:", data["login"], "@", self.domains["Secondary"]]
+                )
+            else:
+                proxy = "".join(["smtp:", data["login"], "@", data["proxy"]])
 
-        attributes = {
-            "givenName": (MODIFY_REPLACE, [data["first"]]),
-            "sAMAccountName": (MODIFY_REPLACE, [data["login"]]),
-            "sn": (MODIFY_REPLACE, [data["last"]]),
-            "DisplayName": (
-                MODIFY_REPLACE,
-                ["".join([data["first"], " ", data["last"]])],
-            ),
-            "title": (MODIFY_REPLACE, [data["title"]]),
-            "description": (MODIFY_REPLACE, [data["description"]]),
-            "userPrincipalName": (
-                MODIFY_REPLACE,
-                ["".join([data["login"], "@", data["domain"]])],
-            ),
-            "mail": (
-                MODIFY_REPLACE,
-                ["".join([data["login"], "@", data["domain"]])],
-            ),
-            "proxyAddresses": [
-                (
+            attributes = {
+                "givenName": (MODIFY_REPLACE, [data["first"]]),
+                "sAMAccountName": (MODIFY_REPLACE, [data["login"]]),
+                "sn": (MODIFY_REPLACE, [data["last"]]),
+                "DisplayName": (
                     MODIFY_REPLACE,
-                    ["".join(["SMTP:", data["login"], "@", data["domain"]])],
+                    ["".join([data["first"], " ", data["last"]])],
                 ),
-                (MODIFY_REPLACE, [proxy]),
-            ],
-        }
-        result = c.modify(
-            dn=data["ou"],
-            changes=attributes,
-        )
-        if not result:
-            msg = "ERROR: User '{0}' was not created: {1}".format(
-                "".join([data["first"], " ", data["last"]]),
-                c.result.get("description"),
+                "title": (MODIFY_REPLACE, [data["title"]]),
+                "description": (MODIFY_REPLACE, [data["description"]]),
+                "userPrincipalName": (
+                    MODIFY_REPLACE,
+                    ["".join([data["login"], "@", data["domain"]])],
+                ),
+                "mail": (
+                    MODIFY_REPLACE,
+                    ["".join([data["login"], "@", data["domain"]])],
+                ),
+                "proxyAddresses": [
+                    (
+                        MODIFY_REPLACE,
+                        ["".join(["SMTP:", data["login"], "@", data["domain"]])],
+                    ),
+                    (MODIFY_REPLACE, [proxy]),
+                ],
+            }
+            result = c.modify(
+                dn=data["ou"],
+                changes=attributes,
             )
-            raise Exception(msg)
-    if data["password"].__len__() >= 8:
-        c.extend.microsoft.modify_password(
-            user=data["ou"], new_password=data["password"], old_password=None
-        )
-    self.progress["value"] = 100
-    widgetStatus(self, NORMAL)
-    self.status["text"] = "Idle..."
-    # self.messageBox("SUCCESS!!", "User Updated!")
-    Toast("SUCCESS!!", "User Updated!", "happy")
-    self.progress["value"] = 0
-    self.editSelect("E")
-    # except:  # noqa
-    #     self.status["text"] = "Idle..."
-    #     widgetStatus(self, NORMAL)
-    #     Toast("ERROR!!", "An error has occured!", "angry")
-    #     # self.messageBox("ERROR!!", "An error has occured!")
-    #     self.progress["value"] = 0
+            if not result:
+                msg = "ERROR: User '{0}' was not created: {1}".format(
+                    "".join([data["first"], " ", data["last"]]),
+                    c.result.get("description"),
+                )
+                raise Exception(msg)
+        if data["password"].__len__() >= 8:
+            c.extend.microsoft.modify_password(
+                user=data["ou"], new_password=data["password"], old_password=None
+            )
+        self.progress["value"] = 100
+        widgetStatus(self, NORMAL)
+        self.status["text"] = "Idle..."
+        Toast("SUCCESS!!", "User Updated!", "happy")
+        self.progress["value"] = 0
+        self.editSelect("E")
+    except:  # noqa
+        self.status["text"] = "Idle..."
+        widgetStatus(self, NORMAL)
+        Toast("ERROR!!", "An error has occured!", "angry")
+        self.progress["value"] = 0
 
 
 def createUser(self, data):
-    # pythoncom.CoInitialize()
-    # try:
-    self.status["text"] = "".join(["Creating ", data["first"], " ", data["last"]])
+    try:
+        self.status["text"] = "".join(["Creating ", data["first"], " ", data["last"]])
 
-    with ldap_connection(self) as c:
-        attributes = {
-            "SAMAccountName": data["login"],
-            "givenName": data["first"],
-            "userPrincipalName": "".join([data["login"], "@", data["domain"]]),
-            "DisplayName": "".join([data["first"], " ", data["last"]]),
-            "sn": data["last"],
-            "mail": "".join([data["login"], "@", data["domain"]]),
-            "proxyAddresses": [
-                "".join(["SMTP:", data["login"], "@", data["domain"]]),
-                "".join(["smtp:", data["login"], "@", data["proxy"]]),
-            ],
-            "HomeDirectory": data["homeDirectory"],
-            "HomeDrive": data["homeDrive"],
-            "title": data["title"],
-            "description": data["description"],
-            "department": data["department"],
-            "company": data["company"],
-            "pwdLastSet": 0,
-        }
-        user_dn = "".join(["CN=", data["first"], " ", data["last"], ",", self.posOU])
-        result = c.add(
-            dn=user_dn,
-            object_class=["top", "person", "organizationalPerson", "user"],
-            attributes=attributes,
-        )
-        if not result:
-            msg = "ERROR: User '{0}' was not created: {1}".format(
-                "".join([data["first"], " ", data["last"]]),
-                c.result.get("description"),
+        with ldap_connection(self) as c:
+            attributes = {
+                "SAMAccountName": data["login"],
+                "givenName": data["first"],
+                "userPrincipalName": "".join([data["login"], "@", data["domain"]]),
+                "DisplayName": "".join([data["first"], " ", data["last"]]),
+                "sn": data["last"],
+                "mail": "".join([data["login"], "@", data["domain"]]),
+                "proxyAddresses": [
+                    "".join(["SMTP:", data["login"], "@", data["domain"]]),
+                    "".join(["smtp:", data["login"], "@", data["proxy"]]),
+                ],
+                "HomeDirectory": data["homeDirectory"],
+                "HomeDrive": data["homeDrive"],
+                "title": data["title"],
+                "description": data["description"],
+                "department": data["department"],
+                "company": data["company"],
+                "pwdLastSet": 0,
+            }
+            user_dn = "".join(
+                ["CN=", data["first"], " ", data["last"], ",", self.posOU]
             )
-            raise Exception(msg)
+            result = c.add(
+                dn=user_dn,
+                object_class=["top", "person", "organizationalPerson", "user"],
+                attributes=attributes,
+            )
+            if not result:
+                msg = "ERROR: User '{0}' was not created: {1}".format(
+                    "".join([data["first"], " ", data["last"]]),
+                    c.result.get("description"),
+                )
+                raise Exception(msg)
 
-    self.progress["value"] = 30
-    c.extend.microsoft.unlock_account(user=user_dn)
-    c.extend.microsoft.modify_password(
-        user=user_dn, new_password=data["password"], old_password=None
-    )
-    # Enable account - must happen after user password is set
-    # newuser.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
-    # newuser.set_user_account_control_setting("PASSWD_NOTREQD", False)
-    enable_account = {"userAccountControl": (MODIFY_REPLACE, [UAC])}
-    c.modify(user_dn, changes=enable_account)
+        self.progress["value"] = 30
+        c.extend.microsoft.unlock_account(user=user_dn)
+        c.extend.microsoft.modify_password(
+            user=user_dn, new_password=data["password"], old_password=None
+        )
+        enable_account = {"userAccountControl": (MODIFY_REPLACE, [UAC])}
+        c.modify(user_dn, changes=enable_account)
 
-    self.progress["value"] = 50
-    self.status["text"] = "".join(
-        ["Adding ", data["first"], " ", data["last"], " to groups"]
-    )
-    # print(data["groups"])
-    c.extend.microsoft.add_members_to_groups([user_dn], data["groups"])
-    # for gp in data["groups"]:
-    #     newgroup = pyad_Trinity.adgroup.ADGroup.from_cn(gp)
-    #     newuser.add_to_group(newgroup)
-    self.progress["value"] = 80
-    self.status["text"] = "".join(
-        ["Creating ", data["first"], " ", data["last"], " home directory"]
-    )
-    # print(data["homeDirectory"])
-    nHomeDir = checkNetworkAccess(self, data["homeDirectory"], data["login"])
-    createHomeDir(
-        data["login"],
-        nHomeDir,
-        base64.b64decode(self.domainName).decode("UTF-8").strip(),
-    )
-    self.progress["value"] = 100
-    widgetStatus(self, NORMAL)
-    self.status["text"] = "Idle..."
-    # self.messageBox("SUCCESS!!", "User Created!")
-    Toast("SUCCESS!!", "User Created!", "happy")
-    self.progress["value"] = 0
-    # except Exception as e:
-    #     self.status["text"] = "Idle..."
-    #     widgetStatus(self, NORMAL)
-    #     self.progress["value"] = 0
-    #     Toast("ERROR!!", "An error has occured!", "angry")
-    #     self.messageBox("ERROR!!", e)
+        self.progress["value"] = 50
+        self.status["text"] = "".join(
+            ["Adding ", data["first"], " ", data["last"], " to groups"]
+        )
+        c.extend.microsoft.add_members_to_groups([user_dn], data["groups"])
+        self.progress["value"] = 80
+        self.status["text"] = "".join(
+            ["Creating ", data["first"], " ", data["last"], " home directory"]
+        )
+        nHomeDir = checkNetworkAccess(self, data["homeDirectory"], data["login"])
+        createHomeDir(
+            data["login"],
+            nHomeDir,
+            base64.b64decode(self.domainName).decode("UTF-8").strip(),
+        )
+        self.progress["value"] = 100
+        widgetStatus(self, NORMAL)
+        self.status["text"] = "Idle..."
+        Toast("SUCCESS!!", "User Created!", "happy")
+        self.progress["value"] = 0
+    except Exception as e:
+        self.status["text"] = "Idle..."
+        widgetStatus(self, NORMAL)
+        self.progress["value"] = 0
+        Toast("ERROR!!", "An error has occured!", "angry")
+        self.messageBox("ERROR!!", e)
 
 
 def createHomeDir(username, homeDir, domainName):
     print(homeDir)
     if path.exists(homeDir) is False:
         mkdir(homeDir)
-
-        # user, domain, type = win32security.LookupAccountName(
-        #     "", domainName + "\\" + username
-        # )
         if name == "nt":
             user, domain, type = win32security.LookupAccountName(domainName, username)
             sd = win32security.GetFileSecurity(
@@ -653,7 +606,6 @@ def createHomeDir(username, homeDir, domainName):
             dacl = sd.GetSecurityDescriptorDacl()
             dacl.AddAccessAllowedAceEx(win32security.ACL_REVISION, 3, 2032127, user)
 
-            # sd.SetSecurityDescriptorDacl(1, dacl, 0)
             sd.SetSecurityDescriptorDacl(dacl[0], True)
             win32security.SetFileSecurity(
                 homeDir, win32security.DACL_SECURITY_INFORMATION, sd
@@ -682,7 +634,6 @@ def remove_groups(self):
     # pythoncom.CoInitialize()
     try:
         userlist = listUsers(self, self.expiredOU)
-        # group = listGroups(self, base64.b64decode(self.groupOU).decode("UTF-8"))
         maxs = userlist.__len__()
         self.status["text"] = "Loading Users..."
         userCount = 1
@@ -698,8 +649,6 @@ def remove_groups(self):
         for y in userlist:
             count += 1
             self.progress["value"] = count
-            # for x in group:
-            #     removeGroups(self, userlist[y]["ou"], group[x]["ou"])
             self.status["text"] = "Cleaning Users: " + str(count) + "/" + str(maxs)
             removeHomedrive(userlist[y]["homeDir"])
             for child in self.tree2.get_children():
@@ -820,7 +769,6 @@ def moveUser(self, bOU, aOU):
     self.progress["value"] = 100
     self.selItem2 = []
     self.status["text"] = "Idle..."
-    # self.messageBox("SUCCESS!!", "Move Complete!")
     Toast("SUCCESS!!", "Move Complete!", "happy")
     widgetStatus(self, NORMAL)
     self.progress["value"] = 0
