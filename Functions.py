@@ -25,7 +25,7 @@ key = b'\xc2\x04_\x8e\xd2\xed7H\x0e\x9b,m\xc1pE\xe9\xdd$\xa9\xdb\x83\x06\xe5l#d\
 settings_file = "Settings.dat"
 UAC = 32 + 65536
 ICT_Admins = {
-    "IT": ["bheffernan"],
+    "IT": ["bheffernan", "brad.heff.desktop"],
     "Management": ["djohnson", "dan.desktop"],
 }
 
