@@ -1,26 +1,24 @@
-import threading
-import time
+# import threading
+# import time
 
 # import time
-import tkthread as tkt
+# import tkthread as tkt
 import io
 import ttkbootstrap as ttk
 import Functions as f
-from signal import SIGINT, signal
+
+# from signal import SIGINT, signal
 from PIL import Image, ImageTk
 from Functions import Version, base64
 from icon import image
-from ldap3.core.exceptions import LDAPBindError
+from ldap3.core.exceptions import LDAPBindError, LDAPPasswordIsMandatoryError
 
 # import subprocess as sp
 # from os import remove, rmdir, mkdir, _exit
 # import Functions as fn
 
-import splash
-import Main
 
-
-class Login(ttk.Window):
+class Login(ttk.Toplevel):
     """
     A class to represent the login window of the Trinity AD User Tool.
 
@@ -37,11 +35,12 @@ class Login(ttk.Window):
     - show(): Shows the window.
     """
 
-    def __init__(self):
-        super(Login, self).__init__(themename="trinity-dark")
-        self.bind_all("<Control-c>", self.handler)
-        signal(SIGINT, lambda x, y: print("") or self.handler(0))
-
+    def __init__(self, original, themename="trinity-dark"):
+        super().__init__()
+        # self.bind_all("<Control-c>", self.handler)
+        # signal(SIGINT, lambda x, y: print("") or self.handler(0))
+        self.MainFrame = original
+        # self.MainFrame.hide()
         # splash.Splash(self)
         W, H = 504, 250
         x, y = self.centerWindow(W, H)
@@ -57,13 +56,12 @@ class Login(ttk.Window):
         self.rowconfigure(2, weight=0, pad=16)
         self.rowconfigure(3, weight=1)
         # print(f.getSettings(self))
-        self.company = "Horizon"
-        self.server = f.getServer(self, self.company)
+
         self.title(
             "".join(["TrinityCloud AD User Tool v", Version[4 : Version.__len__()]])
         )
-        print(self.company)
-        print(self.server)
+        print(self.MainFrame.company)
+        print(self.MainFrame.server)
         lbltitle = ttk.Label(self, text="TrinityCloud AD User Tool")
         lbltitle.grid(row=0, columnspan=4, pady=5)
 
@@ -92,8 +90,6 @@ class Login(ttk.Window):
         self.lblstatus = ttk.Label(self, text="")
         self.lblstatus.grid(row=3, columnspan=4, padx=20)
 
-        splash.loadedMain = True
-
     def Icon(self):
         b64_img = io.BytesIO(base64.b64decode(image))
         img = Image.open(b64_img, mode="r")
@@ -103,6 +99,7 @@ class Login(ttk.Window):
     def loginForm(self):
         username = self.userBox.get()
         password = self.passBox.get()
+        self.lblstatus.config(bootstyle="warning", font=("Poppins", 14))
         self.lblstatus["text"] = "Logging in..."
         self.login(username, password)
 
@@ -110,19 +107,26 @@ class Login(ttk.Window):
         print("Username: ", username)
         print("Password: ", password)
         try:
-            conn = f.ldap_login(self, username, password)
-            if self.company.upper() in conn.extend.standard.who_am_i():
+            conn = f.ldap_login(self.MainFrame, username, password)
+            if self.MainFrame.company.upper() in conn.extend.standard.who_am_i():
+                self.lblstatus.config(bootstyle="success", font=("Poppins", 14))
                 self.lblstatus["text"] = "Login Successful"
-                time.sleep(1)
-                self.hide()
-                Main.Main(self)
+                # time.sleep(1)
+                self.destroy()
+                self.MainFrame.show()
 
             else:
+                self.lblstatus.config(bootstyle="danger", font=("Poppins", 14))
                 self.lblstatus["text"] = "Login Failed"
                 print("Login Failed")
         except LDAPBindError as e:
+            self.lblstatus.config(bootstyle="danger", font=("Poppins", 14))
             self.lblstatus["text"] = "Incorrect Username or Password"
             print("Login Failed: ", str(e))
+        except LDAPPasswordIsMandatoryError as e:
+            print("Login Failed: ", str(e))
+            self.lblstatus.config(bootstyle="danger", font=("Poppins", 14))
+            self.lblstatus["text"] = "Login Failed: Password is mandatory"
         # self.hide()
         # Main.Main(root)
 
@@ -135,34 +139,10 @@ class Login(ttk.Window):
 
     def on_closing(self):
         print("Thanks for using Trinity AD User Tool!\n")
-        root.destroy()
+        self.destroy()
+        self.MainFrame.destroy()
 
     def handler(self, handle):
         msg = "Ctrl-c was pressed. Exiting now... "
         print(msg)
         print("")
-
-    def hide(self):
-        self.withdraw()
-
-    def show(self):
-        self.update()
-        self.deiconify()
-
-
-root = Login()
-
-
-def thread_run(func):
-    threading.Thread(target=func).start()
-
-
-@thread_run
-def func():
-    @tkt.main(root)
-    @tkt.current(root)
-    def runthread():
-        root.update()
-
-
-root.mainloop()

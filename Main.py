@@ -8,20 +8,25 @@ from ttkbootstrap import Style
 import Functions as f
 import Gui
 
+import splash
+
+# import Main
+
 # import Login
 
 
-class Main(ttk.Toplevel):
+class Main(ttk.Window):
     """Main Class for AD Unlocker"""
 
-    def __init__(self, original_frame, themename="trinity-dark"):
-        super().__init__()
+    def __init__(self, themename="trinity-dark"):
+        super(Main, self).__init__()
         self.bind_all("<Control-c>", self.handler)
         signal(SIGINT, lambda x, y: print("") or self.handler())
         # self.after(500, self.check)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
-        self.Login = original_frame
-        # splash.Splash(self)
+        self.company = "Horizon"
+        self.server = f.getServer(self, self.company)
+        splash.Splash(self)
         # Login.Login(self)
         self.data = dict()
         self.domains = dict()
@@ -39,15 +44,11 @@ class Main(ttk.Toplevel):
         self.pdomains = []
         self.homePaths = []
         self.campus = []
-        print(original_frame.company)
-        print(original_frame.server)
-        self.server = original_frame.server
         self.username = ""
         self.password = ""
         self.ou = ""
         self.posOU = ""
         self.domainName = ""
-        self.company = original_frame.company
         self.samFormat = ""
         self.groupPos = ""
         self.editPosOU = ""
@@ -73,7 +74,7 @@ class Main(ttk.Toplevel):
 
         # f.getSettings(self)
 
-        self.error = f.checkSettings(self)
+        # self.error = f.checkSettings(self, self.company)
 
         Gui.baseGUI(self)
 
@@ -83,11 +84,11 @@ class Main(ttk.Toplevel):
 
         # self.mainloop()
 
-        if self.error:
-            self.destroy()
-            tkt.call_nosync(
-                self.messageBox, "ERROR!!", "company settings is incomplete"
-            )
+        # if self.error:
+        #     self.destroy()
+        #     tkt.call_nosync(
+        #         self.messageBox, "ERROR!!", "company settings is incomplete"
+        #     )
 
         self.options.set("Horizon")
         self.comboSelect("", "H")
@@ -98,13 +99,15 @@ class Main(ttk.Toplevel):
             self.combobox["state"] = ttk.DISABLED
 
         # self.hide()
-        # splash.loadedMain = True
+        splash.loadedMain = True
 
     def on_closing(self):
         print("Thanks for using Trinity AD User Tool!\n")
-        self.Login.destroy()
-        # self.destroy()
-        # self.quit()
+        self.destroy()
+        self.quit()
+
+    def hide(self):
+        self.withdraw()
 
     def show(self):
         self.update()
@@ -1191,3 +1194,21 @@ class Main(ttk.Toplevel):
 
         messages.pack(side="top", fill="x", expand=True, padx=10, pady=10)
         btn.pack(side="bottom", expand=True, padx=10, pady=10)
+
+
+root = Main()
+
+
+def thread_run(func):
+    threading.Thread(target=func).start()
+
+
+@thread_run
+def func():
+    @tkt.main(root)
+    @tkt.current(root)
+    def runthread():
+        root.update()
+
+
+root.mainloop()

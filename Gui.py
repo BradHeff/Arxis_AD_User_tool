@@ -3,7 +3,7 @@ import io
 import ttkbootstrap as ttk
 from PIL import Image, ImageTk
 from Functions import Version, base64, loadConfig, saveConfig
-from icon import himage
+from icon import image
 
 
 def Window(self):
@@ -19,7 +19,7 @@ def Window(self):
 
 
 def Icon(self):
-    b64_img = io.BytesIO(base64.b64decode(himage))
+    b64_img = io.BytesIO(base64.b64decode(image))
     img = Image.open(b64_img, mode="r")
     photo = ImageTk.PhotoImage(image=img)
     self.wm_iconphoto(False, photo)
@@ -128,9 +128,9 @@ def baseGUI(self):
     lbl_company.grid(sticky="wns", column=0, row=0, padx=10, pady=5)
 
     self.options = ttk.StringVar(frmbtn)
-    value = base64.b64decode(self.company).decode("UTF-8").split(",")
+    # value = base64.b64decode(self.company).decode("UTF-8").split(",")
     self.combobox = ttk.Combobox(frmbtn, textvariable=self.options, width=32)
-    self.combobox["values"] = value
+    self.combobox["values"] = ["Horizon"]
     self.combobox["state"] = "readonly"
     self.combobox.set("Select Company")
     self.combobox.bind("<<ComboboxSelected>>", self.comboSelect)

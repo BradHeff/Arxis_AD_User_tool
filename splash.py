@@ -1,6 +1,6 @@
 import threading
 import time
-
+import Login
 import ttkbootstrap as ttk
 from signal import SIGINT, signal
 
@@ -315,7 +315,8 @@ class Splash(ttk.Toplevel):
     def onClose(self):
         self.cleanUpRun()
         self.destroy()
-        self.original_frame.show()
+        Login.Login(self.original_frame)
+        # self.original_frame.show()
 
     def handler(self, handle):
         msg = "Ctrl-c was pressed. Exiting now... "

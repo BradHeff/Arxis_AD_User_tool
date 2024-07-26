@@ -71,8 +71,8 @@ def Switch(string, lists):
         return False
 
 
-def checkSettings(self):
-    if base64.b64decode(self.company).decode("UTF-8").__len__() >= 2:
+def checkSettings(self, company):
+    if base64.b64decode(company).decode("UTF-8").__len__() >= 2:
         return True
     else:
         return False
