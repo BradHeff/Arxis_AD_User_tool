@@ -7,6 +7,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap import Style
 import Functions as f
 import Gui
+import json
 
 import splash
 
@@ -29,10 +30,13 @@ class Main(ttk.Window):
         self.jobTitle = dict()
         self.updateList = dict()
         self.fullGroups = dict()
+        self.disOU = dict()
 
+        self.disName = []
         self.selItem = []
         self.selItem2 = []
         self.selItem3 = []
+        self.selItem6 = []
         self.options = []
         self.groups = []
         self.positions = []
@@ -43,6 +47,7 @@ class Main(ttk.Window):
         self.password = ""
         self.ou = ""
         self.posOU = ""
+        self.DisableOU = ""
         self.domainName = ""
         self.samFormat = ""
         self.groupPos = ""
@@ -161,7 +166,7 @@ class Main(ttk.Window):
                     if self.state:
                         f.widgetStatusFailed(self, True)
             case 4:
-                self.btn_unlockAll.configure(text="????")
+                self.btn_unlockAll.configure(text="Disable Users")
                 if not self.compFail:
                     pass
                 else:
@@ -226,6 +231,18 @@ class Main(ttk.Window):
             print(e)
             pass
         self.entDomain["state"] = "readonly"
+
+    def selectItem6(self, a):
+        curItem = self.tree6.focus()
+        self.selItem6 = self.tree6.item(curItem)["values"]
+        for line in self.tree7.get_children():
+            if self.selItem6[2] in self.tree7.item(line)["values"]:
+                f.Toast("Duplicate", "User in the list!", "error")
+                print(f"Duplicate: {self.selItem6[0]}")
+                return
+        self.tree7.insert(
+            "", "end", values=(self.selItem6[0], self.selItem6[1], self.selItem6[2])
+        )
 
     def getCheck(self):
         grp = []
@@ -364,6 +381,52 @@ class Main(ttk.Window):
         t.daemon = True
         t.start()
 
+    def disOption(self):
+        self.tree6.delete(*self.tree6.get_children())
+        self.var2.set(None)
+        self.var.set(None)
+        self.status["text"] = "Loading Users ...."
+        if "clare" in self.McampH6.get():
+            if "Year" in self.var6.get() or "Found" in self.var6.get():
+                self.updateList = f.listUsers2(
+                    self, self.positionsOU[self.var6.get() + "-Clare"]
+                )
+                self.DisableOU = self.positionsOU[self.var6.get() + "-Clare"]
+            elif "ESO" in self.var6.get() or "Student Support" in self.var6.get():
+                self.updateList = f.listUsers2(
+                    self, self.positionsOU["Student Support Clare"]
+                )
+                self.DisableOU = self.positionsOU["Student Support Clare"]
+            elif "Admin" in self.var6.get() and "Temp" not in self.var6.get():
+                self.updateList = f.listUsers2(
+                    self, self.positionsOU[self.var6.get() + " Clare"]
+                )
+                self.DisableOU = self.positionsOU[self.var6.get() + " Clare"]
+            else:
+                self.updateList = f.listUsers2(self, self.positionsOU[self.var6.get()])
+                self.DisableOU = self.positionsOU[self.var6.get()]
+        else:
+            self.updateList = f.listUsers2(self, self.positionsOU[self.var6.get()])
+            self.DisableOU = self.positionsOU[self.var6.get()]
+        self.tree6.delete(*self.tree6.get_children())
+        self.progress["maximum"] = self.updateList.__len__()
+        count = 0
+        for i in self.updateList:
+            count += 1
+            self.progress["value"] = count
+            self.tree6.insert(
+                "",
+                "end",
+                values=(i, self.updateList[i]["name"], self.updateList[i]["ou"]),
+            )
+        self.progress["value"] = 0
+        self.status["text"] = "Idle..."
+
+    def disSelect(self, value):
+        t = threading.Thread(target=self.disOption)
+        t.daemon = True
+        t.start()
+
     def moveNewPosSelect(self, value=None):
         if "clare" in self.McampH2.get():
             if "Year" in self.var2.get() or "Found" in self.var2.get():
@@ -485,6 +548,14 @@ class Main(ttk.Window):
         for la in list:
             la.destroy()
 
+    def clear_dis(self):
+        list = self.lbl_frame9S.grid_slaves()
+        for la in list:
+            la.destroy()
+        list = self.lbl_frame9STU.grid_slaves()
+        for la in list:
+            la.destroy()
+
     def expSelect(self):
         self.expiredOU = self.expiredOUs[self.exOU.get()]
         self.tree2.delete(*self.tree2.get_children())
@@ -529,6 +600,13 @@ class Main(ttk.Window):
                         variable=self.McampH2,
                         value=x,
                     )
+                    balakB = ttk.Radiobutton(
+                        self.lbl_frameC6,
+                        text=x,
+                        variable=self.McampH6,
+                        value=x,
+                        command=lambda: self.comboSelect("camp", "D"),
+                    )
                     if counter == 1:
                         balak.pack(side="left", fill="y", expand=True, padx=10, pady=10)
                         balak_edit.pack(
@@ -538,6 +616,9 @@ class Main(ttk.Window):
                             side="left", fill="y", expand=True, padx=10, pady=10
                         )
                         balak_move2.pack(
+                            side="left", fill="y", expand=True, padx=10, pady=10
+                        )
+                        balakB.pack(
                             side="left", fill="y", expand=True, padx=10, pady=10
                         )
                     else:
@@ -553,11 +634,18 @@ class Main(ttk.Window):
                         balak_move2.pack(
                             side="right", fill="y", expand=True, padx=10, pady=10
                         )
+                        balakB.pack(
+                            side="right", fill="y", expand=True, padx=10, pady=10
+                        )
                     counter -= 1
 
         t = threading.Thread(target=self.comboLoad, args=(value))
         t.daemon = True
         t.start()
+
+    def disableSelect(self, widget):
+        selected_value = self.cmbDisable.get()
+        self.DisableOU = self.disOU[selected_value]
 
     def comboLoad(self, value):  # noqa
         # print(self.positions)
@@ -568,9 +656,12 @@ class Main(ttk.Window):
         # self.clear_exp()
         self.clear_move()
         self.clear_edit()
+        self.clear_dis()
         self.tree4.delete(*self.tree4.get_children())
         self.tree3.delete(*self.tree3.get_children())
         # self.tree2.delete(*self.tree2.get_children())
+        self.tree6.delete(*self.tree6.get_children())
+        self.tree7.delete(*self.tree7.get_children())
         self.tree.delete(*self.tree.get_children())
         self.desc.delete(0, "end")
         self.dpass.delete(0, "end")
@@ -593,6 +684,15 @@ class Main(ttk.Window):
             )
             return
 
+        with open(f.settings_dir + "\\disabled.json", "r") as fs:
+            self.disOU = json.load(fs)
+
+        for x in self.disOU:
+            self.disName.append(x)
+
+        self.cmbDisable["values"] = self.disName
+        self.cmbDisable.set("Select OU")
+
         if not self.positions.__len__() <= 0:
             try:
                 self.progress["value"] = 20
@@ -608,6 +708,7 @@ class Main(ttk.Window):
                 self.var = ttk.StringVar(None, "1")
                 self.var2 = ttk.StringVar(None, "1")
                 self.var3 = ttk.StringVar(None, "1")
+                self.var6 = ttk.StringVar(None, "1")
                 for x in self.positions:
                     for y in self.positions[x]:
                         prog = 1
@@ -655,6 +756,15 @@ class Main(ttk.Window):
                             )
                             rbtn5.grid(row=row, column=count, padx=10, pady=10)
                             rbtn5.selection_clear()
+                            rbtn6 = ttk.Radiobutton(
+                                self.lbl_frame9S,
+                                text=y,
+                                variable=self.var6,
+                                command=lambda: self.disSelect(value),
+                                value=y,
+                            )
+                            rbtn6.grid(row=row, column=count, padx=10, pady=10)
+                            rbtn6.selection_clear()
                             count += 1
                             if count > 3:
                                 count = 0
@@ -696,6 +806,15 @@ class Main(ttk.Window):
                                 text=y,
                                 variable=self.var3,
                                 command=lambda: self.editSelect(value),
+                                value=y,
+                            )
+                            rbtn6.grid(row=row2, column=count2, padx=10, pady=10)
+                            rbtn6.selection_clear()
+                            rbtn6 = ttk.Radiobutton(
+                                self.lbl_frame9STU,
+                                text=y,
+                                variable=self.var6,
+                                command=lambda: self.disSelect(value),
                                 value=y,
                             )
                             rbtn6.grid(row=row2, column=count2, padx=10, pady=10)
@@ -977,6 +1096,8 @@ class Main(ttk.Window):
                 f.widgetStatus(self, ttk.DISABLED)
                 self.progress["max"] = 100
                 self.progress["value"] = 30
+                print(self.selItem2[2])
+                print(self.moveNewPosOU)
                 t = threading.Thread(
                     target=f.moveUser, args=[self, self.selItem2[2], self.moveNewPosOU]
                 )
@@ -1060,7 +1181,40 @@ class Main(ttk.Window):
                         "Password must be 8\
                     characters long",
                     )
+            case 4:
+                if self.compFail:
+                    f.widgetStatus(self, ttk.NORMAL)
+                    tkt.call_nosync(
+                        self.messageBox,
+                        "ERROR!!",
+                        "Your Settings are incomplete\n\
+                    for this TAB!",
+                    )
+                    return
 
+                if self.tree7.get_children() == ():
+                    f.widgetStatus(self, ttk.NORMAL)
+
+                    tkt.call_nosync(self.messageBox, "ERROR!!", "List cannot be empty!")
+                    return
+                disData = []
+                disName = []
+                for line in self.tree7.get_children():
+                    disData.append(self.tree7.item(line)["values"][2])
+                    disName.append(self.tree7.item(line)["values"][1])
+
+                maxs = self.tree7.get_children().__len__()
+                self.progress["maximum"] = float(maxs)
+                self.status["text"] = "Disabling Users..."
+                f.widgetStatus(self, ttk.DISABLED)
+                self.progress["max"] = 100
+                self.progress["value"] = 30
+                tz = threading.Thread(
+                    target=f.disUser,
+                    args=[self, [disData, disName], self.DisableOU.strip()],
+                )
+                tz.daemon = True
+                tz.start()
             case _:
                 print("")
 

@@ -18,10 +18,11 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
 
-DEBUG = True
-Version = "v2.0.9.8"
-key = b'\xc2\x04_\x8e\xd2\xed7H\x0e\x9b,m\xc1pE\xe9\xdd$\xa9\xdb\x83\x06\xe5l#d\x13"o\x00tc'
+DEBUG = False
+Version = "v2.0.10.3"
+key = b'\xa2n\x90\x1f?-D\x02\x03p\x13\xc6k\x91\xe0\xdd\x8d\xb4p\xc9\xca\xa1\xf6w-Li\xc6C\x9f\xac\x95'
 settings_file = "Settings.dat"
+creds = "URip96k9xsm8pUaJ6f8fJPjGbTxxSxzQ4udC2kmmZCCcw2d77d.dat"
 UAC = 32 + 65536
 ICT_Admins = {
     "IT": ["bheffernan", "brad.heff.desktop"],
@@ -319,6 +320,7 @@ def getConfig(self, section):  # noqa
                 self.state = True
         else:
             self.compFail = True
+
     else:
         self.compFail = True
 
@@ -768,6 +770,46 @@ def moveUser(self, bOU, aOU):
     self.tree3.delete(selected_item)
     self.progress["value"] = 100
     self.selItem2 = []
+    self.status["text"] = "Idle..."
+    Toast("SUCCESS!!", "Move Complete!", "happy")
+    widgetStatus(self, NORMAL)
+    self.progress["value"] = 0
+
+
+def disUser(self, aOU, nOU):
+    self.progress["value"] = 60
+    count = 0
+    ou = aOU[0]
+    for x in range(0, len(ou)):
+        count += 1
+        username = ou[x].split(",")[0]
+        self.status["text"] = "".join(["Disabling ", username.replace("CN=", "")])
+        self.progress["value"] = count
+        self.tree7.delete(*self.tree7.get_children())
+
+        with ldap_connection(self) as c:
+            disable_account = {"userAccountControl": (MODIFY_REPLACE, 2)}
+            c.modify(str(ou[x]), changes=disable_account)
+            result = c.modify_dn(
+                dn=str(ou[x]),
+                relative_dn=str(username),
+                new_superior=nOU,
+            )
+            res = get_operation_result(c, result)
+            if not res["description"] == "success":
+                msg = (
+                    "unable to move user "
+                    + username.replace("CN=", "")
+                    + ": "
+                    + str(result)
+                )
+                raise Exception(msg)
+
+    self.progress["value"] = 100
+    self.selItem6 = []
+    self.var6.set(None)
+    self.tree6.delete(*self.tree6.get_children())
+    self.tree7.delete(*self.tree7.get_children())
     self.status["text"] = "Idle..."
     Toast("SUCCESS!!", "Move Complete!", "happy")
     widgetStatus(self, NORMAL)

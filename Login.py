@@ -1,13 +1,14 @@
 import threading
 import time
-
+import os
 import io
 import ttkbootstrap as ttk
 import Functions as f
 import tkthread as tkt
+import configparser_crypt as cCrypt
 
 from PIL import Image, ImageTk
-from Functions import Version, base64
+from Functions import Version, base64, creds, settings_dir, key
 from icon import image
 from ldap3.core.exceptions import LDAPBindError, LDAPPasswordIsMandatoryError
 
@@ -20,7 +21,7 @@ class Login(ttk.Toplevel):
     def __init__(self, original, themename="trinity-dark"):
         super().__init__()
         self.MainFrame = original
-        W, H = 504, 240
+        W, H = 504, 260
 
         self.attributes("-fullscreen", False)
         self.attributes("-topmost", True)
@@ -31,7 +32,7 @@ class Login(ttk.Toplevel):
         self.rowconfigure(0, weight=0, pad=26)
         self.rowconfigure(1, weight=0, pad=16)
         self.rowconfigure(2, weight=0, pad=16)
-        self.rowconfigure(3, weight=1)
+        # self.rowconfigure(4, weight=0, pad=16)
         self.resizable(False, False)
 
         self.title(
@@ -45,7 +46,7 @@ class Login(ttk.Toplevel):
         lbluser = ttk.Label(self, text="Username:")
         lblpass = ttk.Label(self, text="Password:")
 
-        self.userBox = ttk.Entry(self)
+        self.userBox = ttk.Entry(self, textvariable="flastname")
         self.passBox = ttk.Entry(self, show="*")
         self.userBox.bind("<Return>", self.loginForm)
         self.passBox.bind("<Return>", self.loginForm)
@@ -67,11 +68,48 @@ class Login(ttk.Toplevel):
         self.cancelBtn.grid(row=2, column=0, columnspan=2, padx=20)
         self.loginBtn.grid(row=2, column=2, columnspan=2, padx=20)
 
+        self.sLogin = ttk.IntVar(self, 0)
+        self.saveLogin = ttk.Checkbutton(
+            self,
+            text="Remember Me",
+            variable=self.sLogin,
+            onvalue=1,
+            offvalue=0,
+            bootstyle="round-toggle",
+        )
+        self.saveLogin.grid(row=3, column=2, padx=20, pady=10)
+
         self.lblstatus = ttk.Label(self, text="")
-        self.lblstatus.grid(row=3, columnspan=4, padx=20)
+        self.lblstatus.grid(row=4, columnspan=4, padx=20)
 
         x, y = self.centerWindow(W, H)
         self.geometry("%dx%d%+d%+d" % (W, H, x, y))
+        if os.path.isfile(settings_dir + "\\" + creds):
+            print("LOADED")
+            parser = cCrypt.ConfigParserCrypt()
+            parser.aes_key = key
+            parser.read_encrypted(settings_dir + "\\" + creds)
+            if parser.has_section("login"):
+                print("Loaded Config")
+                if parser.has_option("login", "autoload"):
+                    if parser.get("login", "autoload") == "1":
+                        print("Loaded Config3")
+                        self.sLogin.set(eval(parser.get("login", "autoload")))
+                        if parser.has_option("login", "username"):
+                            self.userBox.insert(0, parser.get("login", "username"))
+                        if parser.has_option("login", "password"):
+                            self.passBox.insert(0, parser.get("login", "password"))
+
+    def saveConfig(self):
+        if self.sLogin.get() == 1:
+            conf_file = cCrypt.ConfigParserCrypt()
+            conf_file.aes_key = key
+            conf_file.add_section("login")
+            conf_file["login"]["username"] = str(self.userBox.get())
+            conf_file["login"]["password"] = str(self.passBox.get())
+            conf_file["login"]["autoload"] = str(self.sLogin.get())
+            with open(settings_dir + "\\" + creds, "wb") as file_handle:
+                conf_file.write_encrypted(file_handle)
 
     def disElements(self, state):
         self.userBox["state"] = state
@@ -111,6 +149,7 @@ class Login(ttk.Toplevel):
                         font=("Poppins", 14),
                         text="Login Success",
                     )
+                    self.saveConfig()
                     time.sleep(2)
                     self.destroy()
                     self.MainFrame.show()
