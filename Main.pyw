@@ -23,6 +23,7 @@ class Main(ttk.Window):
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.company = "Horizon"
         self.server = f.getServer(self, self.company)
+        self.isTeacher = False
         splash.Splash(self)
         self.data = dict()
         self.domains = dict()
@@ -37,7 +38,6 @@ class Main(ttk.Window):
         self.selItem2 = []
         self.selItem3 = []
         self.selItem6 = []
-        self.options = []
         self.groups = []
         self.positions = []
         self.pdomains = []
@@ -77,13 +77,8 @@ class Main(ttk.Window):
             "".join(["TrinityCloud AD User Tool v", f.Version[4 : f.Version.__len__()]])
         )
 
-        self.options.set("Horizon")
+        # self.options.set("Horizon")
         self.comboSelect("", "H")
-
-        self.combobox["state"] = ttk.NORMAL
-
-        if not f.DEBUG:
-            self.combobox["state"] = ttk.DISABLED
 
         splash.loadedMain = True
 
@@ -117,39 +112,38 @@ class Main(ttk.Window):
                     f.widgetStatusFailed(self, False)
             case 1:
                 self.btn_unlockAll.configure(text="Create User", state=ttk.NORMAL)
-                if "Select" not in self.options.get():
-                    if not self.compFail:
-                        if self.domains["Primary"].__len__() <= 0:
-                            f.widgetStatusFailed(self, True)
+                if not self.compFail:
+                    if self.domains["Primary"].__len__() <= 0:
+                        f.widgetStatusFailed(self, True)
 
-                            tkt.call_nosync(
-                                self.messageBox,
-                                "ERROR!!",
-                                "Domains Settings is not complete!",
-                            )
-                            return
-                        if self.groupPos.__len__() <= 0:
-                            f.widgetStatusFailed(self, True)
+                        tkt.call_nosync(
+                            self.messageBox,
+                            "ERROR!!",
+                            "Domains Settings is not complete!",
+                        )
+                        return
+                    if self.groupPos.__len__() <= 0:
+                        f.widgetStatusFailed(self, True)
 
-                            tkt.call_nosync(
-                                self.messageBox,
-                                "ERROR!!",
-                                "Group Settings is not complete!",
-                            )
-                            return
-                        if self.positions.__len__() <= 0:
-                            f.widgetStatusFailed(self, True)
+                        tkt.call_nosync(
+                            self.messageBox,
+                            "ERROR!!",
+                            "Group Settings is not complete!",
+                        )
+                        return
+                    if self.positions.__len__() <= 0:
+                        f.widgetStatusFailed(self, True)
 
-                            tkt.call_nosync(
-                                self.messageBox,
-                                "ERROR!!",
-                                "Positions Settings is not complete!",
-                            )
+                        tkt.call_nosync(
+                            self.messageBox,
+                            "ERROR!!",
+                            "Positions Settings is not complete!",
+                        )
 
-                            return
-                    else:
-                        if self.state:
-                            f.widgetStatusFailed(self, True)
+                        return
+                else:
+                    if self.state:
+                        f.widgetStatusFailed(self, True)
             case 2:
                 self.btn_unlockAll.configure(text="Move User", state=ttk.NORMAL)
 
@@ -562,7 +556,7 @@ class Main(ttk.Window):
 
     def comboSelect(self, widget, value="H"):
         if "camp" not in str(widget):
-            f.getConfig(self, self.options.get())
+            f.getConfig(self, self.company)
             self.clear_campus()
             if (
                 not f.base64.b64decode(self.campus)
@@ -903,9 +897,6 @@ class Main(ttk.Window):
         pass
 
     def loadUsers(self):
-        if "Select" in self.options.get():
-            tkt.call_nosync(self.messageBox, "ERROR!!", "You must select a company!")
-            return
         f.widgetStatus(self, ttk.DISABLED)
         self.tree.delete(*self.tree.get_children())
         t = threading.Thread(target=self.loads, args=[])

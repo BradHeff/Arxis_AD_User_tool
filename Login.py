@@ -9,7 +9,7 @@ import configparser_crypt as cCrypt
 
 from PIL import Image, ImageTk
 from Functions import Version, base64, creds, settings_dir, key
-from icon import image
+from icon import himage
 from ldap3.core.exceptions import LDAPBindError, LDAPPasswordIsMandatoryError
 
 
@@ -36,7 +36,12 @@ class Login(ttk.Toplevel):
         self.resizable(False, False)
 
         self.title(
-            "".join(["TrinityCloud AD User Tool v", Version[4 : Version.__len__()]])
+            "".join(
+                [
+                    "TrinityCloud AD User Tool v",
+                    Version[4 : Version.__len__()],
+                ]
+            )
         )
         print(self.MainFrame.company)
         print(self.MainFrame.server)
@@ -94,22 +99,26 @@ class Login(ttk.Toplevel):
                 if parser.has_option("login", "autoload"):
                     if parser.get("login", "autoload") == "1":
                         print("Loaded Config3")
-                        self.sLogin.set(eval(parser.get("login", "autoload")))
+                        if parser.has_option("login", "autoload"):
+                            self.sLogin.set(eval(parser.get("login", "autoload")))
                         if parser.has_option("login", "username"):
                             self.userBox.insert(0, parser.get("login", "username"))
                         if parser.has_option("login", "password"):
                             self.passBox.insert(0, parser.get("login", "password"))
 
     def saveConfig(self):
+        conf_file = cCrypt.ConfigParserCrypt()
+        conf_file.aes_key = key
+        conf_file.add_section("login")
         if self.sLogin.get() == 1:
-            conf_file = cCrypt.ConfigParserCrypt()
-            conf_file.aes_key = key
-            conf_file.add_section("login")
             conf_file["login"]["username"] = str(self.userBox.get())
             conf_file["login"]["password"] = str(self.passBox.get())
-            conf_file["login"]["autoload"] = str(self.sLogin.get())
-            with open(settings_dir + "\\" + creds, "wb") as file_handle:
-                conf_file.write_encrypted(file_handle)
+        else:
+            conf_file["login"]["username"] = ""
+            conf_file["login"]["password"] = ""
+        conf_file["login"]["autoload"] = str(self.sLogin.get())
+        with open(settings_dir + "\\" + creds, "wb") as file_handle:
+            conf_file.write_encrypted(file_handle)
 
     def disElements(self, state):
         self.userBox["state"] = state
@@ -118,7 +127,7 @@ class Login(ttk.Toplevel):
         self.cancelBtn["state"] = state
 
     def Icon(self):
-        b64_img = io.BytesIO(base64.b64decode(image))
+        b64_img = io.BytesIO(base64.b64decode(himage))
         img = Image.open(b64_img, mode="r")
         photo = ImageTk.PhotoImage(image=img)
         self.wm_iconphoto(False, photo)
@@ -137,8 +146,20 @@ class Login(ttk.Toplevel):
         print("Username: ", username)
         print("Password: ", password)
         try:
+
             conn = f.ldap_login(self.MainFrame, username, password)
             if self.MainFrame.company.upper() in conn.extend.standard.who_am_i():
+                # if f.isTeacher(
+                #     self.MainFrame,
+                #     username,
+                # ):
+                #     tkt.call_nosync(
+                #         self.lblstatus.config,
+                #         bootstyle="success",
+                #         font=("Poppins", 14),
+                #         text="Login Success",
+                #     )
+
                 if (
                     username in f.ICT_Admins["IT"]
                     or username in f.ICT_Admins["Management"]
@@ -147,12 +168,15 @@ class Login(ttk.Toplevel):
                         self.lblstatus.config,
                         bootstyle="success",
                         font=("Poppins", 14),
-                        text="Login Success",
+                        text="Authorized",
                     )
                     self.saveConfig()
-                    time.sleep(2)
-                    self.destroy()
-                    self.MainFrame.show()
+                    self.MainFrame.loginUser = username
+                    self.MainFrame.lbl_login.config(
+                        bootstyle="success",
+                        font=("Poppins", 12),
+                        text="Authorized",
+                    )
                 else:
                     tkt.call_nosync(
                         self.lblstatus.config,
@@ -161,6 +185,10 @@ class Login(ttk.Toplevel):
                         text="Not Authorized to access this system",
                     )
                     tkt.call_nosync(self.disElements, ttk.NORMAL)
+                time.sleep(2)
+                self.destroy()
+                self.MainFrame.show()
+
             else:
                 tkt.call_nosync(
                     self.lblstatus.config,

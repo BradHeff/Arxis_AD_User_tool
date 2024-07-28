@@ -93,16 +93,20 @@ def baseGUI(self):
     self.btn_unlockAll.grid(sticky="e", column=3, row=0, padx=10, pady=5)
     self.btn_unlockAll.configure(state=ttk.DISABLED)
 
-    lbl_company = ttk.Label(frmbtn, text="Company:")
-    lbl_company.grid(sticky="wns", column=0, row=0, padx=10, pady=5)
-
-    self.options = ttk.StringVar(frmbtn)
-    self.combobox = ttk.Combobox(frmbtn, textvariable=self.options, width=32)
-    self.combobox["values"] = ["Horizon"]
-    self.combobox["state"] = "readonly"
-    self.combobox.set("Select Company")
-    self.combobox.bind("<<ComboboxSelected>>", self.comboSelect)
-    self.combobox.grid(sticky="w", column=0, row=0, padx=10, pady=5)
+    self.lbl_login = ttk.Label(frmbtn, text="Not Authorized")
+    self.lbl_login.grid(sticky="w", column=0, row=0, padx=10, pady=5)
+    self.lbl_login.config(
+        bootstyle="danger",
+        font=("Poppins", 12),
+        text="No Access",
+    )
+    # self.options = ttk.StringVar(frmbtn)
+    # self.combobox = ttk.Combobox(frmbtn, textvariable=self.options, width=32)
+    # self.combobox["values"] = ["Horizon"]
+    # self.combobox["state"] = "readonly"
+    # self.combobox.set("Select Company")
+    # self.combobox.bind("<<ComboboxSelected>>", self.comboSelect)
+    # self.combobox.grid(sticky="w", column=0, row=0, padx=10, pady=5)
 
     self.status = ttk.Label(frmbtn, text="Idle...")
     self.status.grid(sticky="w", column=0, row=1, padx=10, pady=2)

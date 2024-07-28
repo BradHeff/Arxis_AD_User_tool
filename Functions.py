@@ -18,9 +18,9 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
 
-DEBUG = False
+DEBUG = True
 Version = "v2.0.10.3"
-key = b'\xa2n\x90\x1f?-D\x02\x03p\x13\xc6k\x91\xe0\xdd\x8d\xb4p\xc9\xca\xa1\xf6w-Li\xc6C\x9f\xac\x95'
+key = b"\xd4\x83O\x19\xf1\x8a\xb2\xe0F\xe5\x18T\xdbT%\x07\x88m4bI\xdd#\xbcI\xf8\xcb\xb3\xe5\x0c\xe2\x81"
 settings_file = "Settings.dat"
 creds = "URip96k9xsm8pUaJ6f8fJPjGbTxxSxzQ4udC2kmmZCCcw2d77d.dat"
 UAC = 32 + 65536
@@ -81,6 +81,34 @@ def checkSettings(self, company):
         return True
     else:
         return False
+
+
+def isTeacher(self, username):
+    groupCheck = ["SG_FS_Management", "SG_FS_ExecDrive", "SG_WF_Staff", "SG_WF_IT"]
+
+    # studGroups = ["SG_Student", "SG_WF_Student", "Students"]
+    with ldap_connection(self) as c:
+        # search(base_dn, search_filter.format(sam_account_name), SUBTREE, attributes=['memberOf'])
+        status, result, response, _ = c.search(
+            search_base=base64.b64decode(self.ou).decode("UTF-8"),
+            search_filter="(sAMAccountName={})".format(username),
+            attributes=["memberOf"],
+            search_scope=SUBTREE,
+            get_operational_attributes=True,
+        )
+        if not result:
+            msg = "ERROR: '{0}'".format(c.result.get("description"))
+            raise Exception(msg)
+        for x in response:
+            res = x["attributes"]
+            groups = res["memberOf"]
+            for group in groups:
+                if group.split(",")[0].replace("CN=", "") in groupCheck:
+                    self.isTeacher = True
+                    return True
+
+    self.isTeacher = False
+    return False
 
 
 def ldap_connection(self):
@@ -344,11 +372,6 @@ def getnewuser(self):
 
 
 def widgetStatus(self, status):
-    if status == NORMAL:
-        self.combobox["state"] = "readonly"
-    else:
-        self.combobox["state"] = DISABLED
-
     self.btn_unlockAll["state"] = status
     self.btn_search["state"] = status
     self.btn_userUnlock["state"] = status
