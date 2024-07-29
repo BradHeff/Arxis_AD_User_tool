@@ -9,7 +9,7 @@ import configparser_crypt as cCrypt
 
 from PIL import Image, ImageTk
 from Functions import Version, base64, creds, settings_dir, key
-from icon import himage
+from icon import himage, shield
 from ldap3.core.exceptions import LDAPBindError, LDAPPasswordIsMandatoryError
 
 
@@ -21,7 +21,7 @@ class Login(ttk.Toplevel):
     def __init__(self, original, themename="trinity-dark"):
         super().__init__()
         self.MainFrame = original
-        W, H = 504, 260
+        W, H = 534, 280
 
         self.attributes("-fullscreen", False)
         self.attributes("-topmost", True)
@@ -83,7 +83,15 @@ class Login(ttk.Toplevel):
             bootstyle="round-toggle",
         )
         self.saveLogin.grid(row=3, column=2, padx=20, pady=10)
+        b64_img = base64.b64decode(shield)
+        img = Image.open(io.BytesIO(b64_img))
+        new_size = (70, 70)  # width, height
+        img = img.resize(new_size, Image.ANTIALIAS)
+        photo = ImageTk.PhotoImage(img)
 
+        lblImage = ttk.Label(self, image=photo)
+        lblImage.grid(sticky=ttk.NW, row=3, rowspan=2, column=0, padx=10, pady=10)
+        lblImage.photo = photo
         self.lblstatus = ttk.Label(self, text="")
         self.lblstatus.grid(row=4, columnspan=4, padx=20)
 

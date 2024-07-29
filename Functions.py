@@ -18,9 +18,9 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
 
-DEBUG = True
-Version = "v2.0.10.3"
-key = b"\xd4\x83O\x19\xf1\x8a\xb2\xe0F\xe5\x18T\xdbT%\x07\x88m4bI\xdd#\xbcI\xf8\xcb\xb3\xe5\x0c\xe2\x81"
+DEBUG = False
+Version = "v2.0.10.5"
+key = b'\x18\x13\x82\xc9\x00\xf3[\xb0\xd7S\xf1\xcc,\x98\x1f\n\xfc\xc5=\xc25\xe8\x97O\xf2\xcc\x05\x80\xb7r\xd5Q'
 settings_file = "Settings.dat"
 creds = "URip96k9xsm8pUaJ6f8fJPjGbTxxSxzQ4udC2kmmZCCcw2d77d.dat"
 UAC = 32 + 65536
