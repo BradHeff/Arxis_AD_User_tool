@@ -1,9 +1,10 @@
-import base64
+# import base64
 import sys
 import configparser_crypt as cCrypt
 import OpenSSL
 from os import mkdir, path, removedirs, system, name  # noqa
 import json
+import requests
 
 if name == "nt":
     import win32security
@@ -18,10 +19,14 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
 
-DEBUG = False
+DEBUG = True
 Version = "v2.0.10.5"
-key = b'\x18\x13\x82\xc9\x00\xf3[\xb0\xd7S\xf1\xcc,\x98\x1f\n\xfc\xc5=\xc25\xe8\x97O\xf2\xcc\x05\x80\xb7r\xd5Q'
+key = b"\x18\x13\x82\xc9\x00\xf3[\xb0\xd7S\xf1\xcc,\x98\x1f\n\xfc\xc5=\xc25\xe8\x97O\xf2\xcc\x05\x80\xb7r\xd5Q"
 settings_file = "Settings.dat"
+if DEBUG:
+    api_url = "http://localhost:5000"
+else:
+    api_url = "http://api.trincloud.cc"
 creds = "URip96k9xsm8pUaJ6f8fJPjGbTxxSxzQ4udC2kmmZCCcw2d77d.dat"
 UAC = 32 + 65536
 ICT_Admins = {
@@ -65,6 +70,31 @@ def Toast(title, message, types="happy"):
     toast.show_toast()
 
 
+def checkConnection(self):
+    if "No" in self.lbl_login["text"]:
+        Toast("Connection Error", "Unable to connect to the LDAP server.", "error")
+        return False
+    else:
+        return True
+
+
+def parseStatus(self, json_data):
+    print(json_data)
+    ndata = json_data
+    print(f"Status: {ndata['server']}")
+    parsed = json.loads(
+        str(ndata).replace("'", '"').lower(),
+    )
+    return parsed
+
+
+def getStatus(self):
+    # res = requests.get("http://api.trincloud.cc/api/syncer")
+    res = requests.get("".join([api_url, "/v1/data/LDAP"]))
+    res.raise_for_status()
+    return res.json()
+
+
 def clear_console():
     system("cls")
 
@@ -77,7 +107,7 @@ def Switch(string, lists):
 
 
 def checkSettings(self, company):
-    if base64.b64decode(company).decode("UTF-8").__len__() >= 2:
+    if company.__len__() >= 2:
         return True
     else:
         return False
@@ -90,7 +120,7 @@ def isTeacher(self, username):
     with ldap_connection(self) as c:
         # search(base_dn, search_filter.format(sam_account_name), SUBTREE, attributes=['memberOf'])
         status, result, response, _ = c.search(
-            search_base=base64.b64decode(self.ou).decode("UTF-8"),
+            search_base=self.ou,
             search_filter="(sAMAccountName={})".format(username),
             attributes=["memberOf"],
             search_scope=SUBTREE,
@@ -113,15 +143,15 @@ def isTeacher(self, username):
 
 def ldap_connection(self):
     server = Server(
-        base64.b64decode(self.server).decode("UTF-8").strip(),
+        self.server.strip(),
         use_ssl=True,
         tls=tls_configuration,
     )
 
     return Connection(
         server,
-        base64.b64decode(self.username).decode("UTF-8").strip(),
-        base64.b64decode(self.password).decode("UTF-8").strip(),
+        self.username.strip(),
+        self.password.strip(),
         client_strategy=SAFE_SYNC,
         auto_bind=True,
     )
@@ -129,7 +159,7 @@ def ldap_connection(self):
 
 def ldap_login(self, username, password):
     server = Server(
-        base64.b64decode(self.server).decode("UTF-8").strip(),
+        self.server.strip(),
         use_ssl=True,
         tls=tls_configuration,
     )
@@ -209,7 +239,7 @@ def getServer(self, section):  # noqa
     if parser.has_section(section):
         if parser.has_option(section, "server"):
             return parser.get(section, "server")
-            if not base64.b64decode(self.server).decode("UTF-8").__len__() <= 3:
+            if not self.server.__len__() <= 3:
                 return False
             else:
                 return False
@@ -232,7 +262,7 @@ def getConfig(self, section):  # noqa
         # ===================SERVER================================
         if parser.has_option(section, "server"):
             self.server = parser.get(section, "server")
-            if not base64.b64decode(self.server).decode("UTF-8").__len__() <= 3:
+            if not self.server.__len__() <= 3:
                 self.compFail = False
                 self.servs = True
             else:
@@ -242,7 +272,7 @@ def getConfig(self, section):  # noqa
         # ===================SERVER USERNAME================================
         if parser.has_option(section, "server_user"):
             self.username = parser.get(section, "server_user")
-            if not base64.b64decode(self.username).decode("UTF-8").__len__() <= 3:
+            if not self.username.__len__() <= 3:
                 self.compFail = False
                 self.servs = True
             else:
@@ -252,7 +282,7 @@ def getConfig(self, section):  # noqa
         # ===================SERVER PASSWORD================================
         if parser.has_option(section, "server_pass"):
             self.password = parser.get(section, "server_pass")
-            if not base64.b64decode(self.password).decode("UTF-8").__len__() <= 3:
+            if not self.password.__len__() <= 3:
                 self.compFail = False
                 self.servs = True
             else:
@@ -262,7 +292,7 @@ def getConfig(self, section):  # noqa
         # ===================USEROU================================
         if parser.has_option(section, "userou"):
             self.ou = parser.get(section, "userou")
-            if not base64.b64decode(self.ou).decode("UTF-8").__len__() <= 3:
+            if not self.ou.__len__() <= 3:
                 self.compFail = False
                 self.servs = True
             else:
@@ -272,12 +302,12 @@ def getConfig(self, section):  # noqa
         # ===================DOMAIN NAME================================
         if parser.has_option(section, "domainname"):
             self.domainName = parser.get(section, "domainname")
-            if base64.b64decode(self.domainName).decode("UTF-8").__len__() <= 3:
+            if self.domainName.__len__() <= 3:
                 self.state = True
 
         # ===================POSITIONS================================
         if parser.has_option(section, "positions"):
-            JSON1 = base64.b64decode(parser.get(section, "positions")).decode("UTF-8")
+            JSON1 = parser.get(section, "positions")
             JSON1 = JSON1.replace("'", '"')
             self.positions = json.loads(JSON1)
             if self.positions.__len__() <= 3:
@@ -285,7 +315,7 @@ def getConfig(self, section):  # noqa
 
         # ===================GROUPS================================
         if parser.has_option(section, "groups"):
-            JSON2 = base64.b64decode(parser.get(section, "groups")).decode("UTF-8")
+            JSON2 = parser.get(section, "groups")
             JSON2 = JSON2.replace("'", '"')
             self.groupPos = json.loads(JSON2)
             if self.groupPos.__len__() <= 3:
@@ -293,7 +323,7 @@ def getConfig(self, section):  # noqa
 
         # ===================POSITIONS OU================================
         if parser.has_option(section, "positionsou"):
-            JSON3 = base64.b64decode(parser.get(section, "positionsou")).decode("UTF-8")
+            JSON3 = parser.get(section, "positionsou")
             JSON3 = JSON3.replace("'", '"')
             self.positionsOU = json.loads(JSON3)
             if self.positionsOU.__len__() <= 3:
@@ -301,7 +331,7 @@ def getConfig(self, section):  # noqa
 
         # ===================EXPIRED OU================================
         if parser.has_option(section, "expiredous"):
-            JSON4 = base64.b64decode(parser.get(section, "expiredous")).decode("UTF-8")
+            JSON4 = parser.get(section, "expiredous")
             JSON4 = JSON4.replace("'", '"')
             self.expiredOUs = json.loads(JSON4)
             if self.expiredOUs.__len__() <= 3:
@@ -310,12 +340,12 @@ def getConfig(self, section):  # noqa
         # ===================GROUP OU================================
         if parser.has_option(section, "groupsou"):
             self.groupOU = parser.get(section, "groupsou")
-            if base64.b64decode(self.groupOU).decode("UTF-8").__len__() <= 3:
+            if self.groupOU.__len__() <= 3:
                 self.state = True
 
         # ===================DOMAINS================================
         if parser.has_option(section, "domains"):
-            JSON5 = base64.b64decode(parser.get(section, "domains")).decode("UTF-8")
+            JSON5 = parser.get(section, "domains")
             JSON5 = JSON5.replace("'", '"')
             self.domains = json.loads(JSON5)
             if self.domains.__len__() <= 3:
@@ -324,15 +354,12 @@ def getConfig(self, section):  # noqa
         # ===================HOME DIRECTORIES================================
         if parser.has_option(section, "homepaths"):
             self.homePaths = parser.get(section, "homepaths")
-            if (
-                base64.b64decode(self.homePaths).decode("UTF-8").split(",").__len__()
-                <= 3
-            ):
+            if self.homePaths.split(",").__len__() <= 3:
                 self.state = True
 
         # ===================TITLES================================
         if parser.has_option(section, "title"):
-            JSON6 = base64.b64decode(parser.get(section, "title")).decode("UTF-8")
+            JSON6 = parser.get(section, "title")
             JSON6 = JSON6.replace("'", '"')
             self.jobTitle = json.loads(JSON6)
             if self.jobTitle.__len__() <= 3:
@@ -341,10 +368,7 @@ def getConfig(self, section):  # noqa
         # ===================HOME DIRECTORIES================================
         if parser.has_option(section, "campus"):
             self.campus = parser.get(section, "campus")
-            if (
-                not base64.b64decode(self.campus).decode("UTF-8").split(",").__len__()
-                > 0
-            ):
+            if not self.campus.split(",").__len__() > 0:
                 self.state = True
         else:
             self.compFail = True
@@ -456,7 +480,7 @@ def listLocked(self):
     users = {}
     with ldap_connection(self) as c:
         status, result, response, _ = c.search(
-            search_base=base64.b64decode(self.ou).decode("UTF-8"),
+            search_base=self.ou,
             search_filter="(&(objectClass=user)(objectCategory=person)(lockoutTime>=1))",
             search_scope=SUBTREE,
             attributes=[
@@ -603,7 +627,7 @@ def createUser(self, data):
         createHomeDir(
             data["login"],
             nHomeDir,
-            base64.b64decode(self.domainName).decode("UTF-8").strip(),
+            self.domainName.strip(),
         )
         self.progress["value"] = 100
         widgetStatus(self, NORMAL)

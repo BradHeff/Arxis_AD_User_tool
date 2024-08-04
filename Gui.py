@@ -1,13 +1,13 @@
 import io
-
+import base64
 import ttkbootstrap as ttk
 from PIL import Image, ImageTk
-from Functions import Version, base64, loadConfig, saveConfig
+from Functions import Version, loadConfig, saveConfig
 from icon import image
 
 
 def Window(self):
-    self.W, self.H = 1245, 710
+    self.W, self.H = 1275, 730
     screen_width = self.winfo_screenwidth()
     screen_height = self.winfo_screenheight()
     center_x = int(screen_width / 2 - self.W / 2)
@@ -49,7 +49,7 @@ def baseGUI(self):
     # tab3 = ttk.Frame(self.tabControl)
     tab4 = ttk.Frame(self.tabControl)
     tab5 = ttk.Frame(self.tabControl)
-    tab6 = ttk.Frame(self.tabControl)
+    tab6 = ttk.Frame(self.tabControl, padding=(0, 0, 5, 0))
 
     self.tab2.rowconfigure(1, weight=0, pad=30)
 
@@ -74,7 +74,7 @@ def baseGUI(self):
     self.tabControl.add(tab5, text="Edit User")
     self.tabControl.add(tab6, text="Disable User")
     self.tabControl.bind("<<NotebookTabChanged>>", self.alterButton)
-    self.tabControl.grid(sticky="nsew", columnspan=4, row=0)
+    self.tabControl.grid(sticky=ttk.NSEW, columnspan=4, row=0)
 
     Tab1(self, tab1)
     Tab2(self, self.tab2)
@@ -352,7 +352,8 @@ def Tab3(self, tab3):
     self.tree2.heading("# 2", text="DISPLAY NAME")
     self.tree2.column("# 3", anchor=ttk.CENTER)
     self.tree2.heading("# 3", text="USER DN")
-    self.tree2.grid(sticky="nsew", row=2, columnspan=4, padx=15, pady=5)
+    self.tree2.grid(sticky=ttk.NS, row=2, column=2, rowspan=2, pady=5)
+    # self.tree2.grid(sticky="nsew", row=2, columnspan=4, padx=15, pady=5)
 
 
 def Tab4(self, tab4):
@@ -521,13 +522,15 @@ def Tab6(self, tab6):
     rframe4 = ttk.Frame(tab6)
 
     rframe4.rowconfigure(0, weight=0, pad=26)
+
+    lframe4.rowconfigure(1, weight=0, pad=26)
     lframe4.rowconfigure(2, weight=1)
 
     lframe4.grid(sticky=ttk.NSEW, column=0, row=1, pady=10, padx=5)
     rframe4.grid(sticky=ttk.NSEW, column=1, row=1, pady=10, padx=5)
 
     self.lbl_frameC6 = ttk.LabelFrame(lframe4, text="Campus")
-    self.lbl_frameC6.grid(sticky="ew", column=0, columnspan=2, row=1, padx=15, pady=5)
+    self.lbl_frameC6.grid(column=0, columnspan=2, row=1, padx=15, pady=5)
 
     self.tree6 = ttk.Treeview(lframe4, column=("c1", "c2", "c3"), show="headings")
     self.tree6.column("# 1", anchor=ttk.CENTER)
@@ -537,11 +540,12 @@ def Tab6(self, tab6):
     self.tree6.column("# 3", anchor=ttk.CENTER)
     self.tree6.heading("# 3", text="USER DN")
     self.tree6.bind("<ButtonRelease-1>", self.selectItem6)
-    self.tree6.grid(row=2, columnspan=2, sticky=ttk.NSEW, padx=7, pady=5)
+    self.tree6.grid(sticky=ttk.NS, row=2, column=0, rowspan=2, pady=5)
+    # self.tree6.grid(row=2, columnspan=2, sticky=ttk.NSEW, padx=7, pady=5)
 
     scrollbar = ttk.Scrollbar(lframe4, orient=ttk.VERTICAL, bootstyle="primary-round")
     scrollbar.config(command=self.tree6.yview)
-    scrollbar.grid(row=2, column=2, sticky="nsw", pady=5)
+    scrollbar.grid(row=2, column=2, rowspan=2, sticky=ttk.NS, pady=5, padx=5)
     scrollbar2 = ttk.Scrollbar(
         lframe4, orient=ttk.HORIZONTAL, bootstyle="primary-round"
     )
@@ -551,9 +555,10 @@ def Tab6(self, tab6):
     lbl_frameC7 = ttk.LabelFrame(rframe4, text="Disable OU's")
     lbl_frameC7.grid(sticky="ew", column=0, columnspan=2, row=1, padx=10, pady=5)
 
+    lbl_frameC7.columnconfigure(0, weight=1)
     self.disVals = ttk.StringVar(lbl_frameC7)
     self.cmbDisable = ttk.Combobox(lbl_frameC7, textvariable=self.disVals, width=60)
-    self.cmbDisable.grid(sticky=ttk.SW, column=0, row=0, padx=10, pady=5)
+    self.cmbDisable.grid(columnspan=2, row=0, padx=10, pady=15)
     self.cmbDisable.set("Select OU")
     self.cmbDisable.bind("<<ComboboxSelected>>", self.disableSelect)
     self.McampH6 = ttk.StringVar(self.lbl_frameC6, "balaklava")
@@ -570,13 +575,13 @@ def Tab6(self, tab6):
     self.tree7.heading("# 2", text="DISPLAY NAME")
     self.tree7.column("# 3", anchor=ttk.CENTER)
     self.tree7.heading("# 3", text="USER DN")
-    self.tree7.grid(row=3, columnspan=2, sticky=ttk.NSEW, padx=7, pady=5)
-
+    # self.tree7.grid(row=3, columnspan=2, sticky=ttk.NSEW, padx=7, pady=5)
+    self.tree7.grid(sticky=ttk.NS, row=3, column=0, rowspan=2, pady=5, padx=5)
     scrollbar3 = ttk.Scrollbar(rframe4, orient=ttk.VERTICAL, bootstyle="primary-round")
     scrollbar3.config(command=self.tree7.yview)
-    scrollbar3.grid(row=3, column=2, sticky="nsw", pady=5)
+    scrollbar3.grid(row=3, column=2, rowspan=2, sticky=ttk.NS, pady=5)
     scrollbar4 = ttk.Scrollbar(
         rframe4, orient=ttk.HORIZONTAL, bootstyle="primary-round"
     )
     scrollbar4.config(command=self.tree7.xview)
-    scrollbar4.grid(column=0, columnspan=2, sticky="new", padx=10)
+    scrollbar4.grid(column=0, row=5, sticky=ttk.EW, padx=10)

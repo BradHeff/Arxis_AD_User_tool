@@ -2,12 +2,13 @@ import datetime
 import threading
 from signal import SIGINT, signal
 import tkthread as tkt
-
+import base64
 import ttkbootstrap as ttk
 from ttkbootstrap import Style
 import Functions as f
 import Gui
-import json
+
+# import json
 
 import splash
 
@@ -22,16 +23,19 @@ class Main(ttk.Window):
         # self.after(500, self.check)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.company = "Horizon"
-        self.server = f.getServer(self, self.company)
+        data = f.getStatus(self)
+        self.api_config = f.parseStatus(self, data)
+        self.server = self.api_config["server"]  # f.getServer(self, self.company)
         self.isTeacher = False
-        splash.Splash(self)
+
+        # splash.Splash(self)
         self.data = dict()
-        self.domains = dict()
+        self.domains = self.api_config["domains"]
         self.chkBtns = dict()
-        self.jobTitle = dict()
+        self.jobTitle = self.api_config["title"]
         self.updateList = dict()
         self.fullGroups = dict()
-        self.disOU = dict()
+        self.disOU = self.api_config["expiredous"]
 
         self.disName = []
         self.selItem = []
@@ -39,21 +43,25 @@ class Main(ttk.Window):
         self.selItem3 = []
         self.selItem6 = []
         self.groups = []
-        self.positions = []
-        self.pdomains = []
-        self.homePaths = []
-        self.campus = []
-        self.username = ""
-        self.password = ""
-        self.ou = ""
+        self.positions = self.api_config["positions"]
+        self.pdomains = self.api_config["domains"]
+        self.homePaths = self.api_config["homepaths"]
+        self.campus = self.api_config["campus"]
+        self.username = base64.b64decode(
+            "Y249cHl0aG9uIHNlcnZpY2UgYWNjb3VudCxvdT1zZXJ2aWNlcyxvdT11c2VycyxvdT1ob3Jpem9uLGRjPWhvcml6b24sZGM9bG9jYWw="
+        ).decode("UTF-8")
+        self.password = str(base64.b64decode("Qm9vbURvZ2d5MTIz").decode("UTF-8"))
+        self.ou = self.api_config["userou"]
         self.posOU = ""
         self.DisableOU = ""
-        self.domainName = ""
+        self.domainName = self.api_config["domainname"]
         self.samFormat = ""
-        self.groupPos = ""
+        self.groupOU = self.api_config["groupsou"]
+        self.groupPos = self.api_config["groups"]
         self.editPosOU = ""
         self.movePosOU = ""
         self.moveNewPosOU = ""
+        self.positionsOU = self.api_config["positionsou"]
         self.department = ""
         self.servs = False
         self.isRunning = False
@@ -77,6 +85,8 @@ class Main(ttk.Window):
             "".join(["TrinityCloud AD User Tool v", f.Version[4 : f.Version.__len__()]])
         )
 
+        self.state = f.checkConnection(self)
+        f.widgetStatusFailed(self, self.state)
         # self.options.set("Horizon")
         self.comboSelect("", "H")
 
@@ -108,64 +118,27 @@ class Main(ttk.Window):
         match self.tabControl.index(self.tabControl.select()):
             case 0:
                 self.btn_unlockAll.configure(text="Unlock All", state=ttk.NORMAL)
-                if self.state and self.servs:
-                    f.widgetStatusFailed(self, False)
+                if self.state:
+                    f.widgetStatusFailed(self, True)
             case 1:
                 self.btn_unlockAll.configure(text="Create User", state=ttk.NORMAL)
-                if not self.compFail:
-                    if self.domains["Primary"].__len__() <= 0:
-                        f.widgetStatusFailed(self, True)
-
-                        tkt.call_nosync(
-                            self.messageBox,
-                            "ERROR!!",
-                            "Domains Settings is not complete!",
-                        )
-                        return
-                    if self.groupPos.__len__() <= 0:
-                        f.widgetStatusFailed(self, True)
-
-                        tkt.call_nosync(
-                            self.messageBox,
-                            "ERROR!!",
-                            "Group Settings is not complete!",
-                        )
-                        return
-                    if self.positions.__len__() <= 0:
-                        f.widgetStatusFailed(self, True)
-
-                        tkt.call_nosync(
-                            self.messageBox,
-                            "ERROR!!",
-                            "Positions Settings is not complete!",
-                        )
-
-                        return
+                if self.state:
+                    f.widgetStatusFailed(self, True)
                 else:
                     if self.state:
                         f.widgetStatusFailed(self, True)
             case 2:
                 self.btn_unlockAll.configure(text="Move User", state=ttk.NORMAL)
-
-                if not self.compFail:
-                    pass
-                else:
-                    if self.state:
-                        f.widgetStatusFailed(self, True)
+                if self.state:
+                    f.widgetStatusFailed(self, True)
             case 3:
                 self.btn_unlockAll.configure(text="Update User", state=ttk.NORMAL)
-                if not self.compFail:
-                    pass
-                else:
-                    if self.state:
-                        f.widgetStatusFailed(self, True)
+                if self.state:
+                    f.widgetStatusFailed(self, True)
             case 4:
                 self.btn_unlockAll.configure(text="Disable Users")
-                if not self.compFail:
-                    pass
-                else:
-                    if self.state:
-                        f.widgetStatusFailed(self, True)
+                if self.state:
+                    f.widgetStatusFailed(self, True)
 
             case _:
                 f.Toast("ERROR!!!", "Something went wrong!", "sad")
@@ -556,17 +529,18 @@ class Main(ttk.Window):
 
     def comboSelect(self, widget, value="H"):
         if "camp" not in str(widget):
-            f.getConfig(self, self.company)
+            # f.getConfig(self, self.company)
             self.clear_campus()
-            if (
-                not f.base64.b64decode(self.campus)
-                .decode("UTF-8")
-                .split(",")[0]
-                .__len__()
-                <= 0
-            ):
+            # if (
+            #     not f.self.campus
+            #     .split(",")[0]
+            #     .__len__()
+            #     <= 0
+            # ):
+            if self.campus.split(",")[0].__len__() <= 0:
+                #     .__len__().__len__() <= 0:
                 counter = 1
-                for x in f.base64.b64decode(self.campus).decode("UTF-8").split(","):
+                for x in self.campus.split(","):
                     balak = ttk.Radiobutton(
                         self.lbl_frameC,
                         text=x,
@@ -664,22 +638,22 @@ class Main(ttk.Window):
         self.orgCompEnt.delete(0, "end")
         self.desc.insert(0, self.date)
 
-        if self.compFail and self.state and self.servs:
-            f.widgetStatusFailed(self, False)
+        # if self.compFail and self.state and self.servs:
+        #     f.widgetStatusFailed(self, False)
 
-            tkt.call_nosync(self.messageBox, "ERROR!!", "Some settings are incomplete")
-            return
+        #     tkt.call_nosync(self.messageBox, "ERROR!!", "Some settings are incomplete")
+        #     return
 
-        if self.compFail:
-            f.widgetStatusFailed(self, True)
+        # if self.compFail:
+        #     f.widgetStatusFailed(self, True)
 
-            tkt.call_nosync(
-                self.messageBox, "ERROR!!", "Server settings are incomplete"
-            )
-            return
+        #     tkt.call_nosync(
+        #         self.messageBox, "ERROR!!", "Server settings are incomplete"
+        #     )
+        #     return
 
-        with open(f.settings_dir + "\\disabled.json", "r") as fs:
-            self.disOU = json.load(fs)
+        # with open(f.settings_dir + "\\disabled.json", "r") as fs:
+        #     self.disOU = json.load(fs)
 
         for x in self.disOU:
             self.disName.append(x)
@@ -844,11 +818,12 @@ class Main(ttk.Window):
         #             prog += 1
         #     except:
         #         pass
-        print(self.domains["Primary"])
-        if not self.domains["Primary"].__len__() <= 0:
+        print(self.domains)
+        print(self.domains["primary"])
+        if not self.domains["primary"].__len__() <= 0:
             try:
                 self.progress["value"] = 60
-                self.pdomains = self.domains["Primary"]
+                self.pdomains = self.domains["primary"]
                 self.combo_domain["values"] = self.pdomains
                 self.primary_domain.set("Select Domain")
             except Exception as e:
@@ -856,21 +831,21 @@ class Main(ttk.Window):
                 print(e)
                 pass
         if (
-            not f.base64.b64decode(self.homePaths).decode("UTF-8").split(",").__len__()
+            # not f.self.homePaths.split(",").__len__()
+            not self.homePaths.split(",").__len__()
             <= 0
         ):
             try:
                 self.progress["value"] = 70
-                self.homePath["values"] = (
-                    f.base64.b64decode(self.homePaths).decode("UTF-8").split(",")
-                )
+                self.homePath["values"] = self.homePaths.split(",")
                 self.paths.set("Select Homepath")
                 self.hdrive.set("Select Drive")
             except Exception as e:
                 print("ERROR DRIVE")
                 print(e)
                 pass
-        if not f.base64.b64decode(self.groupOU).decode("UTF-8").__len__() <= 3:
+        # if not f.self.groupOU.__len__() <= 3:
+        if not self.groupOU.__len__() <= 3:
             self.progress["value"] = 80
             prog = 1
         self.progress["value"] = 0
