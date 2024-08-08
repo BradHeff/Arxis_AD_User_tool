@@ -430,7 +430,7 @@ def Tab5(self, tab5):
     rframe5.grid(sticky="nsew", column=1, row=1, pady=10, padx=10)
 
     self.lbl_frameG = ttk.Labelframe(lframe5, text="Campus")
-    self.lbl_frameG.grid(sticky="new", columnspan=2, row=1, padx=10, pady=5)
+    self.lbl_frameG.grid(sticky=ttk.EW, columnspan=2, row=0, padx=10, pady=5)
     self.EcampH = ttk.StringVar(self.lbl_frameG, "balaklava")
     self.lbl_frame9 = ttk.Labelframe(lframe5, text="Staff User OU's")
     self.lbl_frame9.grid(sticky="new", columnspan=2, row=2, padx=10, pady=5)
@@ -530,7 +530,7 @@ def Tab6(self, tab6):
     rframe4.grid(sticky=ttk.NSEW, column=1, row=1, pady=10, padx=5)
 
     self.lbl_frameC6 = ttk.LabelFrame(lframe4, text="Campus")
-    self.lbl_frameC6.grid(column=0, columnspan=2, row=1, padx=15, pady=5)
+    self.lbl_frameC6.grid(sticky=ttk.EW, columnspan=2, row=1, padx=15, pady=5)
 
     self.tree6 = ttk.Treeview(lframe4, column=("c1", "c2", "c3"), show="headings")
     self.tree6.column("# 1", anchor=ttk.CENTER)

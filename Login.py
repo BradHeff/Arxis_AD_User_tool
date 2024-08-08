@@ -193,7 +193,10 @@ class Login(ttk.Toplevel):
                         text="Not Authorized to access this system",
                     )
                     tkt.call_nosync(self.disElements, ttk.NORMAL)
+                self.MainFrame.state = f.checkConnection(self.MainFrame)
+                
                 time.sleep(2)
+                f.widgetStatusFailed(self.MainFrame, False)
                 self.destroy()
                 self.MainFrame.show()
 

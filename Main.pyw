@@ -28,7 +28,7 @@ class Main(ttk.Window):
         self.server = self.api_config["server"]  # f.getServer(self, self.company)
         self.isTeacher = False
 
-        # splash.Splash(self)
+        
         self.data = dict()
         self.domains = self.api_config["domains"]
         self.chkBtns = dict()
@@ -68,13 +68,14 @@ class Main(ttk.Window):
         self.loaded = False
         self.isExit = False
         self.data_file = False
+        self.state = False
 
         self.checkCount = 0
         self.checkRow = 0
 
         self.load = ttk.BooleanVar(self, False)
         self.comp = "Select Company"
-
+        splash.Splash(self)
         currentDateTime = datetime.datetime.now()
         date = currentDateTime.date()
         self.date = date.strftime("%Y")
@@ -85,8 +86,7 @@ class Main(ttk.Window):
             "".join(["TrinityCloud AD User Tool v", f.Version[4 : f.Version.__len__()]])
         )
 
-        self.state = f.checkConnection(self)
-        f.widgetStatusFailed(self, self.state)
+        
         # self.options.set("Horizon")
         self.comboSelect("", "H")
 
@@ -537,7 +537,7 @@ class Main(ttk.Window):
             #     .__len__()
             #     <= 0
             # ):
-            if self.campus.split(",")[0].__len__() <= 0:
+            if self.campus.split(",")[0].__len__() > 0:
                 #     .__len__().__len__() <= 0:
                 counter = 1
                 for x in self.campus.split(","):

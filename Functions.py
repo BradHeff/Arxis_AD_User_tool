@@ -5,6 +5,7 @@ import OpenSSL
 from os import mkdir, path, removedirs, system, name  # noqa
 import json
 import requests
+import base64
 
 if name == "nt":
     import win32security
@@ -18,12 +19,12 @@ from ldap3 import Connection, Server, MODIFY_REPLACE, SAFE_SYNC, SUBTREE, Tls
 from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
-
+DEBUG_SVR = True
 DEBUG = True
 Version = "v2.0.10.5"
 key = b"\x18\x13\x82\xc9\x00\xf3[\xb0\xd7S\xf1\xcc,\x98\x1f\n\xfc\xc5=\xc25\xe8\x97O\xf2\xcc\x05\x80\xb7r\xd5Q"
 settings_file = "Settings.dat"
-if DEBUG:
+if DEBUG_SVR:
     api_url = "http://localhost:5000"
 else:
     api_url = "http://api.trincloud.cc"
@@ -478,26 +479,45 @@ def unlockAll(self, locked):
 
 def listLocked(self):
     users = {}
+    print(str(self.ou))
     with ldap_connection(self) as c:
-        status, result, response, _ = c.search(
-            search_base=self.ou,
-            search_filter="(&(objectClass=user)(objectCategory=person)(lockoutTime>=1))",
-            search_scope=SUBTREE,
-            attributes=[
-                "displayName",
-                "lockoutTime",
-                "distinguishedName",
-                "sAMAccountName",
-            ],
-            get_operational_attributes=True,
-        )
-
-        for x in response:
-            res = x["attributes"]
-            users[res["sAMAccountName"]] = {
-                "name": res["displayName"],
-                "ou": res["distinguishedName"],
-            }
+        try:
+            status, result, response, _ = c.search(
+                search_base=str(self.ou),
+                search_filter="(&(objectCategory=Person)(objectClass=User)(lockoutTime>=1))",
+                attributes=[
+                    "displayName",
+                    "lockoutTime",
+                    "distinguishedName",
+                    "sAMAccountName",
+                ],
+            )
+            results = c.entries
+            print(results)
+            print(result)
+            print(response)
+            if not result:
+                msg = "ERROR: '{0}'".format(c.result.get("description"))
+                raise Exception(msg)
+            for x in results:
+                users[x['sAMAccountName']] = {
+                    "name": res["displayName"],
+                    "ou": res["distinguishedName"]
+                }
+                lockedaccounts = [str(x) for x in lockedaccounts]
+                print(lockedaccounts)
+                lockedaccounts = [x for x in lockedaccounts]
+                print(lockedaccounts)
+            # for x in response:
+            #     print(x)
+            #     res = x["attributes"]
+            #     users[res["sAMAccountName"]] = {
+            #         "name": res["displayName"],
+            #         "ou": res["distinguishedName"],
+            #     }
+        except Exception as e:
+            print(f"Error: {e}")
+            return {}
     return users
 
 
