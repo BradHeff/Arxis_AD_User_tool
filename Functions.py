@@ -5,7 +5,7 @@ import OpenSSL
 from os import mkdir, path, removedirs, system, name  # noqa
 import json
 import requests
-import base64
+import base64  # noqa
 
 if name == "nt":
     import win32security
@@ -15,10 +15,19 @@ from pathlib import Path
 from ttkbootstrap import DISABLED, NORMAL
 from ttkbootstrap.toast import ToastNotification
 
-from ldap3 import Connection, Server, MODIFY_REPLACE, SAFE_SYNC, SUBTREE, Tls
+from ldap3 import (
+    Connection,
+    Server,
+    MODIFY_REPLACE,
+    SAFE_SYNC,
+    SUBTREE,
+    Tls,
+    core,
+)
 from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
+
 DEBUG_SVR = True
 DEBUG = True
 Version = "v2.0.10.5"
@@ -482,9 +491,9 @@ def listLocked(self):
     print(str(self.ou))
     with ldap_connection(self) as c:
         try:
-            status, result, response, _ = c.search(
+            c.search(
                 search_base=str(self.ou),
-                search_filter="(&(objectCategory=Person)(objectClass=User)(lockoutTime>=1))",
+                search_filter="(&(objectClass=user)(&(lockoutTime=*)(!(lockoutTime=0))))",
                 attributes=[
                     "displayName",
                     "lockoutTime",
@@ -493,31 +502,29 @@ def listLocked(self):
                 ],
             )
             results = c.entries
-            print(results)
-            print(result)
-            print(response)
-            if not result:
-                msg = "ERROR: '{0}'".format(c.result.get("description"))
-                raise Exception(msg)
-            for x in results:
-                users[x['sAMAccountName']] = {
-                    "name": res["displayName"],
-                    "ou": res["distinguishedName"]
-                }
-                lockedaccounts = [str(x) for x in lockedaccounts]
-                print(lockedaccounts)
-                lockedaccounts = [x for x in lockedaccounts]
-                print(lockedaccounts)
-            # for x in response:
-            #     print(x)
-            #     res = x["attributes"]
-            #     users[res["sAMAccountName"]] = {
-            #         "name": res["displayName"],
-            #         "ou": res["distinguishedName"],
-            #     }
-        except Exception as e:
-            print(f"Error: {e}")
-            return {}
+        except core.exceptions.LDAPException as e:
+            print(e)
+        print(results)
+        print(self.ou)
+
+        for x in results:
+            res = x["attributes"]
+            users[res["sAMAccountName"]] = {
+                "name": res["displayName"],
+                "ou": res["distinguishedName"],
+            }
+        lockedaccounts = [str(y) for y in results]
+        print(lockedaccounts)
+        if lockedaccounts.__len__() >= 1:
+            lockedaccounts = [x for x in lockedaccounts["attributes"]]
+            print(lockedaccounts)
+        # for x in response:
+        #     print(x)
+        #     res = x["attributes"]
+        #     users[res["sAMAccountName"]] = {
+        #         "name": res["displayName"],
+        #         "ou": res["distinguishedName"],
+        #     }
     return users
 
 
