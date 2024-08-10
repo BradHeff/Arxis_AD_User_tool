@@ -28,10 +28,10 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
 
-DEBUG_SVR = True
-DEBUG = True
-Version = "v2.0.10.5"
-key = b"\x18\x13\x82\xc9\x00\xf3[\xb0\xd7S\xf1\xcc,\x98\x1f\n\xfc\xc5=\xc25\xe8\x97O\xf2\xcc\x05\x80\xb7r\xd5Q"
+DEBUG_SVR = False
+DEBUG = False
+Version = "v2.0.10.7"
+key = b'\xac\xf2\x15\xa325@\x0c\xaa\xb2\xd0EC\x07-\x01\xd4\x18\xbe\xffBX\xf8\x89\x9d\x15\xfbzD\xc5\xf9\x17'
 settings_file = "Settings.dat"
 if DEBUG_SVR:
     api_url = "http://localhost:5000"
@@ -91,7 +91,7 @@ def checkConnection(self):
 def parseStatus(self, json_data):
     print(json_data)
     ndata = json_data
-    print(f"Status: {ndata['server']}")
+    # print(f"Status: {ndata['server']}")
     parsed = json.loads(
         str(ndata).replace("'", '"').lower(),
     )
@@ -101,6 +101,13 @@ def parseStatus(self, json_data):
 def getStatus(self):
     # res = requests.get("http://api.trincloud.cc/api/syncer")
     res = requests.get("".join([api_url, "/v1/data/LDAP"]))
+    res.raise_for_status()
+    return res.json()
+
+
+def getUpdate(self):
+    # res = requests.get("http://api.trincloud.cc/api/syncer")
+    res = requests.get("".join([api_url, "/v1/data/Programs"]))
     res.raise_for_status()
     return res.json()
 
@@ -413,7 +420,7 @@ def widgetStatus(self, status):
 
 
 def widgetStatusFailed(self, state):
-    if state:
+    if not state:
         self.btn_unlockAll["state"] = DISABLED
         self.btn_search["state"] = DISABLED
         self.btn_userUnlock["state"] = DISABLED

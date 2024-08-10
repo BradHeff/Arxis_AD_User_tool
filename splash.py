@@ -16,7 +16,7 @@ from icon import loading
 # from GifLabel import GifLabel
 
 loadedMain = False
-versionFile = "https://trincloud.cc/programs/hcs_ad_tool.txt"
+# versionFile = "https://trincloud.cc/programs/hcs_ad_tool.txt"
 newProg = "https://trincloud.cc/programs/release/TrinityCloud%20AD%20User%20Tool"
 # data_dir = ''.join([exe_dir, '\\Data\\'])
 dwnld = """
@@ -147,7 +147,7 @@ class Splash(ttk.Toplevel):
         self.prog.place(x=20.2, y=235)
         self.cleanUpRun()
 
-        t = threading.Thread(target=self.checkUpdate)
+        t = threading.Thread(target=self.checkUpdate, args=("ADTools",))
         t.daemon = True
         t.start()
 
@@ -166,20 +166,25 @@ class Splash(ttk.Toplevel):
         y = (screen_height / 2) - (height / 2)
         return int(x), int(y)
 
-    def checkUpdate(self):
+    def checkUpdate(self, tool):
         try:
             time.sleep(2)
-            r = requests.get(versionFile)
-            if r.status_code == 200:
+            # r = requests.get(versionFile)
+            jsn = self.original_frame.updatez.get(tool)
+            if "version" in jsn:
                 # print(r.text)
-                if version.parse(str(r.text)) > version.parse(
+                if version.parse(str(jsn["version"])) > version.parse(
                     str(fn.Version.replace("v", ""))
                 ):
                     self.canvas.itemconfig(
-                        self.text, text="Downloading new version v%s" % str(r.text)
+                        self.text,
+                        text="Downloading new version v%s" % str(jsn["version"]),
                     )
                     self.cleanUp()
-                    t = threading.Thread(target=self.startUpdate, args=(r.text,))
+                    t = threading.Thread(
+                        target=self.startUpdate,
+                        args=(str(jsn["version"]),),
+                    )
                     t.daemon = True
                     t.start()
                 else:
@@ -192,7 +197,7 @@ class Splash(ttk.Toplevel):
                     self.cleanUpRun()
                     self.onClose()
             else:
-                print(r.status_code)
+                print(jsn)
                 self.onClose()
 
         except Exception as e:

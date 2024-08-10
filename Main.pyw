@@ -23,12 +23,13 @@ class Main(ttk.Window):
         # self.after(500, self.check)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.company = "Horizon"
-        data = f.getStatus(self)
-        self.api_config = f.parseStatus(self, data)
+        self.dataz = f.getStatus(self)
+        self.updatez = f.getUpdate(self)
+        self.api_config = f.parseStatus(self, self.dataz)
+        self.api_updates = f.parseStatus(self, self.updatez)
         self.server = self.api_config["server"]  # f.getServer(self, self.company)
         self.isTeacher = False
 
-        
         self.data = dict()
         self.domains = self.api_config["domains"]
         self.chkBtns = dict()
@@ -85,8 +86,6 @@ class Main(ttk.Window):
         self.title(
             "".join(["TrinityCloud AD User Tool v", f.Version[4 : f.Version.__len__()]])
         )
-
-        
         # self.options.set("Horizon")
         self.comboSelect("", "H")
 

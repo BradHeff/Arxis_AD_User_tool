@@ -196,7 +196,7 @@ class Login(ttk.Toplevel):
                 self.MainFrame.state = f.checkConnection(self.MainFrame)
                 
                 time.sleep(2)
-                f.widgetStatusFailed(self.MainFrame, False)
+                f.widgetStatusFailed(self.MainFrame, True)
                 self.destroy()
                 self.MainFrame.show()
 
