@@ -114,10 +114,10 @@ class Splash(ttk.Toplevel):
         )
         if fn.name == "nt":
             self.attributes("-toolwindow", True)
-            self.attributes("-transparentcolor", "grey")
+            self.attributes("-transparentcolor", "green")
         else:
             self.attributes("-type", "splash")
-        self.configure(background="grey")
+        self.configure(background="green")
         self.overrideredirect(True)
         self.update()
         image = decode_base64_image(loading)
@@ -125,9 +125,9 @@ class Splash(ttk.Toplevel):
         photo = ImageTk.PhotoImage(rounded_image)
         self.canvas = ttk.Canvas(
             self,
-            bg="grey",
-            width=W - 4,
-            height=H - 4,
+            bg="green",
+            width=W,
+            height=H,
             highlightthickness=0,
         )
         self.canvas.pack(fill="both", expand=True)

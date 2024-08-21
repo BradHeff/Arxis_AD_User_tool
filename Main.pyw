@@ -17,7 +17,7 @@ class Main(ttk.Window):
     """Main Class for AD Unlocker"""
 
     def __init__(self):
-        super(Main, self).__init__(themename="trinity-dark")
+        super(Main, self).__init__(themename="trinity-dark", hdpi=True, scaling=1.3)
         self.bind_all("<Control-c>", self.handler)
         signal(SIGINT, lambda x, y: print("") or self.handler())
         # self.after(500, self.check)
@@ -637,20 +637,6 @@ class Main(ttk.Window):
         self.orgCompEnt.delete(0, "end")
         self.desc.insert(0, self.date)
 
-        # if self.compFail and self.state and self.servs:
-        #     f.widgetStatusFailed(self, False)
-
-        #     tkt.call_nosync(self.messageBox, "ERROR!!", "Some settings are incomplete")
-        #     return
-
-        # if self.compFail:
-        #     f.widgetStatusFailed(self, True)
-
-        #     tkt.call_nosync(
-        #         self.messageBox, "ERROR!!", "Server settings are incomplete"
-        #     )
-        #     return
-
         # with open(f.settings_dir + "\\disabled.json", "r") as fs:
         #     self.disOU = json.load(fs)
 
@@ -925,16 +911,6 @@ class Main(ttk.Window):
     def unlockAll(self):
         f.widgetStatus(self, ttk.DISABLED)
         data = dict()
-        if self.compFail:
-            f.widgetStatus(self, ttk.NORMAL)
-
-            tkt.call_nosync(
-                self.messageBox,
-                "ERROR!!",
-                "Your Settings are incomplete\n\
-            for this TAB!",
-            )
-            return
         match self.tabControl.index(self.tabControl.select()):
             case 0:
                 if self.tree.get_children() == ():
@@ -1012,7 +988,7 @@ class Main(ttk.Window):
                     data["last"] = self.lname.get().strip().capitalize()
                     data["password"] = self.dpass.get()
                     data["domain"] = self.primary_domain.get()
-                    data["proxy"] = self.domains["Secondary"]
+                    data["proxy"] = self.domains["secondary"]
                     data["groups"] = groups
                     data["homeDirectory"] = self.paths.get() + "\\" + samname.lower()
                     data["homeDrive"] = self.hdrive.get() + ":"
@@ -1037,16 +1013,6 @@ class Main(ttk.Window):
             # case 2:
             #     print("PRINTERD")
             case 2:
-                if self.compFail:
-                    f.widgetStatus(self, ttk.NORMAL)
-
-                    tkt.call_nosync(
-                        self.messageBox,
-                        "ERROR!!",
-                        "Your Settings are incomplete\n\
-                    for this TAB!",
-                    )
-                    return
                 if self.var2.get().__len__() <= 2 or self.movePosOU.__len__() <= 1:
                     tkt.call_nosync(
                         self.messageBox, "ERROR!!", "You must select a position!"
@@ -1069,16 +1035,6 @@ class Main(ttk.Window):
                 t.daemon = True
                 t.start()
             case 3:
-                if self.compFail:
-                    f.widgetStatus(self, ttk.NORMAL)
-
-                    tkt.call_nosync(
-                        self.messageBox,
-                        "ERROR!!",
-                        "Your Settings are incomplete\n\
-                    for this TAB!",
-                    )
-                    return
 
                 if (
                     self.entPass.get().__len__() >= 8
@@ -1127,12 +1083,12 @@ class Main(ttk.Window):
                             if self.entDomain.get() not in x and x.__len__() > 5:
                                 data["proxy"] = x.split("@")[1]
                             else:
-                                if not self.domains["Secondary"].__len__() <= 3:
-                                    data["proxy"] = self.domains["Secondary"]
+                                if not self.domains["secondary"].__len__() <= 3:
+                                    data["proxy"] = self.domains["secondary"]
 
                     else:
-                        if not self.domains["Secondary"].__len__() <= 3:
-                            data["proxy"] = self.domains["Secondary"]
+                        if not self.domains["secondary"].__len__() <= 3:
+                            data["proxy"] = self.domains["secondary"]
 
                     t = threading.Thread(target=f.update_user, args=[self, data])
                     t.daemon = True
@@ -1147,15 +1103,6 @@ class Main(ttk.Window):
                     characters long",
                     )
             case 4:
-                if self.compFail:
-                    f.widgetStatus(self, ttk.NORMAL)
-                    tkt.call_nosync(
-                        self.messageBox,
-                        "ERROR!!",
-                        "Your Settings are incomplete\n\
-                    for this TAB!",
-                    )
-                    return
 
                 if self.tree7.get_children() == ():
                     f.widgetStatus(self, ttk.NORMAL)
@@ -1184,18 +1131,7 @@ class Main(ttk.Window):
                 print("")
 
         # elif self.tabControl.index(self.tabControl.select()) == 2:
-        #     if not self.compFail:
-        #         if not self.expiredOU == None:
-        #             f.widgetStatus(self, ttk.DISABLED)
-        #             t = threading.Thread(target=f.remove_groups, args=[self])
-        #             t.start()
-        #         else:
-        #             f.widgetStatus(self, ttk.NORMAL)
-        #             tkt.call_nosync(self.messageBox,"ERROR!!", "You must select an OU!")
-        #     else:
-        #         f.widgetStatus(self, ttk.NORMAL)
-        #         tkt.call_nosync(self.messageBox,"ERROR!!", "Your Settings are\
-        #           incomplete\nfor this TAB!")
+
         # elif self.tabControl.index(self.tabControl.select()) == 3:
         #     f.widgetStatus(self, ttk.NORMAL)
         #     tkt.call_nosync(self.messageBox,"MAINTENANCE!!", "This Option is still\

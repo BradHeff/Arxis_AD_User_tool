@@ -29,9 +29,9 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
 )
 
 DEBUG_SVR = False
-DEBUG = False
+DEBUG = True
 Version = "v2.0.10.7"
-key = b'\xac\xf2\x15\xa325@\x0c\xaa\xb2\xd0EC\x07-\x01\xd4\x18\xbe\xffBX\xf8\x89\x9d\x15\xfbzD\xc5\xf9\x17'
+key = b"\xac\xf2\x15\xa325@\x0c\xaa\xb2\xd0EC\x07-\x01\xd4\x18\xbe\xffBX\xf8\x89\x9d\x15\xfbzD\xc5\xf9\x17"
 settings_file = "Settings.dat"
 if DEBUG_SVR:
     api_url = "http://localhost:5000"
@@ -495,6 +495,7 @@ def unlockAll(self, locked):
 
 def listLocked(self):
     users = {}
+    results = ""
     print(str(self.ou))
     with ldap_connection(self) as c:
         try:
@@ -543,7 +544,7 @@ def update_user(self, data):
 
             if data["proxy"] is None:
                 proxy = "".join(
-                    ["smtp:", data["login"], "@", self.domains["Secondary"]]
+                    ["smtp:", data["login"], "@", self.domains["secondary"]]
                 )
             else:
                 proxy = "".join(["smtp:", data["login"], "@", data["proxy"]])
@@ -657,12 +658,12 @@ def createUser(self, data):
         self.status["text"] = "".join(
             ["Creating ", data["first"], " ", data["last"], " home directory"]
         )
-        nHomeDir = checkNetworkAccess(self, data["homeDirectory"], data["login"])
-        createHomeDir(
-            data["login"],
-            nHomeDir,
-            self.domainName.strip(),
-        )
+        # nHomeDir = checkNetworkAccess(self, data["homeDirectory"], data["login"])
+        # createHomeDir(
+        #     data["login"],
+        #     nHomeDir,
+        #     self.domainName.strip(),
+        # )
         self.progress["value"] = 100
         widgetStatus(self, NORMAL)
         self.status["text"] = "Idle..."
