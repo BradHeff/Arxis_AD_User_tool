@@ -7,11 +7,11 @@ from signal import SIGINT, signal
 from PIL import Image, ImageDraw, ImageTk
 import subprocess as sp
 from os import remove, rmdir, mkdir, _exit
-import Functions as fn
+import usr.lib.Arxis_AD_Tool.Functions as fn
 import requests
 from packaging import version
 
-from icon import loading
+from usr.lib.Arxis_AD_Tool.icon import loading
 
 # from GifLabel import GifLabel
 

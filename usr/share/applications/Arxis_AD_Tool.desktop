@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Arxis AD Tool
+GenericName=AD Tool
+X-GNOME-FullName=Arxis AD Tool
+Comment=Unlock and add users to Active Directory
+Exec=arxis-ad-tool
+Icon=arxis
+Terminal=false
+Type=Application
+Categories=GTK;Settings;Security;X-GNOME-Settings-Panel;X-GNOME-SystemSettings;X-Unity-Settings-Panel;X-XFCE-SettingsDialog;X-XFCE-SystemSettings;
+Keywords=Arxis;arxis;ad;AD;tool;Tool;
+StartupNotify=true

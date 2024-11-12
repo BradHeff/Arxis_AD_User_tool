@@ -3,13 +3,13 @@ import time
 import os
 import io
 import ttkbootstrap as ttk
-import Functions as f
+import usr.lib.Arxis_AD_Tool.Functions as f
 import tkthread as tkt
 import configparser_crypt as cCrypt
 import base64
 from PIL import Image, ImageTk
-from Functions import Version, creds, settings_dir, key
-from icon import himage, shield
+from usr.lib.Arxis_AD_Tool.Functions import Version, creds, settings_dir, key
+from usr.lib.Arxis_AD_Tool.icon import himage, shield
 from ldap3.core.exceptions import LDAPBindError, LDAPPasswordIsMandatoryError
 
 

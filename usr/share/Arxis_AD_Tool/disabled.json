@@ -1,0 +1,5 @@
+{
+  "Disabled": "OU=Disabled,OU=Users,OU=Horizon,DC=HORIZON,DC=local",
+  "ExpiredStaff": "OU=ExpiredStaff,OU=Users,OU=Horizon,DC=HORIZON,DC=local",
+  "ExpiredStudents": "OU=ExpiredStudents,OU=Users,OU=Horizon,DC=HORIZON,DC=local"
+}
