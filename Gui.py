@@ -2,12 +2,12 @@ import io
 import base64
 import ttkbootstrap as ttk
 from PIL import Image, ImageTk
-from Functions import Version, loadConfig, saveConfig
+from Functions import Version
 from icon import image
 
 
 def Window(self):
-    self.W, self.H = 1275, 730
+    self.W, self.H = 1875, 830
     screen_width = self.winfo_screenwidth()
     screen_height = self.winfo_screenheight()
     center_x = int(screen_width / 2 - self.W / 2)
@@ -15,7 +15,7 @@ def Window(self):
     self.geometry(f"{self.W}x{self.H}+{center_x}+{center_y}")
     self.minsize(1240, 710)
     self.attributes("-fullscreen", False)
-    self.resizable(False, False)
+    # self.resizable(False, False)
 
 
 def Icon(self):
@@ -29,27 +29,30 @@ def baseGUI(self):
     Window(self)
     Icon(self)
 
-    menubar = ttk.Menu(self, background="#4a4a59", fg="#ededef")
-    self.file = ttk.Menu(menubar, tearoff=0, background="#4a4a59", fg="#ededef")
-    self.file.add_checkbutton(
-        label="Auto Load", variable=self.load, command=self.setLoad
-    )
-    self.file.add_command(label="Load", command=lambda: loadConfig(self, True))
-    self.file.add_command(label="Save", command=lambda: saveConfig(self))
-    self.file.add_separator()
-    self.file.add_command(label="Exit", command=self.quit)
+    # menubar = ttk.Menu(self, background="#4a4a59", fg="#ededef")
+    # self.file = ttk.Menu(menubar, tearoff=0, background="#4a4a59", fg="#ededef")
+    # self.file.add_checkbutton(
+    #     label="Auto Load", variable=self.load, command=self.setLoad
+    # )
+    # self.file.add_command(label="Load", command=lambda: loadConfig(self, True))
+    # self.file.add_command(label="Save", command=lambda: saveConfig(self))
+    # self.file.add_separator()
+    # self.file.add_command(label="Exit", command=self.quit)
 
-    menubar.add_cascade(label="File", menu=self.file)
-    self.config(menu=menubar, background="#4a4a59")
+    # menubar.add_cascade(label="File", menu=self.file)
+    # self.config(menu=menubar, background="#4a4a59")
+    self.columnconfigure(1, weight=1)
+    self.columnconfigure(0, weight=0, pad=70)
+    self.rowconfigure(0, weight=1)
 
     self.tabControl = ttk.Notebook(self)
 
     tab1 = ttk.Frame(self.tabControl, padding=(0, 0, 5, 0))
     self.tab2 = ttk.Frame(self.tabControl)
     # tab3 = ttk.Frame(self.tabControl)
-    tab4 = ttk.Frame(self.tabControl)
-    tab5 = ttk.Frame(self.tabControl)
-    tab6 = ttk.Frame(self.tabControl, padding=(0, 0, 5, 0))
+    # tab4 = ttk.Frame(self.tabControl)
+    # tab5 = ttk.Frame(self.tabControl)
+    # tab6 = ttk.Frame(self.tabControl, padding=(0, 0, 5, 0))
 
     self.tab2.rowconfigure(1, weight=0, pad=30)
 
@@ -59,29 +62,25 @@ def baseGUI(self):
     # tab3.rowconfigure(5, weight=1)
     # tab3.columnconfigure(0, weight=1)
 
-    tab4.rowconfigure(4, weight=1)
-    tab4.columnconfigure(0, weight=1)
-    tab4.columnconfigure(2, weight=1)
-
-    self.columnconfigure(1, weight=1)
-    self.columnconfigure(0, weight=0, pad=70)
-    self.rowconfigure(0, weight=1)
+    # tab4.rowconfigure(4, weight=1)
+    # tab4.columnconfigure(0, weight=1)
+    # tab4.columnconfigure(2, weight=1)
 
     self.tabControl.add(tab1, text="Lock", compound="top")
     self.tabControl.add(self.tab2, text="New Users")
     # self.tabControl.add(tab3, text="Disabled User")
-    self.tabControl.add(tab4, text="Move User")
-    self.tabControl.add(tab5, text="Edit User")
-    self.tabControl.add(tab6, text="Disable User")
+    # self.tabControl.add(tab4, text="Move User")
+    # self.tabControl.add(tab5, text="Edit User")
+    # self.tabControl.add(tab6, text="Disable User")
     self.tabControl.bind("<<NotebookTabChanged>>", self.alterButton)
     self.tabControl.grid(sticky=ttk.NSEW, columnspan=4, row=0)
 
     Tab1(self, tab1)
     Tab2(self, self.tab2)
     # Tab3(self, tab3)
-    Tab4(self, tab4)
-    Tab5(self, tab5)
-    Tab6(self, tab6)
+    # Tab4(self, tab4)
+    # Tab5(self, tab5)
+    # Tab6(self, tab6)
 
     frmbtn = ttk.Frame(self)
     frmbtn.grid(sticky="sew", columnspan=4, row=5)
@@ -93,13 +92,13 @@ def baseGUI(self):
     self.btn_unlockAll.grid(sticky="e", column=3, row=0, padx=10, pady=5)
     self.btn_unlockAll.configure(state=ttk.DISABLED)
 
-    self.lbl_login = ttk.Label(frmbtn, text="Not Authorized")
-    self.lbl_login.grid(sticky="w", column=0, row=0, padx=10, pady=5)
-    self.lbl_login.config(
-        bootstyle="danger",
-        font=("Poppins", 12),
-        text="No Access",
-    )
+    # self.lbl_login = ttk.Label(frmbtn, text="Not Authorized")
+    # self.lbl_login.grid(sticky="w", column=0, row=0, padx=10, pady=5)
+    # self.lbl_login.config(
+    #     bootstyle="danger",
+    #     font=("Poppins", 12),
+    #     text="No Access",
+    # )
     # self.options = ttk.StringVar(frmbtn)
     # self.combobox = ttk.Combobox(frmbtn, textvariable=self.options, width=32)
     # self.combobox["values"] = ["Horizon"]
@@ -165,16 +164,16 @@ def Tab2(self, tab2):
     lbl_title = ttk.Label(tab2, text="Active Directory New Users")
     lbl_title.grid(sticky="n", columnspan=4, padx=10, pady=5)
 
+    tab2.columnconfigure(0, weight=1)
+    tab2.columnconfigure(2, weight=1)
+
+    tab2.rowconfigure(1, weight=1)
+
     lframe = ttk.Frame(tab2)
     rframe = ttk.Frame(tab2)
 
     lframe.grid(sticky="nsew", column=0, row=1, columnspan=2, pady=10)
     rframe.grid(sticky="nsew", column=2, row=1, columnspan=2, pady=10, padx=5)
-
-    tab2.columnconfigure(0, weight=1)
-    tab2.columnconfigure(2, weight=1)
-
-    tab2.rowconfigure(1, weight=1)
 
     lframe.rowconfigure(1, weight=0, pad=26)
     lframe.columnconfigure(10, weight=1)
@@ -256,52 +255,52 @@ def Tab2(self, tab2):
     self.dpass = ttk.Entry(rframe, width=42)
     self.dpass.grid(sticky="se", column=3, row=0, padx=10, pady=5)
 
-    lbl_homeDrive = ttk.Label(self.lbl_frame3, text="Home Drive:")
-    lbl_homeDrive.grid(sticky="nw", column=0, row=0, padx=10, pady=10)
+    # lbl_homeDrive = ttk.Label(self.lbl_frame3, text="Home Drive:")
+    # lbl_homeDrive.grid(sticky="nw", column=0, row=0, padx=10, pady=10)
 
-    self.hdrive = ttk.StringVar(self.lbl_frame3, "Select Drive")
-    self.combo_hdrive = ttk.Combobox(
-        self.lbl_frame3, textvariable=self.hdrive, width=15
-    )
-    self.combo_hdrive["values"] = [
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "G",
-        "H",
-        "I",
-        "J",
-        "K",
-        "L",
-        "M",
-        "N",
-        "O",
-        "P",
-        "Q",
-        "R",
-        "S",
-        "T",
-        "U",
-        "V",
-        "W",
-        "X",
-        "Y",
-        "Z",
-    ]
-    self.combo_hdrive["state"] = "readonly"
-    self.combo_hdrive.bind("<<ComboboxSelected>>", self.driveSelect)
-    self.combo_hdrive.grid(sticky="ne", column=1, row=0, padx=10, pady=10)
+    # self.hdrive = ttk.StringVar(self.lbl_frame3, "Select Drive")
+    # self.combo_hdrive = ttk.Combobox(
+    #     self.lbl_frame3, textvariable=self.hdrive, width=15
+    # )
+    # self.combo_hdrive["values"] = [
+    #     "A",
+    #     "B",
+    #     "C",
+    #     "D",
+    #     "E",
+    #     "F",
+    #     "G",
+    #     "H",
+    #     "I",
+    #     "J",
+    #     "K",
+    #     "L",
+    #     "M",
+    #     "N",
+    #     "O",
+    #     "P",
+    #     "Q",
+    #     "R",
+    #     "S",
+    #     "T",
+    #     "U",
+    #     "V",
+    #     "W",
+    #     "X",
+    #     "Y",
+    #     "Z",
+    # ]
+    # self.combo_hdrive["state"] = "readonly"
+    # self.combo_hdrive.bind("<<ComboboxSelected>>", self.driveSelect)
+    # self.combo_hdrive.grid(sticky="ne", column=1, row=0, padx=10, pady=10)
 
-    lbl_homePath = ttk.Label(self.lbl_frame3, text="Home Path:")
-    lbl_homePath.grid(sticky="we", column=3, row=0, padx=10, pady=10)
+    # lbl_homePath = ttk.Label(self.lbl_frame3, text="Home Path:")
+    # lbl_homePath.grid(sticky="we", column=3, row=0, padx=10, pady=10)
 
-    self.paths = ttk.StringVar(self.lbl_frame3, "Select Homepath")
-    self.homePath = ttk.Combobox(self.lbl_frame3, textvariable=self.paths, width=20)
-    self.homePath["state"] = "readonly"
-    self.homePath.grid(sticky="ne", column=4, row=0, padx=10, pady=10)
+    # self.paths = ttk.StringVar(self.lbl_frame3, "Select Homepath")
+    # self.homePath = ttk.Combobox(self.lbl_frame3, textvariable=self.paths, width=20)
+    # self.homePath["state"] = "readonly"
+    # self.homePath.grid(sticky="ne", column=4, row=0, padx=10, pady=10)
 
     lbl_desc = ttk.Label(self.lbl_frame3, text="Description:")
     lbl_desc.grid(sticky="wsn", column=0, row=1, padx=10, pady=10)

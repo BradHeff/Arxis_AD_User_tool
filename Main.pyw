@@ -10,14 +10,14 @@ import Gui
 
 # import json
 
-import splash
+# import splash
 
 
-class Main(ttk.Window):
+class Mainz(ttk.Window):
     """Main Class for AD Unlocker"""
 
     def __init__(self):
-        super(Main, self).__init__(themename="trinity-dark", hdpi=True, scaling=1.3)
+        super(Mainz, self).__init__(themename="trinity-dark")
         self.bind_all("<Control-c>", self.handler)
         signal(SIGINT, lambda x, y: print("") or self.handler())
         # self.after(500, self.check)
@@ -69,27 +69,25 @@ class Main(ttk.Window):
         self.loaded = False
         self.isExit = False
         self.data_file = False
-        self.state = False
+        self.state = True
 
         self.checkCount = 0
         self.checkRow = 0
 
         self.load = ttk.BooleanVar(self, False)
         self.comp = "Select Company"
-        splash.Splash(self)
+        # splash.Splash(self)
         currentDateTime = datetime.datetime.now()
         date = currentDateTime.date()
         self.date = date.strftime("%Y")
-
-        Gui.baseGUI(self)
 
         self.title(
             "".join(["TrinityCloud AD User Tool v", f.Version[4 : f.Version.__len__()]])
         )
         # self.options.set("Horizon")
+        Gui.baseGUI(self)
         self.comboSelect("", "H")
-
-        splash.loadedMain = True
+        # splash.loadedMain = True
 
     def on_closing(self):
         print("Thanks for using Trinity AD User Tool!\n")
@@ -529,7 +527,7 @@ class Main(ttk.Window):
     def comboSelect(self, widget, value="H"):
         if "camp" not in str(widget):
             # f.getConfig(self, self.company)
-            self.clear_campus()
+            # self.clear_campus()
             # if (
             #     not f.self.campus
             #     .split(",")[0]
@@ -547,63 +545,63 @@ class Main(ttk.Window):
                         value=x,
                         command=lambda: self.comboSelect("camp", "H"),
                     )
-                    balak_edit = ttk.Radiobutton(
-                        self.lbl_frameG,
-                        text=x,
-                        variable=self.EcampH,
-                        value=x,
-                        command=lambda: self.comboSelect("camp", "E"),
-                    )
-                    balak_move = ttk.Radiobutton(
-                        self.lbl_frameF,
-                        text=x,
-                        variable=self.McampH,
-                        value=x,
-                        command=lambda: self.comboSelect("camp", "M"),
-                    )
-                    balak_move2 = ttk.Radiobutton(
-                        self.lbl_frameF2,
-                        text=x,
-                        variable=self.McampH2,
-                        value=x,
-                    )
-                    balakB = ttk.Radiobutton(
-                        self.lbl_frameC6,
-                        text=x,
-                        variable=self.McampH6,
-                        value=x,
-                        command=lambda: self.comboSelect("camp", "D"),
-                    )
+                    # balak_edit = ttk.Radiobutton(
+                    #     self.lbl_frameG,
+                    #     text=x,
+                    #     variable=self.EcampH,
+                    #     value=x,
+                    #     command=lambda: self.comboSelect("camp", "E"),
+                    # )
+                    # balak_move = ttk.Radiobutton(
+                    #     self.lbl_frameF,
+                    #     text=x,
+                    #     variable=self.McampH,
+                    #     value=x,
+                    #     command=lambda: self.comboSelect("camp", "M"),
+                    # )
+                    # balak_move2 = ttk.Radiobutton(
+                    #     self.lbl_frameF2,
+                    #     text=x,
+                    #     variable=self.McampH2,
+                    #     value=x,
+                    # )
+                    # balakB = ttk.Radiobutton(
+                    #     self.lbl_frameC6,
+                    #     text=x,
+                    #     variable=self.McampH6,
+                    #     value=x,
+                    #     command=lambda: self.comboSelect("camp", "D"),
+                    # )
                     if counter == 1:
                         balak.pack(side="left", fill="y", expand=True, padx=10, pady=10)
-                        balak_edit.pack(
-                            side="left", fill="y", expand=True, padx=10, pady=10
-                        )
-                        balak_move.pack(
-                            side="left", fill="y", expand=True, padx=10, pady=10
-                        )
-                        balak_move2.pack(
-                            side="left", fill="y", expand=True, padx=10, pady=10
-                        )
-                        balakB.pack(
-                            side="left", fill="y", expand=True, padx=10, pady=10
-                        )
+                        # balak_edit.pack(
+                        #     side="left", fill="y", expand=True, padx=10, pady=10
+                        # )
+                        # balak_move.pack(
+                        #     side="left", fill="y", expand=True, padx=10, pady=10
+                        # )
+                        # balak_move2.pack(
+                        #     side="left", fill="y", expand=True, padx=10, pady=10
+                        # )
+                        # balakB.pack(
+                        #     side="left", fill="y", expand=True, padx=10, pady=10
+                        # )
                     else:
                         balak.pack(
                             side="right", fill="y", expand=True, padx=10, pady=10
                         )
-                        balak_edit.pack(
-                            side="right", fill="y", expand=True, padx=10, pady=10
-                        )
-                        balak_move.pack(
-                            side="right", fill="y", expand=True, padx=10, pady=10
-                        )
-                        balak_move2.pack(
-                            side="right", fill="y", expand=True, padx=10, pady=10
-                        )
-                        balakB.pack(
-                            side="right", fill="y", expand=True, padx=10, pady=10
-                        )
+                        # balak_edit.pack(
+                        #     side="right", fill="y", expand=True, padx=10, pady=10
+                        # )
+                        # balak_move.pack(
+                        #     side="right", fill="y", expand=True, padx=10, pady=10
+                        # )
+                        # balak_move2.pack(
+                        #     side="right", fill="y", expand=True, padx=10, pady=10
+                        # )
+                        # balakB.pack(
+                        #     side="right", fill="y", expand=True, padx=10, pady=10
+                        # )
                     counter -= 1
 
         t = threading.Thread(target=self.comboLoad, args=(value))
@@ -621,14 +619,14 @@ class Main(ttk.Window):
         self.clear_pos()
         self.clear_group()
         # self.clear_exp()
-        self.clear_move()
-        self.clear_edit()
-        self.clear_dis()
-        self.tree4.delete(*self.tree4.get_children())
-        self.tree3.delete(*self.tree3.get_children())
+        # self.clear_move()
+        # self.clear_edit()
+        # self.clear_dis()
+        # self.tree4.delete(*self.tree4.get_children())
+        # self.tree3.delete(*self.tree3.get_children())
         # self.tree2.delete(*self.tree2.get_children())
-        self.tree6.delete(*self.tree6.get_children())
-        self.tree7.delete(*self.tree7.get_children())
+        # self.tree6.delete(*self.tree6.get_children())
+        # self.tree7.delete(*self.tree7.get_children())
         self.tree.delete(*self.tree.get_children())
         self.desc.delete(0, "end")
         self.dpass.delete(0, "end")
@@ -643,8 +641,8 @@ class Main(ttk.Window):
         for x in self.disOU:
             self.disName.append(x)
 
-        self.cmbDisable["values"] = self.disName
-        self.cmbDisable.set("Select OU")
+        # self.cmbDisable["values"] = self.disName
+        # self.cmbDisable.set("Select OU")
 
         if not self.positions.__len__() <= 0:
             try:
@@ -654,14 +652,14 @@ class Main(ttk.Window):
                 count2 = 0
                 row2 = 0
 
-                count11 = 0
-                row11 = 0
+                # count11 = 0
+                # row11 = 0
 
-                self.chkValue = ttk.StringVar(self.lbl_frame8, "1")
+                # self.chkValue = ttk.StringVar(self.lbl_frame8, "1")
                 self.var = ttk.StringVar(None, "1")
-                self.var2 = ttk.StringVar(None, "1")
-                self.var3 = ttk.StringVar(None, "1")
-                self.var6 = ttk.StringVar(None, "1")
+                # self.var2 = ttk.StringVar(None, "1")
+                # self.var3 = ttk.StringVar(None, "1")
+                # self.var6 = ttk.StringVar(None, "1")
                 for x in self.positions:
                     for y in self.positions[x]:
                         prog = 1
@@ -678,46 +676,46 @@ class Main(ttk.Window):
                             )
                             rbtn.grid(row=row, column=count, padx=10, pady=10)
                             rbtn.selection_clear()
-                            rbtn3 = ttk.Radiobutton(
-                                self.lbl_frame6,
-                                text=y,
-                                variable=self.var2,
-                                command=lambda: self.moveSelect(value),
-                                value=y,
-                            )
-                            rbtn3.grid(row=row, column=count, padx=10, pady=10)
-                            rbtn3.selection_clear()
-                            rbtn11 = ttk.Radiobutton(
-                                self.lbl_frame8,
-                                text=y,
-                                variable=self.chkValue,
-                                command=lambda: self.moveNewPosSelect(value),
-                                value=y,
-                            )
-                            rbtn11.grid(row=row11, column=count11, padx=10, pady=10)
-                            rbtn11.selection_clear()
-                            count11 += 1
-                            if count11 > 4:
-                                count11 = 0
-                                row11 += 1
-                            rbtn5 = ttk.Radiobutton(
-                                self.lbl_frame9,
-                                text=y,
-                                variable=self.var3,
-                                command=lambda: self.editSelect(value),
-                                value=y,
-                            )
-                            rbtn5.grid(row=row, column=count, padx=10, pady=10)
-                            rbtn5.selection_clear()
-                            rbtn6 = ttk.Radiobutton(
-                                self.lbl_frame9S,
-                                text=y,
-                                variable=self.var6,
-                                command=lambda: self.disSelect(value),
-                                value=y,
-                            )
-                            rbtn6.grid(row=row, column=count, padx=10, pady=10)
-                            rbtn6.selection_clear()
+                            # rbtn3 = ttk.Radiobutton(
+                            #     self.lbl_frame6,
+                            #     text=y,
+                            #     variable=self.var2,
+                            #     command=lambda: self.moveSelect(value),
+                            #     value=y,
+                            # )
+                            # rbtn3.grid(row=row, column=count, padx=10, pady=10)
+                            # rbtn3.selection_clear()
+                            # rbtn11 = ttk.Radiobutton(
+                            #     self.lbl_frame8,
+                            #     text=y,
+                            #     variable=self.chkValue,
+                            #     command=lambda: self.moveNewPosSelect(value),
+                            #     value=y,
+                            # )
+                            # rbtn11.grid(row=row11, column=count11, padx=10, pady=10)
+                            # rbtn11.selection_clear()
+                            # count11 += 1
+                            # if count11 > 4:
+                            #     count11 = 0
+                            #     row11 += 1
+                            # rbtn5 = ttk.Radiobutton(
+                            #     self.lbl_frame9,
+                            #     text=y,
+                            #     variable=self.var3,
+                            #     command=lambda: self.editSelect(value),
+                            #     value=y,
+                            # )
+                            # rbtn5.grid(row=row, column=count, padx=10, pady=10)
+                            # rbtn5.selection_clear()
+                            # rbtn6 = ttk.Radiobutton(
+                            #     self.lbl_frame9S,
+                            #     text=y,
+                            #     variable=self.var6,
+                            #     command=lambda: self.disSelect(value),
+                            #     value=y,
+                            # )
+                            # rbtn6.grid(row=row, column=count, padx=10, pady=10)
+                            # rbtn6.selection_clear()
                             count += 1
                             if count > 3:
                                 count = 0
@@ -732,46 +730,46 @@ class Main(ttk.Window):
                             )
                             rbtn2.grid(row=row2, column=count2, padx=10, pady=10)
                             rbtn2.selection_clear()
-                            rbtn4 = ttk.Radiobutton(
-                                self.lbl_frame7,
-                                text=y,
-                                variable=self.var2,
-                                command=lambda: self.moveSelect(value),
-                                value=y,
-                            )
-                            rbtn4.grid(row=row2, column=count2, padx=10, pady=10)
-                            rbtn4.selection_clear()
-                            rbtn12 = ttk.Radiobutton(
-                                self.lbl_frame8,
-                                text=y,
-                                variable=self.chkValue,
-                                command=lambda: self.moveNewPosSelect(value),
-                                value=y,
-                            )
-                            rbtn12.grid(row=row11, column=count11, padx=10, pady=10)
-                            rbtn12.selection_clear()
-                            count11 += 1
-                            if count11 > 4:
-                                count11 = 0
-                                row11 += 1
-                            rbtn6 = ttk.Radiobutton(
-                                self.lbl_frame10,
-                                text=y,
-                                variable=self.var3,
-                                command=lambda: self.editSelect(value),
-                                value=y,
-                            )
-                            rbtn6.grid(row=row2, column=count2, padx=10, pady=10)
-                            rbtn6.selection_clear()
-                            rbtn6 = ttk.Radiobutton(
-                                self.lbl_frame9STU,
-                                text=y,
-                                variable=self.var6,
-                                command=lambda: self.disSelect(value),
-                                value=y,
-                            )
-                            rbtn6.grid(row=row2, column=count2, padx=10, pady=10)
-                            rbtn6.selection_clear()
+                            # rbtn4 = ttk.Radiobutton(
+                            #     self.lbl_frame7,
+                            #     text=y,
+                            #     variable=self.var2,
+                            #     command=lambda: self.moveSelect(value),
+                            #     value=y,
+                            # )
+                            # rbtn4.grid(row=row2, column=count2, padx=10, pady=10)
+                            # rbtn4.selection_clear()
+                            # rbtn12 = ttk.Radiobutton(
+                            #     self.lbl_frame8,
+                            #     text=y,
+                            #     variable=self.chkValue,
+                            #     command=lambda: self.moveNewPosSelect(value),
+                            #     value=y,
+                            # )
+                            # rbtn12.grid(row=row11, column=count11, padx=10, pady=10)
+                            # rbtn12.selection_clear()
+                            # count11 += 1
+                            # if count11 > 4:
+                            #     count11 = 0
+                            #     row11 += 1
+                            # rbtn6 = ttk.Radiobutton(
+                            #     self.lbl_frame10,
+                            #     text=y,
+                            #     variable=self.var3,
+                            #     command=lambda: self.editSelect(value),
+                            #     value=y,
+                            # )
+                            # rbtn6.grid(row=row2, column=count2, padx=10, pady=10)
+                            # rbtn6.selection_clear()
+                            # rbtn6 = ttk.Radiobutton(
+                            #     self.lbl_frame9STU,
+                            #     text=y,
+                            #     variable=self.var6,
+                            #     command=lambda: self.disSelect(value),
+                            #     value=y,
+                            # )
+                            # rbtn6.grid(row=row2, column=count2, padx=10, pady=10)
+                            # rbtn6.selection_clear()
                             count2 += 1
                             if count2 > 6:
                                 count2 = 0
@@ -822,9 +820,9 @@ class Main(ttk.Window):
         ):
             try:
                 self.progress["value"] = 70
-                self.homePath["values"] = self.homePaths.split(",")
-                self.paths.set("Select Homepath")
-                self.hdrive.set("Select Drive")
+                # self.homePath["values"] = self.homePaths.split(",")
+                # self.paths.set("Select Homepath")
+                # self.hdrive.set("Select Drive")
             except Exception as e:
                 print("ERROR DRIVE")
                 print(e)
@@ -1173,19 +1171,6 @@ class Main(ttk.Window):
         btn.pack(side="bottom", expand=True, padx=10, pady=10)
 
 
-root = Main()
-
-
-def thread_run(func):
-    threading.Thread(target=func).start()
-
-
-@thread_run
-def func():
-    @tkt.main(root)
-    @tkt.current(root)
-    def runthread():
-        root.update()
-
-
-root.mainloop()
+if __name__ == "__main__":
+    root = Mainz()
+    root.mainloop()

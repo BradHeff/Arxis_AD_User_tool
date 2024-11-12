@@ -80,12 +80,12 @@ def Toast(title, message, types="happy"):
     toast.show_toast()
 
 
-def checkConnection(self):
-    if "No" in self.lbl_login["text"]:
-        Toast("Connection Error", "Unable to connect to the LDAP server.", "error")
-        return False
-    else:
-        return True
+# def checkConnection(self):
+#     if "No" in self.lbl_login["text"]:
+#         Toast("Connection Error", "Unable to connect to the LDAP server.", "error")
+#         return False
+#     else:
+#         return True
 
 
 def parseStatus(self, json_data):
@@ -452,11 +452,13 @@ def resetPassword(self, ou, newpass):
         self.tree.delete(selected_item)
         self.selItem = []
         widgetStatus(self, NORMAL)
-        Toast("SUCCESS!!", "Password set and user unlocked!", "happy")
+        # Toast("SUCCESS!!", "Password set and user unlocked!", "happy")
+        print("Password reset and user unlocked successfully.")
     except:  # noqa
         self.selItem = []
         widgetStatus(self, NORMAL)
-        Toast("ERROR!!", "An error has occured!", "angry")
+        # Toast("ERROR!!", "An error has occured!", "angry")
+        print("An error occurred while resetting password.")
 
 
 def unlockUser(self, ou, all=0):
@@ -591,14 +593,14 @@ def update_user(self, data):
             )
         self.progress["value"] = 100
         widgetStatus(self, NORMAL)
-        self.status["text"] = "Idle..."
-        Toast("SUCCESS!!", "User Updated!", "happy")
+        self.status["text"] = "User Updated!"
+        # Toast("SUCCESS!!", "User Updated!", "happy")
         self.progress["value"] = 0
         self.editSelect("E")
     except:  # noqa
         self.status["text"] = "Idle..."
         widgetStatus(self, NORMAL)
-        Toast("ERROR!!", "An error has occured!", "angry")
+        # Toast("ERROR!!", "An error has occured!", "angry")
         self.progress["value"] = 0
 
 
@@ -666,15 +668,16 @@ def createUser(self, data):
         # )
         self.progress["value"] = 100
         widgetStatus(self, NORMAL)
-        self.status["text"] = "Idle..."
-        Toast("SUCCESS!!", "User Created!", "happy")
+        self.status["text"] = "User Created!"
+        # Toast("SUCCESS!!", "User Created!", "happy")
         self.progress["value"] = 0
     except Exception as e:
         self.status["text"] = "Idle..."
         widgetStatus(self, NORMAL)
         self.progress["value"] = 0
-        Toast("ERROR!!", "An error has occured!", "angry")
-        self.messageBox("ERROR!!", e)
+        print(e)
+        # Toast("ERROR!!", "An error has occured!", "angry")
+        # self.messageBox("ERROR!!", e)
 
 
 def createHomeDir(username, homeDir, domainName):
