@@ -1,7 +1,8 @@
 # import base64
-import sys
+# import sys
 import configparser_crypt as cCrypt
-import OpenSSL
+
+# import pyOpenSSL as OpenSSL
 from os import mkdir, path, removedirs, system, name  # noqa
 import json
 import requests
@@ -21,7 +22,7 @@ from ldap3 import (
     MODIFY_REPLACE,
     SAFE_SYNC,
     SUBTREE,
-    Tls,
+    # Tls,
     core,
 )
 from ldap3.extend.microsoft.removeMembersFromGroups import (
@@ -44,9 +45,9 @@ ICT_Admins = {
     "Management": ["djohnson", "dan.desktop"],
 }
 
-tls_configuration = Tls(
-    validate=OpenSSL.SSL.VERIFY_NONE, version=OpenSSL.SSL.TLSv1_1_METHOD
-)
+# tls_configuration = Tls(
+#     validate=OpenSSL.SSL.VERIFY_NONE, version=OpenSSL.SSL.TLSv1_1_METHOD
+# )
 # if not DEBUG:
 #     exe_dir = str(path.dirname(sys.executable))
 # else:
@@ -162,7 +163,7 @@ def ldap_connection(self):
     server = Server(
         self.server.strip(),
         use_ssl=True,
-        tls=tls_configuration,
+        # tls=tls_configuration,
     )
 
     return Connection(
@@ -178,7 +179,7 @@ def ldap_login(self, username, password):
     server = Server(
         self.server.strip(),
         use_ssl=True,
-        tls=tls_configuration,
+        # tls=tls_configuration,
     )
     return Connection(
         server,
@@ -620,8 +621,8 @@ def createUser(self, data):
                     "".join(["SMTP:", data["login"], "@", data["domain"]]),
                     "".join(["smtp:", data["login"], "@", data["proxy"]]),
                 ],
-                "HomeDirectory": data["homeDirectory"],
-                "HomeDrive": data["homeDrive"],
+                # "HomeDirectory": data["homeDirectory"],
+                # "HomeDrive": data["homeDrive"],
                 "title": data["title"],
                 "description": data["description"],
                 "department": data["department"],
@@ -759,7 +760,6 @@ def listUsers(self, ou):
                 "displayName",
                 "distinguishedName",
                 "sAMAccountName",
-                "homeDirectory",
             ],
             search_scope=SUBTREE,
             get_operational_attributes=True,
@@ -773,7 +773,7 @@ def listUsers(self, ou):
             users[res["sAMAccountName"]] = {
                 "name": res["displayName"],
                 "ou": res["distinguishedName"],
-                "homeDir": res["homeDirectory"],
+                # "homeDir": res["homeDirectory"],
             }
     return users
 
