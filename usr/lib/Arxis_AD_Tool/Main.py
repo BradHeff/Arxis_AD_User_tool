@@ -8,10 +8,6 @@ from ttkbootstrap import Style
 import Functions as f
 import Gui
 
-# import json
-
-# import splash
-
 
 class Mainz(ttk.Window):
     """Main Class for AD Unlocker"""
@@ -36,17 +32,14 @@ class Mainz(ttk.Window):
 
         self.disName = []
         self.selItem = []
-        # self.selItem2 = []
-        # self.selItem3 = []
-        # self.selItem6 = []
         self.groups = []
+
         self.username = base64.b64decode(
             "Y249cHl0aG9uIHNlcnZpY2UgYWNjb3VudCxvdT1zZXJ2aWNlcyxvdT11c2VycyxvdT1ob3Jpem9uLGRjPWhvcml6b24sZGM9bG9jYWw="
         ).decode("UTF-8")
         self.password = str(base64.b64decode("Qm9vbURvZ2d5MTIz").decode("UTF-8"))
 
         self.posOU = ""
-        # self.DisableOU = ""
         self.samFormat = ""
         self.department = ""
 
@@ -62,15 +55,14 @@ class Mainz(ttk.Window):
 
         self.load = ttk.BooleanVar(self, False)
         self.comp = "Select Company"
-        # # splash.Splash(self)
+
         currentDateTime = datetime.datetime.now()
         date = currentDateTime.date()
         self.date = date.strftime("%Y")
 
         self.title("".join(["Arxis AD Tool v", f.Version[4 : f.Version.__len__()]]))
-        # self.options.set("Horizon")
+
         Gui.baseGUI(self)
-        # splash.loadedMain = True
 
     def fetchData(self):
         self.dataz = f.getStatus(self)
@@ -83,15 +75,11 @@ class Mainz(ttk.Window):
         self.disOU = self.api_config["expiredous"]
         self.positions = self.api_config["positions"]
         self.pdomains = self.api_config["domains"]
-        # self.homePaths = self.api_config["homepaths"]
         self.campus = self.api_config["campus"]
         self.ou = self.api_config["userou"]
         self.domainName = self.api_config["domainname"]
         self.groupOU = self.api_config["groupsou"]
         self.groupPos = self.api_config["groups"]
-        # self.editPosOU = ""
-        # self.movePosOU = ""
-        # self.moveNewPosOU = ""
         self.positionsOU = self.api_config["positionsou"]
         self.comboSelect("", "H")
 
@@ -99,23 +87,6 @@ class Mainz(ttk.Window):
         print("Thanks for using Arxis AD Tool!\n")
         self.destroy()
         self.quit()
-
-    # def hide(self):
-    #     self.withdraw()
-
-    # def show(self):
-    #     self.update()
-    #     self.deiconify()
-
-    # def setLoad(self):
-    #     if f.path.isfile(f.settings_dir + "Config.ini"):
-    #         parser = f.cCrypt.ConfigParserCrypt()
-    #         parser.read(f.settings_dir + "Config.ini")
-    #         parser.set("config", "autoload", str(self.load.get()))
-    #         with open(f.settings_dir + "Config.ini", "w+") as w:
-    #             parser.write(w)
-    #     else:
-    #         f.saveConfig(self)
 
     def alterButton(self, widget):
         index = self.tabControl.index(self.tabControl.select())
@@ -133,73 +104,9 @@ class Mainz(ttk.Window):
         else:
             f.Toast("ERROR!!!", "Something went wrong!", "sad")
 
-    # def driveSelect(self, el):
-    #     pass
-
     def selectItem(self, a):
         curItem = self.tree.focus()
         self.selItem = self.tree.item(curItem)["values"]
-
-    # def selectItem2(self, a):
-    #     curItem = self.tree3.focus()
-    #     self.selItem2 = self.tree3.item(curItem)["values"]
-
-    # def selectItem3(self, a):
-    #     curItem = self.tree4.focus()
-    #     self.selItem3 = self.tree4.item(curItem)["values"]
-    #     self.entDomain["state"] = "normal"
-    #     self.entDesc.delete(0, "end")
-    #     self.entJobTitle.delete(0, "end")
-    #     self.entSamname.delete(0, "end")
-    #     self.entDomain.delete(0, "end")
-    #     self.lname_entry.delete(0, "end")
-    #     self.fname_entry.delete(0, "end")
-    #     try:
-    #         domain = str(self.updateList[self.selItem3[0]]["userPrincipalName"])
-    #         domain = domain.split("@")[1].strip()
-    #         self.entDomain.insert(0, domain)
-    #     except Exception as e:
-    #         print(e)
-    #         pass
-    #     try:
-    #         self.entJobTitle.insert(0, self.updateList[self.selItem3[0]]["title"])
-    #     except Exception as e:
-    #         print(e)
-    #         pass
-    #     try:
-    #         self.lname_entry.insert(0, self.updateList[self.selItem3[0]]["lname"])
-    #     except Exception as e:
-    #         print(e)
-    #         pass
-    #     try:
-    #         self.fname_entry.insert(0, self.updateList[self.selItem3[0]]["fname"])
-    #     except Exception as e:
-    #         print(e)
-    #         pass
-    #     try:
-    #         self.entSamname.insert(0, self.selItem3[0])
-    #     except Exception as e:
-    #         print(e)
-    #         pass
-    #     try:
-    #         desc = self.updateList[self.selItem3[0]]["description"][0]
-    #         self.entDesc.insert(0, str(desc))
-    #     except Exception as e:
-    #         print(e)
-    #         pass
-    #     self.entDomain["state"] = "readonly"
-
-    # def selectItem6(self, a):
-    #     curItem = self.tree6.focus()
-    #     self.selItem6 = self.tree6.item(curItem)["values"]
-    #     for line in self.tree7.get_children():
-    #         if self.selItem6[2] in self.tree7.item(line)["values"]:
-    #             f.Toast("Duplicate", "User in the list!", "error")
-    #             print(f"Duplicate: {self.selItem6[0]}")
-    #             return
-    #     self.tree7.insert(
-    #         "", "end", values=(self.selItem6[0], self.selItem6[1], self.selItem6[2])
-    #     )
 
     def getCheck(self):
         grp = []
@@ -276,187 +183,6 @@ class Mainz(ttk.Window):
             except Exception as e:
                 print(e)
 
-    # def editSelect(self, value):
-    #     self.entDomain["state"] = "normal"
-    #     self.entDesc.delete(0, "end")
-    #     self.entJobTitle.delete(0, "end")
-    #     self.entSamname.delete(0, "end")
-    #     self.entDomain.delete(0, "end")
-    #     self.lname_entry.delete(0, "end")
-    #     self.fname_entry.delete(0, "end")
-    #     self.entDomain["state"] = "readonly"
-    #     t = threading.Thread(target=self.editOption)
-    #     t.daemon = True
-    #     t.start()
-
-    # def editOption(self):
-    #     self.tree3.delete(*self.tree3.get_children())
-    #     self.var2.set(None)
-    #     self.var.set(None)
-    #     list = self.lbl_frame8.grid_slaves()
-    #     for lx in list:
-    #         lx.destroy()
-    #     self.status["text"] = "Loading Users ...."
-    #     if "clare" in self.EcampH.get():
-    #         if "Year" in self.var3.get() or "Found" in self.var3.get():
-    #             self.updateList = f.listUsers2(
-    #                 self, self.positionsOU[self.var3.get() + "-Clare"]
-    #             )
-    #             self.editPosOU = self.positionsOU[self.var3.get() + "-Clare"]
-    #         elif "ESO" in self.var3.get() or "Student Support" in self.var3.get():
-    #             self.updateList = f.listUsers2(
-    #                 self, self.positionsOU["Student Support Clare"]
-    #             )
-    #             self.editPosOU = self.positionsOU["Student Support Clare"]
-    #         elif "Admin" in self.var3.get() and "Temp" not in self.var3.get():
-    #             self.updateList = f.listUsers2(
-    #                 self, self.positionsOU[self.var3.get() + " Clare"]
-    #             )
-    #             self.editPosOU = self.positionsOU[self.var3.get() + " Clare"]
-    #         else:
-    #             self.updateList = f.listUsers2(self, self.positionsOU[self.var3.get()])
-    #             self.editPosOU = self.positionsOU[self.var3.get()]
-    #     else:
-    #         self.updateList = f.listUsers2(self, self.positionsOU[self.var3.get()])
-    #         self.editPosOU = self.positionsOU[self.var3.get()]
-    #     self.tree4.delete(*self.tree4.get_children())
-    #     self.progress["maximum"] = self.updateList.__len__()
-    #     count = 0
-    #     for i in self.updateList:
-    #         count += 1
-    #         self.progress["value"] = count
-    #         self.tree4.insert(
-    #             "",
-    #             "end",
-    #             values=(i, self.updateList[i]["name"], self.updateList[i]["ou"]),
-    #         )
-    #     self.progress["value"] = 0
-    #     self.status["text"] = "Idle..."
-
-    # def moveSelect(self, value):
-    #     t = threading.Thread(target=self.movePosSelect, args=(value,))
-    #     t.daemon = True
-    #     t.start()
-
-    # def disOption(self):
-    #     self.tree6.delete(*self.tree6.get_children())
-    #     self.var2.set(None)
-    #     self.var.set(None)
-    #     self.status["text"] = "Loading Users ...."
-    #     if "clare" in self.McampH6.get():
-    #         if "Year" in self.var6.get() or "Found" in self.var6.get():
-    #             self.updateList = f.listUsers2(
-    #                 self, self.positionsOU[self.var6.get() + "-Clare"]
-    #             )
-    #             self.DisableOU = self.positionsOU[self.var6.get() + "-Clare"]
-    #         elif "ESO" in self.var6.get() or "Student Support" in self.var6.get():
-    #             self.updateList = f.listUsers2(
-    #                 self, self.positionsOU["Student Support Clare"]
-    #             )
-    #             self.DisableOU = self.positionsOU["Student Support Clare"]
-    #         elif "Admin" in self.var6.get() and "Temp" not in self.var6.get():
-    #             self.updateList = f.listUsers2(
-    #                 self, self.positionsOU[self.var6.get() + " Clare"]
-    #             )
-    #             self.DisableOU = self.positionsOU[self.var6.get() + " Clare"]
-    #         else:
-    #             self.updateList = f.listUsers2(self, self.positionsOU[self.var6.get()])
-    #             self.DisableOU = self.positionsOU[self.var6.get()]
-    #     else:
-    #         self.updateList = f.listUsers2(self, self.positionsOU[self.var6.get()])
-    #         self.DisableOU = self.positionsOU[self.var6.get()]
-    #     self.tree6.delete(*self.tree6.get_children())
-    #     self.progress["maximum"] = self.updateList.__len__()
-    #     count = 0
-    #     for i in self.updateList:
-    #         count += 1
-    #         self.progress["value"] = count
-    #         self.tree6.insert(
-    #             "",
-    #             "end",
-    #             values=(i, self.updateList[i]["name"], self.updateList[i]["ou"]),
-    #         )
-    #     self.progress["value"] = 0
-    #     self.status["text"] = "Idle..."
-
-    # def disSelect(self, value):
-    #     t = threading.Thread(target=self.disOption)
-    #     t.daemon = True
-    #     t.start()
-
-    # def moveNewPosSelect(self, value=None):
-    #     if "clare" in self.McampH2.get():
-    #         if "Year" in self.var2.get() or "Found" in self.var2.get():
-    #             self.moveNewPosOU = self.positionsOU[self.var2.get() + "-Clare"]
-    #             print("CLARE!!@")
-    #         elif "ESO" in self.var2.get() or "Student Support" in self.var2.get():
-    #             self.moveNewPosOU = self.positionsOU["Student Support Clare"]
-    #             print("CLARE!!@@")
-    #         elif "Admin" in self.var2.get() and "Temp" not in self.var2.get():
-    #             self.moveNewPosOU = self.positionsOU[self.var2.get() + " Clare"]
-    #             print("CLARE!!@@#")
-    #         else:
-    #             self.moveNewPosOU = self.positionsOU[self.var2.get()]
-    #             print("CLARE!!@@##")
-    #     else:
-    #         self.moveNewPosOU = self.positionsOU[self.var2.get()]
-    #         print("BALAK")
-
-    # def movePosSelect(self, value=None):
-    #     self.tree4.delete(*self.tree4.get_children())
-    #     self.tree3.delete(*self.tree3.get_children())
-    #     self.var3.set(None)
-    #     self.var.set(None)
-    #     self.entDomain["state"] = "normal"
-    #     self.entDesc.delete(0, "end")
-    #     self.entJobTitle.delete(0, "end")
-    #     self.entSamname.delete(0, "end")
-    #     self.entDomain.delete(0, "end")
-    #     self.lname_entry.delete(0, "end")
-    #     self.fname_entry.delete(0, "end")
-    #     self.entDomain["state"] = "readonly"
-    #     self.status["text"] = "Loading Users ...."
-
-    #     if "clare" in self.McampH.get():
-    #         if "Year" in self.var2.get() or "Found" in self.var2.get():
-    #             self.updateList = f.listUsers2(
-    #                 self, self.positionsOU[self.var2.get() + "-Clare"]
-    #             )
-    #             self.movePosOU = self.positionsOU[self.var2.get() + "-Clare"]
-
-    #         elif "ESO" in self.var2.get() or "Student Support" in self.var2.get():
-    #             self.updateList = f.listUsers2(
-    #                 self, self.positionsOU["Student Support Clare"]
-    #             )
-    #             self.movePosOU = self.positionsOU["Student Support Clare"]
-
-    #         elif "Admin" in self.var2.get() and "Temp" not in self.var2.get():
-    #             self.updateList = f.listUsers2(
-    #                 self, self.positionsOU[self.var2.get() + " Clare"]
-    #             )
-    #             self.movePosOU = self.positionsOU[self.var2.get() + " Clare"]
-
-    #         else:
-    #             self.updateList = f.listUsers2(self, self.positionsOU[self.var2.get()])
-    #             self.movePosOU = self.positionsOU[self.var2.get()]
-
-    #     else:
-    #         self.updateList = f.listUsers2(self, self.positionsOU[self.var2.get()])
-    #         self.movePosOU = self.positionsOU[self.var2.get()]
-
-    #     usersList = f.listUsers(self, self.movePosOU)
-    #     self.progress["maximum"] = float(usersList.__len__())
-    #     progCount = 1
-    #     for i in usersList:
-    #         self.progress["value"] = progCount
-    #         self.tree3.insert(
-    #             "", "end", values=(i, usersList[i]["name"], usersList[i]["ou"])
-    #         )
-    #         progCount += 1
-
-    #     self.status["text"] = "Idle..."
-    #     self.progress["value"] = 0
-
     def clear_group(self):
         list = self.lbl_frame2.grid_slaves()
         for la in list:
@@ -480,42 +206,6 @@ class Mainz(ttk.Window):
         list = self.lbl_frame4.grid_slaves()
         for la in list:
             la.destroy()
-
-    # def clear_exp(self):
-    #     list = self.lbl_frame5.grid_slaves()
-    #     for lx in list:
-    #         lx.destroy()
-
-    # def clear_move(self):
-    #     list = self.lbl_frame6.grid_slaves()
-    #     for lx in list:
-    #         lx.destroy()
-    #     list = self.lbl_frame7.grid_slaves()
-    #     for lxx in list:
-    #         lxx.destroy()
-    #     list = self.lbl_frame8.grid_slaves()
-    #     for lxxx in list:
-    #         lxxx.destroy()
-
-    # def clear_edit(self):
-    #     list = self.lbl_frame9.grid_slaves()
-    #     for la in list:
-    #         la.destroy()
-    #     list = self.lbl_frame10.grid_slaves()
-    #     for la in list:
-    #         la.destroy()
-
-    # def clear_dis(self):
-    #     list = self.lbl_frame9S.grid_slaves()
-    #     for la in list:
-    #         la.destroy()
-    #     list = self.lbl_frame9STU.grid_slaves()
-    #     for la in list:
-    #         la.destroy()
-
-    # def expSelect(self):
-    #     self.expiredOU = self.expiredOUs[self.exOU.get()]
-    #     self.tree2.delete(*self.tree2.get_children())
 
     def comboSelect(self, widget, value="H"):
         if "camp" not in str(widget):
@@ -601,25 +291,10 @@ class Mainz(ttk.Window):
         t.daemon = True
         t.start()
 
-    # def disableSelect(self, widget):
-    #     selected_value = self.cmbDisable.get()
-    #     self.DisableOU = self.disOU[selected_value]
-
     def comboLoad(self, value):  # noqa
-        # print(self.positions)
-        # f.pythoncom.CoInitialize()
         self.status["text"] = "Loading..."
         self.clear_pos()
         self.clear_group()
-        # self.clear_exp()
-        # self.clear_move()
-        # self.clear_edit()
-        # self.clear_dis()
-        # self.tree4.delete(*self.tree4.get_children())
-        # self.tree3.delete(*self.tree3.get_children())
-        # self.tree2.delete(*self.tree2.get_children())
-        # self.tree6.delete(*self.tree6.get_children())
-        # self.tree7.delete(*self.tree7.get_children())
         self.tree.delete(*self.tree.get_children())
         self.desc.delete(0, "end")
         self.dpass.delete(0, "end")
@@ -628,14 +303,8 @@ class Mainz(ttk.Window):
         self.orgCompEnt.delete(0, "end")
         self.desc.insert(0, self.date)
 
-        # with open(f.settings_dir + "\\disabled.json", "r") as fs:
-        #     self.disOU = json.load(fs)
-
         for x in self.disOU:
             self.disName.append(x)
-
-        # self.cmbDisable["values"] = self.disName
-        # self.cmbDisable.set("Select OU")
 
         if not self.positions.__len__() <= 0:
             try:
@@ -645,14 +314,7 @@ class Mainz(ttk.Window):
                 count2 = 0
                 row2 = 0
 
-                # count11 = 0
-                # row11 = 0
-
-                # self.chkValue = ttk.StringVar(self.lbl_frame8, "1")
                 self.var = ttk.StringVar(None, "1")
-                # self.var2 = ttk.StringVar(None, "1")
-                # self.var3 = ttk.StringVar(None, "1")
-                # self.var6 = ttk.StringVar(None, "1")
                 for x in self.positions:
                     for y in self.positions[x]:
                         prog = 1
@@ -669,46 +331,7 @@ class Mainz(ttk.Window):
                             )
                             rbtn.grid(row=row, column=count, padx=10, pady=10)
                             rbtn.selection_clear()
-                            # rbtn3 = ttk.Radiobutton(
-                            #     self.lbl_frame6,
-                            #     text=y,
-                            #     variable=self.var2,
-                            #     command=lambda: self.moveSelect(value),
-                            #     value=y,
-                            # )
-                            # rbtn3.grid(row=row, column=count, padx=10, pady=10)
-                            # rbtn3.selection_clear()
-                            # rbtn11 = ttk.Radiobutton(
-                            #     self.lbl_frame8,
-                            #     text=y,
-                            #     variable=self.chkValue,
-                            #     command=lambda: self.moveNewPosSelect(value),
-                            #     value=y,
-                            # )
-                            # rbtn11.grid(row=row11, column=count11, padx=10, pady=10)
-                            # rbtn11.selection_clear()
-                            # count11 += 1
-                            # if count11 > 4:
-                            #     count11 = 0
-                            #     row11 += 1
-                            # rbtn5 = ttk.Radiobutton(
-                            #     self.lbl_frame9,
-                            #     text=y,
-                            #     variable=self.var3,
-                            #     command=lambda: self.editSelect(value),
-                            #     value=y,
-                            # )
-                            # rbtn5.grid(row=row, column=count, padx=10, pady=10)
-                            # rbtn5.selection_clear()
-                            # rbtn6 = ttk.Radiobutton(
-                            #     self.lbl_frame9S,
-                            #     text=y,
-                            #     variable=self.var6,
-                            #     command=lambda: self.disSelect(value),
-                            #     value=y,
-                            # )
-                            # rbtn6.grid(row=row, column=count, padx=10, pady=10)
-                            # rbtn6.selection_clear()
+
                             count += 1
                             if count > 3:
                                 count = 0
@@ -723,46 +346,7 @@ class Mainz(ttk.Window):
                             )
                             rbtn2.grid(row=row2, column=count2, padx=10, pady=10)
                             rbtn2.selection_clear()
-                            # rbtn4 = ttk.Radiobutton(
-                            #     self.lbl_frame7,
-                            #     text=y,
-                            #     variable=self.var2,
-                            #     command=lambda: self.moveSelect(value),
-                            #     value=y,
-                            # )
-                            # rbtn4.grid(row=row2, column=count2, padx=10, pady=10)
-                            # rbtn4.selection_clear()
-                            # rbtn12 = ttk.Radiobutton(
-                            #     self.lbl_frame8,
-                            #     text=y,
-                            #     variable=self.chkValue,
-                            #     command=lambda: self.moveNewPosSelect(value),
-                            #     value=y,
-                            # )
-                            # rbtn12.grid(row=row11, column=count11, padx=10, pady=10)
-                            # rbtn12.selection_clear()
-                            # count11 += 1
-                            # if count11 > 4:
-                            #     count11 = 0
-                            #     row11 += 1
-                            # rbtn6 = ttk.Radiobutton(
-                            #     self.lbl_frame10,
-                            #     text=y,
-                            #     variable=self.var3,
-                            #     command=lambda: self.editSelect(value),
-                            #     value=y,
-                            # )
-                            # rbtn6.grid(row=row2, column=count2, padx=10, pady=10)
-                            # rbtn6.selection_clear()
-                            # rbtn6 = ttk.Radiobutton(
-                            #     self.lbl_frame9STU,
-                            #     text=y,
-                            #     variable=self.var6,
-                            #     command=lambda: self.disSelect(value),
-                            #     value=y,
-                            # )
-                            # rbtn6.grid(row=row2, column=count2, padx=10, pady=10)
-                            # rbtn6.selection_clear()
+
                             count2 += 1
                             if count2 > 6:
                                 count2 = 0
@@ -772,30 +356,6 @@ class Mainz(ttk.Window):
                 print("ERROR POS")
                 print(e)
 
-        # if not self.expiredOUs.__len__() <= 0:
-        #     try:
-        #         self.progress['maximum'] = float(self.expiredOUs.\
-        #       __len__())
-        #         prog = 1
-        #         count3 = 0
-        #         row3 = 0
-        #         self.exOU = ttk.StringVar(None,"1")
-        #         for i in self.expiredOUs:
-        #             self.progress['value'] = prog
-        #             rbtn3 = ttk.Radiobutton(self.lbl_frame5,
-        #               text=i, variable=self.exOU,
-        #               command=self.expSelect, value=i)
-        #             rbtn3.grid(row=row3, column=count3, padx=10, pady=10)
-        #             rbtn3.selection_clear()
-        #             count3 += 1
-        #             if count3 > 3:
-        #                 count3 = 0
-        #                 row3 += 1
-        #             prog += 1
-        #     except:
-        #         pass
-        print(self.domains)
-        print(self.domains["primary"])
         if not self.domains["primary"].__len__() <= 0:
             try:
                 self.progress["value"] = 60
@@ -806,21 +366,7 @@ class Mainz(ttk.Window):
                 print("ERROR DOMAIN")
                 print(e)
                 pass
-        # if (
-        #     # not f.self.homePaths.split(",").__len__()
-        #     not self.homePaths.split(",").__len__()
-        #     <= 0
-        # ):
-        #     try:
-        #         self.progress["value"] = 70
-        #         # self.homePath["values"] = self.homePaths.split(",")
-        #         # self.paths.set("Select Homepath")
-        #         # self.hdrive.set("Select Drive")
-        #     except Exception as e:
-        #         print("ERROR DRIVE")
-        #         print(e)
-        #         pass
-        # if not f.self.groupOU.__len__() <= 3:
+
         if not self.groupOU.__len__() <= 3:
             self.progress["value"] = 80
             prog = 1
@@ -838,14 +384,12 @@ class Mainz(ttk.Window):
             return
         f.widgetStatus(self, ttk.DISABLED)
         newPass = self.passBox.get()
+
         t = threading.Thread(
             target=f.resetPassword, args=[self, self.selItem[2], newPass]
         )
         t.daemon = True
         t.start()
-
-    # def moveUser(self):
-    #     pass
 
     def loadUsers(self):
         f.widgetStatus(self, ttk.DISABLED)
@@ -934,12 +478,7 @@ class Mainz(ttk.Window):
                     or password 8 characters min",
                     )
                     return
-                if (
-                    "Select"
-                    in self.primary_domain.get()
-                    # or "Select" in self.hdrive.get()
-                    # or self.paths.get().__len__() <= 0
-                ):
+                if "Select" in self.primary_domain.get():
                     f.widgetStatus(self, ttk.NORMAL)
                     self.status["text"] = "Idle..."
 
@@ -982,17 +521,17 @@ class Mainz(ttk.Window):
                 data["domain"] = self.primary_domain.get()
                 data["proxy"] = self.domains["secondary"]
                 data["groups"] = groups
-                # data["homeDirectory"] = self.paths.get() + "\\" + samname.lower()
-                # data["homeDrive"] = self.hdrive.get() + ":"
                 data["description"] = self.desc.get()
                 data["title"] = self.jobTitleEnt.get()
                 data["department"] = self.depEnt.get()
                 data["company"] = self.orgCompEnt.get()
                 self.progress["value"] = 20
-                # print(data["groups"])
-                t = threading.Thread(target=f.createUser, args=(self, data))
-                t.daemon = True
-                t.start()
+                try:
+                    t = threading.Thread(target=f.createUser, args=(self, data))
+                    t.daemon = True
+                    t.start()
+                except Exception as e:
+                    print(f"ERROR: {e}")
             else:
                 f.widgetStatus(self, ttk.NORMAL)
 
@@ -1002,132 +541,8 @@ class Mainz(ttk.Window):
                     "First and Lastname must\n\
                 be filled!",
                 )
-        # case 2:
-        #     print("PRINTERD")
-        # case 2:
-        #     if self.var2.get().__len__() <= 2 or self.movePosOU.__len__() <= 1:
-        #         tkt.call_nosync(
-        #             self.messageBox, "ERROR!!", "You must select a position!"
-        #         )
-        #         return
-        #     if self.selItem2.__len__() <= 0:
-        #         tkt.call_nosync(
-        #             self.messageBox, "ERROR!!", "You must select a user!"
-        #         )
-        #         return
-        #     self.status["text"] = "Moving " + str(self.selItem2[1]) + "..."
-        #     f.widgetStatus(self, ttk.DISABLED)
-        #     self.progress["max"] = 100
-        #     self.progress["value"] = 30
-        #     print(self.selItem2[2])
-        #     print(self.moveNewPosOU)
-        #     t = threading.Thread(
-        #         target=f.moveUser, args=[self, self.selItem2[2], self.moveNewPosOU]
-        #     )
-        #     t.daemon = True
-        #     t.start()
-        # case 3:
-
-        #     if (
-        #         self.entPass.get().__len__() >= 8
-        #         or self.entPass.get().__len__() == 0
-        #     ):
-        #         if self.tree4.get_children() == ():
-        #             tkt.call_nosync(
-        #                 self.messageBox, "ERROR!!", "Must select a position"
-        #             )
-        #             return
-
-        #         if self.selItem3.__len__() <= 0:
-        #             tkt.call_nosync(
-        #                 self.messageBox, "ERROR!!", "Must select a user!"
-        #             )
-        #             return
-
-        #         if self.fname_entry.get().__len__() <= 1:
-        #             tkt.call_nosync(
-        #                 self.messageBox,
-        #                 "ERROR!!",
-        #                 "First Name\
-        #             cannot be empty!",
-        #             )
-        #             return
-
-        #         data = dict()
-        #         f.widgetStatus(self, ttk.DISABLED)
-        #         self.progress["value"] = 10
-        #         self.status["text"] = "Gathering Information..."
-
-        #         data["login"] = self.entSamname.get()
-        #         data["first"] = self.fname_entry.get().capitalize()
-        #         data["last"] = self.lname_entry.get().capitalize()
-        #         data["domain"] = self.entDomain.get()
-        #         data["description"] = self.entDesc.get()
-        #         data["title"] = self.entJobTitle.get()
-        #         data["ou"] = self.updateList[self.selItem3[0]]["ou"]
-        #         data["password"] = self.entPass.get()
-        #         data["proxy"] = None
-
-        #         self.progress["value"] = 20
-        #         lists = self.updateList[self.selItem3[0]]
-        #         if lists["proxyAddresses"] is not None:
-        #             for x in lists["proxyAddresses"]:
-        #                 if self.entDomain.get() not in x and x.__len__() > 5:
-        #                     data["proxy"] = x.split("@")[1]
-        #                 else:
-        #                     if not self.domains["secondary"].__len__() <= 3:
-        #                         data["proxy"] = self.domains["secondary"]
-
-        #         else:
-        #             if not self.domains["secondary"].__len__() <= 3:
-        #                 data["proxy"] = self.domains["secondary"]
-
-        #         t = threading.Thread(target=f.update_user, args=[self, data])
-        #         t.daemon = True
-        #         t.start()
-        #     else:
-        #         f.widgetStatus(self, ttk.NORMAL)
-
-        #         tkt.call_nosync(
-        #             self.messageBox,
-        #             "ERROR!!",
-        #             "Password must be 8\
-        #         characters long",
-        #         )
-        # case 4:
-
-        #     if self.tree7.get_children() == ():
-        #         f.widgetStatus(self, ttk.NORMAL)
-
-        #         tkt.call_nosync(self.messageBox, "ERROR!!", "List cannot be empty!")
-        #         return
-        #     disData = []
-        #     disName = []
-        #     for line in self.tree7.get_children():
-        #         disData.append(self.tree7.item(line)["values"][2])
-        #         disName.append(self.tree7.item(line)["values"][1])
-
-        #     maxs = self.tree7.get_children().__len__()
-        #     self.progress["maximum"] = float(maxs)
-        #     self.status["text"] = "Disabling Users..."
-        #     f.widgetStatus(self, ttk.DISABLED)
-        #     self.progress["max"] = 100
-        #     self.progress["value"] = 30
-        #     tz = threading.Thread(
-        #         target=f.disUser,
-        #         args=[self, [disData, disName], self.DisableOU.strip()],
-        #     )
-        #     tz.daemon = True
-        #     tz.start()
         else:
             print("")
-
-        # elif self.tabControl.index(self.tabControl.select()) == 2:
-
-        # elif self.tabControl.index(self.tabControl.select()) == 3:
-        #     f.widgetStatus(self, ttk.NORMAL)
-        #     tkt.call_nosync(self.messageBox,"MAINTENANCE!!", "This Option is still\
-        #       being\ndeveloped.")
 
     def resetProgress(self):
         self.progress["value"] = 0
