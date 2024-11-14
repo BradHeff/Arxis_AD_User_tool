@@ -1,0 +1,14 @@
+#!/bin/bash
+
+python3 compile.py build_ext --inplace
+
+pyinstaller --onefile --name=AADT --hidden-import=PIL._tkinter_finder --hidden-import=PIL.ImageTk --hidden-import=ttkbootstrap --hidden-import=ldap3 --hidden-import=pyOpenSSL --hidden-import=configparser_crypt --hidden-import=requests --hidden-import=tinyaes --hidden-import=tkthread Main.py
+
+cp -a dist/AADT ~/rpmbuild/BUILD/AADT/
+
+rpmbuild -ba ~/rpmbuild/SPECS/AADT.spec
+
+
+
+
+

@@ -1,4 +1,3 @@
-pywin32; platform_system=="Windows"
 pillow
 ttkbootstrap
 ldap3
