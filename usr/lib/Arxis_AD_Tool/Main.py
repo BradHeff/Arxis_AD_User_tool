@@ -18,11 +18,12 @@ class Mainz(ttk.Window):
         signal(SIGINT, lambda x, y: print("") or self.handler())
         # self.after(500, self.check)
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
-        self.company = "Horizon"
 
-        fd = threading.Thread(target=self.fetchData)
-        fd.daemon = True
-        fd.start()
+        self.company = "Horizon"
+        self.username = base64.b64decode(
+            "Y249cHl0aG9uIHNlcnZpY2UgYWNjb3VudCxvdT1zZXJ2aWNlcyxvdT11c2VycyxvdT1ob3Jpem9uLGRjPWhvcml6b24sZGM9bG9jYWw="
+        ).decode("UTF-8")
+        self.password = str(base64.b64decode("Qm9vbURvZ2d5MTIz").decode("UTF-8"))
 
         self.isTeacher = False
         self.data = dict()
@@ -33,11 +34,6 @@ class Mainz(ttk.Window):
         self.disName = []
         self.selItem = []
         self.groups = []
-
-        self.username = base64.b64decode(
-            "Y249cHl0aG9uIHNlcnZpY2UgYWNjb3VudCxvdT1zZXJ2aWNlcyxvdT11c2VycyxvdT1ob3Jpem9uLGRjPWhvcml6b24sZGM9bG9jYWw="
-        ).decode("UTF-8")
-        self.password = str(base64.b64decode("Qm9vbURvZ2d5MTIz").decode("UTF-8"))
 
         self.posOU = ""
         self.samFormat = ""
@@ -55,6 +51,27 @@ class Mainz(ttk.Window):
 
         self.load = ttk.BooleanVar(self, False)
         self.comp = "Select Company"
+
+        self.dataz = {}
+        self.updatez = {}
+        self.api_config = {}
+        self.api_updates = {}
+        self.server = ""
+        self.domains = []
+        self.jobTitle = []
+        self.disOU = {}
+        self.positions = {}
+        self.pdomains = {}
+        self.campus = []
+        self.ou = {}
+        self.domainName = []
+        self.groupOU = {}
+        self.groupPos = {}
+        self.positionsOU = {}
+
+        t = threading.Thread(target=self.fetchData)
+        t.daemon = True
+        t.start()
 
         currentDateTime = datetime.datetime.now()
         date = currentDateTime.date()
@@ -414,6 +431,7 @@ class Mainz(ttk.Window):
                         "", "end", values=(x, locked[x]["name"], locked[x]["ou"])
                     )
         except Exception as e:
+            print("ERROR LOAD USERS, ", str(e))
             tkt.call_nosync(self.messageBox, "Error", "An error occurred, " + str(e))
             tkt.call_nosync(f.Toast, "ERROR!", "An error occurred", "angry")
 

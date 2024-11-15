@@ -42,7 +42,7 @@ ICT_Admins = {
 tls_configuration = Tls(
     validate=OpenSSL.SSL.VERIFY_NONE, version=OpenSSL.SSL.TLSv1_1_METHOD
 )
-
+server = None
 exe_dir = str(Path(__file__).parents[2])
 # print(f"Executable Directory: {exe_dir}")
 
@@ -113,6 +113,7 @@ def checkSettings(self, company):
 
 
 def ldap_connection(self):
+
     try:
         server = Server(
             self.server.strip(),
@@ -129,7 +130,7 @@ def ldap_connection(self):
         )
     except Exception as e:
         print(f"ERROR: {e}")
-        self.lbl_login["text"] = "No"
+        # self.lbl_login["text"] = "No"
         return None
 
 
