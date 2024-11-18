@@ -2486,7 +2486,7 @@ static const char __pyx_k_samFormat[] = "samFormat";
 static const char __pyx_k_selection[] = "selection";
 static const char __pyx_k_to_groups[] = " to groups";
 static const char __pyx_k_unlockAll[] = "unlockAll";
-static const char __pyx_k_v2_0_10_7[] = "v2.0.10.7";
+static const char __pyx_k_v2_0_10_8[] = "v2.0.10.8";
 static const char __pyx_k_Config_ini[] = "Config.ini";
 static const char __pyx_k_Connection[] = "Connection";
 static const char __pyx_k_ICT_Admins[] = "ICT_Admins";
@@ -2965,7 +2965,7 @@ typedef struct {
   PyObject *__pyx_n_s_users;
   PyObject *__pyx_kp_u_v1_data_LDAP;
   PyObject *__pyx_kp_u_v1_data_Programs;
-  PyObject *__pyx_kp_u_v2_0_10_7;
+  PyObject *__pyx_kp_u_v2_0_10_8;
   PyObject *__pyx_n_s_validate;
   PyObject *__pyx_n_u_value;
   PyObject *__pyx_n_s_var;
@@ -3410,7 +3410,7 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_users);
   Py_CLEAR(clear_module_state->__pyx_kp_u_v1_data_LDAP);
   Py_CLEAR(clear_module_state->__pyx_kp_u_v1_data_Programs);
-  Py_CLEAR(clear_module_state->__pyx_kp_u_v2_0_10_7);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_v2_0_10_8);
   Py_CLEAR(clear_module_state->__pyx_n_s_validate);
   Py_CLEAR(clear_module_state->__pyx_n_u_value);
   Py_CLEAR(clear_module_state->__pyx_n_s_var);
@@ -3833,7 +3833,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_users);
   Py_VISIT(traverse_module_state->__pyx_kp_u_v1_data_LDAP);
   Py_VISIT(traverse_module_state->__pyx_kp_u_v1_data_Programs);
-  Py_VISIT(traverse_module_state->__pyx_kp_u_v2_0_10_7);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_v2_0_10_8);
   Py_VISIT(traverse_module_state->__pyx_n_s_validate);
   Py_VISIT(traverse_module_state->__pyx_n_u_value);
   Py_VISIT(traverse_module_state->__pyx_n_s_var);
@@ -4266,7 +4266,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_users __pyx_mstate_global->__pyx_n_s_users
 #define __pyx_kp_u_v1_data_LDAP __pyx_mstate_global->__pyx_kp_u_v1_data_LDAP
 #define __pyx_kp_u_v1_data_Programs __pyx_mstate_global->__pyx_kp_u_v1_data_Programs
-#define __pyx_kp_u_v2_0_10_7 __pyx_mstate_global->__pyx_kp_u_v2_0_10_7
+#define __pyx_kp_u_v2_0_10_8 __pyx_mstate_global->__pyx_kp_u_v2_0_10_8
 #define __pyx_n_s_validate __pyx_mstate_global->__pyx_n_s_validate
 #define __pyx_n_u_value __pyx_mstate_global->__pyx_n_u_value
 #define __pyx_n_s_var __pyx_mstate_global->__pyx_n_s_var
@@ -17758,7 +17758,7 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_users, __pyx_k_users, sizeof(__pyx_k_users), 0, 0, 1, 1},
     {&__pyx_kp_u_v1_data_LDAP, __pyx_k_v1_data_LDAP, sizeof(__pyx_k_v1_data_LDAP), 0, 1, 0, 0},
     {&__pyx_kp_u_v1_data_Programs, __pyx_k_v1_data_Programs, sizeof(__pyx_k_v1_data_Programs), 0, 1, 0, 0},
-    {&__pyx_kp_u_v2_0_10_7, __pyx_k_v2_0_10_7, sizeof(__pyx_k_v2_0_10_7), 0, 1, 0, 0},
+    {&__pyx_kp_u_v2_0_10_8, __pyx_k_v2_0_10_8, sizeof(__pyx_k_v2_0_10_8), 0, 1, 0, 0},
     {&__pyx_n_s_validate, __pyx_k_validate, sizeof(__pyx_k_validate), 0, 0, 1, 1},
     {&__pyx_n_u_value, __pyx_k_value, sizeof(__pyx_k_value), 0, 1, 0, 1},
     {&__pyx_n_s_var, __pyx_k_var, sizeof(__pyx_k_var), 0, 0, 1, 1},
@@ -18925,7 +18925,7 @@ if (!__Pyx_RefNanny) {
  * 
  * DEBUG_SVR = False             # <<<<<<<<<<<<<<
  * DEBUG = True
- * Version = "v2.0.10.7"
+ * Version = "v2.0.10.8"
  */
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_DEBUG_SVR, Py_False) < 0) __PYX_ERR(0, 26, __pyx_L1_error)
 
@@ -18933,7 +18933,7 @@ if (!__Pyx_RefNanny) {
  * 
  * DEBUG_SVR = False
  * DEBUG = True             # <<<<<<<<<<<<<<
- * Version = "v2.0.10.7"
+ * Version = "v2.0.10.8"
  * key = b"\xb1]\xdbM\xed\xc9d\x86\xfe\xc9\x97\x15\x93&R\xba\x9a\xb9#\xadh\x83\xc9D\xa6\xba\xdbX$\xb3TJ"
  */
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_DEBUG, Py_True) < 0) __PYX_ERR(0, 27, __pyx_L1_error)
@@ -18941,15 +18941,15 @@ if (!__Pyx_RefNanny) {
   /* "Functions.py":28
  * DEBUG_SVR = False
  * DEBUG = True
- * Version = "v2.0.10.7"             # <<<<<<<<<<<<<<
+ * Version = "v2.0.10.8"             # <<<<<<<<<<<<<<
  * key = b"\xb1]\xdbM\xed\xc9d\x86\xfe\xc9\x97\x15\x93&R\xba\x9a\xb9#\xadh\x83\xc9D\xa6\xba\xdbX$\xb3TJ"
  * settings_file = "Settings.dat"
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Version, __pyx_kp_u_v2_0_10_7) < 0) __PYX_ERR(0, 28, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Version, __pyx_kp_u_v2_0_10_8) < 0) __PYX_ERR(0, 28, __pyx_L1_error)
 
   /* "Functions.py":29
  * DEBUG = True
- * Version = "v2.0.10.7"
+ * Version = "v2.0.10.8"
  * key = b"\xb1]\xdbM\xed\xc9d\x86\xfe\xc9\x97\x15\x93&R\xba\x9a\xb9#\xadh\x83\xc9D\xa6\xba\xdbX$\xb3TJ"             # <<<<<<<<<<<<<<
  * settings_file = "Settings.dat"
  * if DEBUG_SVR:
@@ -18957,7 +18957,7 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_key, __pyx_kp_b_Md_R_hDX_TJ) < 0) __PYX_ERR(0, 29, __pyx_L1_error)
 
   /* "Functions.py":30
- * Version = "v2.0.10.7"
+ * Version = "v2.0.10.8"
  * key = b"\xb1]\xdbM\xed\xc9d\x86\xfe\xc9\x97\x15\x93&R\xba\x9a\xb9#\xadh\x83\xc9D\xa6\xba\xdbX$\xb3TJ"
  * settings_file = "Settings.dat"             # <<<<<<<<<<<<<<
  * if DEBUG_SVR:
