@@ -119,7 +119,8 @@ class Mainz(ttk.Window):
                 if self.state:
                     f.widgetStatusFailed(self, True)
         else:
-            f.Toast("ERROR!!!", "Something went wrong!", "sad")
+            print("ERROR!!! - Something went wrong!")
+            # f.Toast("ERROR!!!", "Something went wrong!", "sad")
 
     def selectItem(self, a):
         curItem = self.tree.focus()
@@ -137,6 +138,9 @@ class Mainz(ttk.Window):
         self.dep = "Balaklava Campus"
         isBalak = False
 
+        self.dpass.insert(
+            0, "".join(["Horizon", datetime.datetime.now().strftime("%Y")])
+        )
         if "clare" in self.campH.get():
             isBalak = False
         else:
@@ -378,7 +382,7 @@ class Mainz(ttk.Window):
                 self.progress["value"] = 60
                 self.pdomains = self.domains["primary"]
                 self.combo_domain["values"] = self.pdomains
-                self.primary_domain.set("Select Domain")
+                self.primary_domain.set("horizon.sa.edu.au")
             except Exception as e:
                 print("ERROR DOMAIN")
                 print(e)

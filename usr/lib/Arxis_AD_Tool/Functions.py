@@ -404,12 +404,12 @@ def resetPassword(self, ou, newpass):
         self.tree.delete(selected_item)
         self.selItem = []
         widgetStatus(self, NORMAL)
-        Toast("SUCCESS!!", "Password set and user unlocked!", "happy")
+        # Toast("SUCCESS!!", "Password set and user unlocked!", "happy")
         print("Password reset and user unlocked successfully.")
     except:  # noqa
         self.selItem = []
         widgetStatus(self, NORMAL)
-        Toast("ERROR!!", "An error has occured!", "angry")
+        # Toast("ERROR!!", "An error has occured!", "angry")
         print("An error occurred while resetting password.")
 
 
@@ -443,7 +443,7 @@ def unlockAll(self, locked):
     self.tree.delete(*self.tree.get_children())
     widgetStatus(self, NORMAL)
     self.status["text"] = "Idle..."
-    Toast("SUCCESS!!", "Unlock Complete!", "happy")
+    # Toast("SUCCESS!!", "Unlock Complete!", "happy")
     self.progress["value"] = 0
 
 
@@ -601,51 +601,50 @@ def createUser(self, data):
         )
         c.extend.microsoft.add_members_to_groups([user_dn], data["groups"])
         self.progress["value"] = 80
-        self.status["text"] = "".join(
-            ["Creating ", data["first"], " ", data["last"], " home directory"]
-        )
+
         self.progress["value"] = 100
         widgetStatus(self, NORMAL)
         self.status["text"] = "User Created!"
-        Toast("SUCCESS!!", "User Created!", "happy")
+        # Toast("SUCCESS!!", "User Created!", "happy")
         self.progress["value"] = 0
     except Exception as e:
         print("ERRORS:", str(e))
         self.status["text"] = "Idle..."
         widgetStatus(self, NORMAL)
         self.progress["value"] = 0
-        Toast("ERROR!!", "An error has occured!", "angry")
+        # Toast("ERROR!!", "An error has occured!", "angry")
 
-    # def remove_groups(self):
-    # pythoncom.CoInitialize()
-    try:
-        userlist = listUsers(self, self.expiredOU)
-        maxs = userlist.__len__()
-        self.status["text"] = "Loading Users..."
-        userCount = 1
-        for x in userlist:
-            self.tree2.insert(
-                "", "end", values=(x, userlist[x]["name"], userlist[x]["homeDir"])
-            )
-            self.progress["value"] = userCount
-        count = 1
-        self.progress["value"] = count
-        self.status["text"] = "Cleaning Users: " + str(count) + "/" + str(maxs)
-        self.progress["maximum"] = float(maxs)
-        for y in userlist:
-            count += 1
-            self.progress["value"] = count
-            self.status["text"] = "Cleaning Users: " + str(count) + "/" + str(maxs)
-            removeHomedrive(userlist[y]["homeDir"])
-            for child in self.tree2.get_children():
-                if y in self.tree2.item(child)["values"]:
-                    self.tree2.delete(child)
-    except Exception as e:
-        print(e)
-        self.messageBox("ERROR!", "An error has occurred!")
-    widgetStatus(self, NORMAL)
-    self.status["text"] = "Idle..."
-    self.after(1000, self.resetProgress)
+
+# def remove_groups(self):
+#     pythoncom.CoInitialize()
+#     try:
+#         userlist = listUsers(self, self.expiredOU)
+#         maxs = userlist.__len__()
+#         self.status["text"] = "Loading Users..."
+#         userCount = 1
+#         for x in userlist:
+#             self.tree2.insert(
+#                 "", "end", values=(x, userlist[x]["name"], userlist[x]["homeDir"])
+#             )
+#             self.progress["value"] = userCount
+#         count = 1
+#         self.progress["value"] = count
+#         self.status["text"] = "Cleaning Users: " + str(count) + "/" + str(maxs)
+#         self.progress["maximum"] = float(maxs)
+#         for y in userlist:
+#             count += 1
+#             self.progress["value"] = count
+#             self.status["text"] = "Cleaning Users: " + str(count) + "/" + str(maxs)
+#             removeHomedrive(userlist[y]["homeDir"])
+#             for child in self.tree2.get_children():
+#                 if y in self.tree2.item(child)["values"]:
+#                     self.tree2.delete(child)
+#     except Exception as e:
+#         print(e)
+#         self.messageBox("ERROR!", "An error has occurred!")
+#     widgetStatus(self, NORMAL)
+#     self.status["text"] = "Idle..."
+#     self.after(1000, self.resetProgress)
 
 
 def listUsers(self, ou):

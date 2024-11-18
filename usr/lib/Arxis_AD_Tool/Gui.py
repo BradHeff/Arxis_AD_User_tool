@@ -258,7 +258,7 @@ def Tab2(self, tab2):
 
     self.dpass = ttk.Entry(rframe, width=42)
     self.dpass.grid(sticky="se", column=3, row=0, padx=10, pady=5)
-
+    self.dpass.configure(show="*")
     # lbl_homeDrive = ttk.Label(self.lbl_frame3, text="Home Drive:")
     # lbl_homeDrive.grid(sticky="nw", column=0, row=0, padx=10, pady=10)
 
