@@ -11,6 +11,7 @@ def Window(self):
     self.W, self.H = 1395, 780
     screen_width = self.winfo_screenwidth()
     screen_height = self.winfo_screenheight()
+    print(screen_width)
     center_x = int(screen_width / 2 - self.W / 2)
     center_y = int(screen_height / 2 - self.H / 2)
     self.geometry(f"{self.W}x{self.H}+{center_x}+{center_y}")

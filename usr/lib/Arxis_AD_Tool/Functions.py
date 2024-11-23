@@ -71,7 +71,7 @@ def Toast(title, message, types="happy"):
 
 
 def parseStatus(self, json_data):
-    print(json_data)
+    # print(json_data)
     ndata = json_data
     # print(f"Status: {ndata['server']}")
     parsed = json.loads(
@@ -465,8 +465,8 @@ def listLocked(self):
             results = c.entries
         except core.exceptions.LDAPException as e:
             print(e)
-        print(results)
-        print(self.ou)
+        # print(results)
+        # print(self.ou)
 
         for x in results:
             res = x["attributes"]

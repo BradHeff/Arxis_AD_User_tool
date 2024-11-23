@@ -7,6 +7,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap import Style
 import Functions as f
 import Gui
+from ttkbootstrap.dialogs.dialogs import Messagebox
 
 
 class Mainz(ttk.Window):
@@ -172,7 +173,7 @@ class Mainz(ttk.Window):
         style = Style()
         self.checkCount = 0
         self.checkRow = 0
-        print(self.groups)
+        # print(self.groups)
         for x in self.groups:
             gn = x.split(",")[0].replace("CN=", "")
             self.chkBtns[gn] = ttk.IntVar()
@@ -230,14 +231,6 @@ class Mainz(ttk.Window):
 
     def comboSelect(self, widget, value="H"):
         if "camp" not in str(widget):
-            # f.getConfig(self, self.company)
-            # self.clear_campus()
-            # if (
-            #     not f.self.campus
-            #     .split(",")[0]
-            #     .__len__()
-            #     <= 0
-            # ):
             if self.campus.split(",")[0].__len__() > 0:
                 #     .__len__().__len__() <= 0:
                 counter = 1
@@ -579,27 +572,7 @@ class Mainz(ttk.Window):
         self.after(500, self.check)  # time in ms.
 
     def messageBox(self, txttitle, message):
-        geo = self.winfo_geometry()
-        posX = geo.split("+")[1]
-        posY = geo.split("+")[2]
-        W, H = 300, 100
-        center_x = int(int(posX) + (self.W / 2) - (W / 2))
-        center_y = int(int(posY) + (self.H / 2) - (H / 2))
-
-        mb = ttk.Toplevel(title=txttitle)
-        mb.geometry(f"{W}x{H}+{center_x}+{center_y}")
-        mb.attributes("-toolwindow", True)
-        mb.attributes("-topmost", True)
-
-        messages = ttk.Label(
-            mb, text=message, wraplength=250, justify=ttk.CENTER, style="color:black"
-        )
-        btn = ttk.Button(
-            mb, text="OK", width=20, command=mb.destroy, style="bgcolor: black"
-        )
-
-        messages.pack(side="top", fill="x", expand=True, padx=10, pady=10)
-        btn.pack(side="bottom", expand=True, padx=10, pady=10)
+        Messagebox.show_error(message, title=txttitle, parent=self, alert=True)
 
 
 if __name__ == "__main__":
