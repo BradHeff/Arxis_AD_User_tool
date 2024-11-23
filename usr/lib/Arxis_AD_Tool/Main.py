@@ -391,10 +391,10 @@ class Mainz(ttk.Window):
 
     def resetPass(self):
         if self.selItem.__len__() <= 0:
-            tkt.call_nosync(self.messageBox, "ERROR!!", "Must select a user!")
+            tkt.call_nosync(self.messageBox, "ERROR!!", "Must select a user!", "error")
             return
         if self.passBox.get().__len__() < 8:
-            tkt.call_nosync(self.messageBox, "ERROR!!", "Password Too Short!")
+            tkt.call_nosync(self.messageBox, "ERROR!!", "Password Too Short!", "error")
             return
         f.widgetStatus(self, ttk.DISABLED)
         newPass = self.passBox.get()
@@ -429,7 +429,9 @@ class Mainz(ttk.Window):
                     )
         except Exception as e:
             print("ERROR LOAD USERS, ", str(e))
-            tkt.call_nosync(self.messageBox, "Error", "An error occurred, " + str(e))
+            tkt.call_nosync(
+                self.messageBox, "Error", "An error occurred, " + str(e), "error"
+            )
             tkt.call_nosync(f.Toast, "ERROR!", "An error occurred", "angry")
 
         f.widgetStatus(self, ttk.NORMAL)
@@ -437,11 +439,13 @@ class Mainz(ttk.Window):
 
     def unlockUsers(self):
         if self.tree.get_children() == ():
-            tkt.call_nosync(self.messageBox, "ERROR!!", "List cannot be empty!")
+            tkt.call_nosync(
+                self.messageBox, "ERROR!!", "List cannot be empty!", "error"
+            )
             return
 
         if self.selItem.__len__() <= 0:
-            tkt.call_nosync(self.messageBox, "ERROR!!", "Must select a user!")
+            tkt.call_nosync(self.messageBox, "ERROR!!", "Must select a user!", "error")
             return
 
         f.widgetStatus(self, ttk.DISABLED)
@@ -466,7 +470,9 @@ class Mainz(ttk.Window):
             if self.tree.get_children() == ():
                 f.widgetStatus(self, ttk.NORMAL)
 
-                tkt.call_nosync(self.messageBox, "ERROR!!", "List cannot be empty!")
+                tkt.call_nosync(
+                    self.messageBox, "ERROR!!", "List cannot be empty!", "error"
+                )
                 return
 
             for line in self.tree.get_children():
@@ -491,6 +497,7 @@ class Mainz(ttk.Window):
                         "ERROR!!",
                         "Must enter Password\n\
                     or password 8 characters min",
+                        "error",
                     )
                     return
                 if "Select" in self.primary_domain.get():
@@ -502,6 +509,7 @@ class Mainz(ttk.Window):
                         "ERROR!!",
                         "You must select domain\n\
                                     HomeDrive and HomePath",
+                        "error",
                     )
                     return
                 self.progress["value"] = 10
@@ -555,6 +563,7 @@ class Mainz(ttk.Window):
                     "ERROR!!",
                     "First and Lastname must\n\
                 be filled!",
+                    "error",
                 )
         else:
             print("")
@@ -571,8 +580,43 @@ class Mainz(ttk.Window):
     def check(self):
         self.after(500, self.check)  # time in ms.
 
-    def messageBox(self, txttitle, message):
-        Messagebox.show_error(message, title=txttitle, parent=self, alert=True)
+    def messageBox(self, txttitle, message, type):
+        match type:
+            case "info":
+                Messagebox.show_info(
+                    message,
+                    title=txttitle,
+                    parent=self,
+                    alert=True,
+                )
+            case "warning":
+                Messagebox.show_warning(
+                    message,
+                    title=txttitle,
+                    parent=self,
+                    alert=True,
+                )
+            case "question":
+                return Messagebox.show_question(
+                    message,
+                    title=txttitle,
+                    parent=self,
+                    alert=True,
+                )
+            case "error":
+                Messagebox.show_error(
+                    message,
+                    title=txttitle,
+                    parent=self,
+                    alert=True,
+                )
+            case _:
+                Messagebox.ok(
+                    message,
+                    title=txttitle,
+                    parent=self,
+                    alert=False,
+                )
 
 
 if __name__ == "__main__":

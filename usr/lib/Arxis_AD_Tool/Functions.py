@@ -641,7 +641,7 @@ def createUser(self, data):
 #                     self.tree2.delete(child)
 #     except Exception as e:
 #         print(e)
-#         self.messageBox("ERROR!", "An error has occurred!")
+#         self.messageBox("ERROR!", "An error has occurred!", "error")
 #     widgetStatus(self, NORMAL)
 #     self.status["text"] = "Idle..."
 #     self.after(1000, self.resetProgress)
