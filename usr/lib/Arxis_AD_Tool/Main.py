@@ -87,7 +87,11 @@ class Mainz(ttk.Window):
         self.updatez = f.getUpdate(self)
         self.api_config = f.parseStatus(self, self.dataz)
         self.api_updates = f.parseStatus(self, self.updatez)
-        self.server = self.api_config["server"]  # f.getServer(self, self.company)
+        if f.DEBUG:
+            self.server = "192.168.3.34"
+        else:
+            self.server = self.api_config["server"]  # f.getServer(self, self.company)
+        print(self.server)
         self.domains = self.api_config["domains"]
         self.jobTitle = self.api_config["title"]
         self.disOU = self.api_config["expiredous"]

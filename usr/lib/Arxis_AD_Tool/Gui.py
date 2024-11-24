@@ -9,13 +9,14 @@ from icon import image
 
 def Window(self):
     self.W, self.H = 1395, 780
-    screen_width = self.winfo_screenwidth()
+    screen_width = self.winfo_screenwidth() / 2
+    screen_width2 = screen_width + (screen_width / 2)
     screen_height = self.winfo_screenheight()
-    print(screen_width)
-    center_x = int(screen_width / 2 - self.W / 2)
-    center_y = int(screen_height / 2 - self.H / 2)
+    print(screen_width2)
+    center_x = int(screen_width2 - (self.W / 2))
+    center_y = int(screen_height / 2 - (self.H / 2))
     self.geometry(f"{self.W}x{self.H}+{center_x}+{center_y}")
-    self.minsize(1240, 710)
+    self.minsize(1395, 710)
     self.attributes("-fullscreen", False)
     # self.resizable(False, False)
 
