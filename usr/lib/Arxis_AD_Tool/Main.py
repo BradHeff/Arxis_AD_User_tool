@@ -82,6 +82,9 @@ class Mainz(ttk.Window):
 
         Gui.baseGUI(self)
 
+    def setLoad(self):
+        print(f"Load state: {self.load.get()}")
+
     def fetchData(self):
         self.dataz = f.getStatus(self)
         self.updatez = f.getUpdate(self)

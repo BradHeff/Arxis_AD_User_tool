@@ -27,17 +27,13 @@ DEBUG_SVR = False
 DEBUG = True
 Version = "v2.0.10.8"
 key = b"\xb1]\xdbM\xed\xc9d\x86\xfe\xc9\x97\x15\x93&R\xba\x9a\xb9#\xadh\x83\xc9D\xa6\xba\xdbX$\xb3TJ"
-settings_file = "Settings.dat"
+# settings_file = "Settings.dat"
 if DEBUG_SVR:
     api_url = "http://localhost:5000"
 else:
     api_url = "http://api.trincloud.cc"
-creds = "URip96k9xsm8pUaJ6f8fJPjGbTxxSxzQ4udC2kmmZCCcw2d77d.dat"
+# creds = "URip96k9xsm8pUaJ6f8fJPjGbTxxSxzQ4udC2kmmZCCcw2d77d.dat"
 UAC = 32 + 65536
-ICT_Admins = {
-    "IT": ["bheffernan", "brad.heff.desktop"],
-    "Management": ["djohnson", "dan.desktop"],
-}
 
 tls_configuration = Tls(
     validate=OpenSSL.SSL.VERIFY_NONE, version=OpenSSL.SSL.TLSv1_1_METHOD
@@ -98,20 +94,6 @@ def clear_console():
     system("cls")
 
 
-def Switch(string, lists):
-    if string.lower() in lists:
-        return True
-    else:
-        return False
-
-
-def checkSettings(self, company):
-    if company.__len__() >= 2:
-        return True
-    else:
-        return False
-
-
 def ldap_connection(self):
 
     try:
@@ -161,21 +143,20 @@ def get_operation_result(connection, operation_result):
 def saveConfig(self):
     parser = cCrypt.ConfigParserCrypt()
     parser["config"] = {}
-    if "Select" not in self.options.get():
-        parser["config"]["autoload"] = str(self.load.get())
-        parser["config"]["company"] = self.options.get()
-        parser["config"]["tab"] = str(self.tabControl.index(self.tabControl.select()))
 
-        if not self.var.get() == "1":
-            parser["newuser"] = {}
-            data = getnewuser(self)
-            parser["newuser"]["domain"] = data["domain"]
-            parser["newuser"]["campus"] = data["campus"]
-            parser["newuser"]["password"] = data["password"]
-            parser["newuser"]["format"] = data["format"]
-            parser["newuser"]["pos"] = data["pos"]
-            parser["newuser"]["desc"] = data["desc"]
-            parser["newuser"]["title"] = data["title"]
+    parser["config"]["autoload"] = str(self.load.get())
+    parser["config"]["tab"] = str(self.tabControl.index(self.tabControl.select()))
+
+    if not self.var.get() == "1":
+        parser["newuser"] = {}
+        data = getnewuser(self)
+        parser["newuser"]["domain"] = data["domain"]
+        parser["newuser"]["campus"] = data["campus"]
+        parser["newuser"]["password"] = data["password"]
+        parser["newuser"]["format"] = data["format"]
+        parser["newuser"]["pos"] = data["pos"]
+        parser["newuser"]["desc"] = data["desc"]
+        parser["newuser"]["title"] = data["title"]
 
     with open(settings_dir + "Config.ini", "w") as w:
         parser.write(w)
@@ -205,21 +186,21 @@ def loadConfig(self, check=False):
             self.loaded = True
 
 
-def getServer(self, section):  # noqa
-    parser = cCrypt.ConfigParserCrypt()
-    parser.aes_key = key
-    parser.read_encrypted(settings_dir + settings_file)
-    if parser.has_section(section):
-        if parser.has_option(section, "server"):
-            return parser.get(section, "server")
+# def getServer(self, section):  # noqa
+#     parser = cCrypt.ConfigParserCrypt()
+#     parser.aes_key = key
+#     parser.read_encrypted(settings_dir + settings_file)
+#     if parser.has_section(section):
+#         if parser.has_option(section, "server"):
+#             return parser.get(section, "server")
 
 
-def getSettings(self):
-    parser = cCrypt.ConfigParserCrypt()
-    parser.aes_key = key
-    parser.read_encrypted(settings_dir + settings_file)
-    if parser.has_section("Settings"):
-        return parser.get("Settings", "company")
+# def getSettings(self):
+#     parser = cCrypt.ConfigParserCrypt()
+#     parser.aes_key = key
+#     parser.read_encrypted(settings_dir + settings_file)
+#     if parser.has_section("Settings"):
+#         return parser.get("Settings", "company")
 
 
 # def getConfig(self, section):  # noqa
@@ -357,8 +338,6 @@ def getnewuser(self):
     data["campus"] = str(self.campH.get())
     data["domain"] = self.primary_domain.get()
     data["password"] = self.dpass.get()
-    data["hdrive"] = self.hdrive.get()
-    data["hpath"] = self.paths.get()
     data["desc"] = self.desc.get()
     data["title"] = self.jobTitleEnt.get()
     return data

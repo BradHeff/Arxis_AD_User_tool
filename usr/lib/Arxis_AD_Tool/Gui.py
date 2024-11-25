@@ -3,7 +3,7 @@ import base64
 import ttkbootstrap as ttk
 from PIL import Image, ImageTk
 import tkinter.font as tkFont
-from Functions import Version
+from Functions import Version, loadConfig, saveConfig
 from icon import image
 
 
@@ -35,18 +35,21 @@ def baseGUI(self):
     default_font = tkFont.nametofont("TkDefaultFont")
     default_font.configure(size=7, family="Poppins")
     self.option_add("*Font", default_font)
-    # menubar = ttk.Menu(self, background="#4a4a59", fg="#ededef")
-    # self.file = ttk.Menu(menubar, tearoff=0, background="#4a4a59", fg="#ededef")
-    # self.file.add_checkbutton(
-    #     label="Auto Load", variable=self.load, command=self.setLoad
-    # )
-    # self.file.add_command(label="Load", command=lambda: loadConfig(self, True))
-    # self.file.add_command(label="Save", command=lambda: saveConfig(self))
-    # self.file.add_separator()
-    # self.file.add_command(label="Exit", command=self.quit)
 
-    # menubar.add_cascade(label="File", menu=self.file)
-    # self.config(menu=menubar, background="#4a4a59")
+    menubar = ttk.Menu(self, background="#4a4a59", fg="#ededef")
+
+    self.load = ttk.BooleanVar(menubar, value=True)
+    self.file = ttk.Menu(menubar, tearoff=0, background="#4a4a59", fg="#ededef")
+    self.file.add_checkbutton(
+        label="Auto Load", variable=self.load, command=self.setLoad
+    )
+    self.file.add_command(label="Load", command=lambda: loadConfig(self, True))
+    self.file.add_command(label="Save", command=lambda: saveConfig(self))
+    self.file.add_separator()
+    self.file.add_command(label="Exit", command=self.quit)
+
+    menubar.add_cascade(label="File", menu=self.file)
+    self.config(menu=menubar, background="#4a4a59")
     self.columnconfigure(1, weight=1)
     self.columnconfigure(0, weight=0, pad=70)
     self.rowconfigure(0, weight=1)
