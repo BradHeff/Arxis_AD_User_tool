@@ -584,46 +584,42 @@ class Mainz(ttk.Window):
         print("")
         self.destroy()
 
-    def check(self):
-        self.after(500, self.check)  # time in ms.
-
-    def messageBox(self, txttitle, message, type):
-        match type:
-            case "info":
-                Messagebox.show_info(
-                    message,
-                    title=txttitle,
-                    parent=self,
-                    alert=True,
-                )
-            case "warning":
-                Messagebox.show_warning(
-                    message,
-                    title=txttitle,
-                    parent=self,
-                    alert=True,
-                )
-            case "question":
-                return Messagebox.show_question(
-                    message,
-                    title=txttitle,
-                    parent=self,
-                    alert=True,
-                )
-            case "error":
-                Messagebox.show_error(
-                    message,
-                    title=txttitle,
-                    parent=self,
-                    alert=True,
-                )
-            case _:
-                Messagebox.ok(
-                    message,
-                    title=txttitle,
-                    parent=self,
-                    alert=False,
-                )
+    def messageBox(self, txttitle, message, typez):
+        if typez == "info":
+            Messagebox.show_info(
+                message,
+                title=txttitle,
+                parent=self,
+                alert=True,
+            )
+        elif typez == "warning":
+            Messagebox.show_warning(
+                message,
+                title=txttitle,
+                parent=self,
+                alert=True,
+            )
+        elif typez == "question":
+            return Messagebox.show_question(
+                message,
+                title=txttitle,
+                parent=self,
+                alert=True,
+            )
+        elif typez == "error":
+            Messagebox.show_error(
+                message,
+                title=txttitle,
+                parent=self,
+                alert=True,
+            )
+        else:
+            Messagebox.ok(
+                message,
+                title=txttitle,
+                parent=self,
+                alert=False,
+            )
 
 
 if __name__ == "__main__":
