@@ -34,7 +34,9 @@ def _tabNaming(tab_name):
     # name = "".join([tab_name, "0" * pad])
     # print(name)
     # print(len(name))
-    return tab_name
+    print(f"{tab_name:<0}{' ':>{15 - len(tab_name)}}")
+    return f"{tab_name:<0}{' ':>{15 - len(tab_name)}}"
+    # return tab_name
 
 
 def baseGUI(self):
@@ -63,7 +65,21 @@ def baseGUI(self):
     self.columnconfigure(0, weight=0, pad=70)
     self.rowconfigure(0, weight=1)
 
-    self.style.configure("long.TNotebook", tabposition="wn", expanded=True)
+    self.style.configure(
+        "long.TNotebook",
+        tabposition=ttk.W + ttk.N,
+        tabplacement=ttk.N + ttk.EW,
+        expanded=20,
+    )
+    self.style.configure(
+        "TNotebook.Tab",
+        padding=[15, 30],
+    )
+    self.style.map(
+        "TNotebook.Tab",
+        foreground=[("selected", "white")],
+        background=[("selected", "#3998e7")],
+    )
     self.tabControl = ttk.Notebook(self, style="long.TNotebook")
 
     tab1 = ttk.Frame(self.tabControl, padding=(0, 0, 5, 0))
@@ -86,7 +102,7 @@ def baseGUI(self):
     # tab4.columnconfigure(2, weight=1)
 
     self.tabControl.add(tab1, text=_tabNaming("Locked Users"), compound="left")
-    self.tabControl.add(self.tab2, text=_tabNaming("New Users     "), compound="left")
+    self.tabControl.add(self.tab2, text=_tabNaming("New Users"), compound="left")
     # self.tabControl.add(tab3, text="Disabled User")
     # self.tabControl.add(tab4, text="Move User")
     # self.tabControl.add(tab5, text="Edit User")
