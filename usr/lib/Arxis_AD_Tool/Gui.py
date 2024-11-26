@@ -28,12 +28,21 @@ def Icon(self):
     self.wm_iconphoto(False, photo)
 
 
+def _tabNaming(tab_name):
+    # pad = 16 - len(tab_name)
+    # print(pad)
+    # name = "".join([tab_name, "0" * pad])
+    # print(name)
+    # print(len(name))
+    return tab_name
+
+
 def baseGUI(self):
     Window(self)
     Icon(self)
     # self.config(font=("Poppins", 12))
     default_font = tkFont.nametofont("TkDefaultFont")
-    default_font.configure(size=7, family="Poppins")
+    default_font.configure(size=10, family="Poppins")
     self.option_add("*Font", default_font)
 
     menubar = ttk.Menu(self, background="#4a4a59", fg="#ededef")
@@ -54,7 +63,8 @@ def baseGUI(self):
     self.columnconfigure(0, weight=0, pad=70)
     self.rowconfigure(0, weight=1)
 
-    self.tabControl = ttk.Notebook(self)
+    self.style.configure("long.TNotebook", tabposition="wn", expanded=True)
+    self.tabControl = ttk.Notebook(self, style="long.TNotebook")
 
     tab1 = ttk.Frame(self.tabControl, padding=(0, 0, 5, 0))
     self.tab2 = ttk.Frame(self.tabControl)
@@ -75,8 +85,8 @@ def baseGUI(self):
     # tab4.columnconfigure(0, weight=1)
     # tab4.columnconfigure(2, weight=1)
 
-    self.tabControl.add(tab1, text="Lock", compound="top")
-    self.tabControl.add(self.tab2, text="New Users")
+    self.tabControl.add(tab1, text=_tabNaming("Locked Users"), compound="left")
+    self.tabControl.add(self.tab2, text=_tabNaming("New Users     "), compound="left")
     # self.tabControl.add(tab3, text="Disabled User")
     # self.tabControl.add(tab4, text="Move User")
     # self.tabControl.add(tab5, text="Edit User")
