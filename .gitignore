@@ -8,6 +8,8 @@
 /scrap
 /Upload
 /Tmp
-*.spec
+/usr/*/*/*.spec
+/usr/*/*.spec
+/usr/*.spec
 *.exe
 *.gif
