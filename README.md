@@ -29,7 +29,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/BradHeff/Horizon_AD_User_tool">
+  <a href="https://github.com/BradHeff/Arxis_AD_User_tool">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
@@ -38,12 +38,12 @@
   <p align="center">
     Streamline Active Directory management with an intuitive interface for user account operations.
     <br />
-    <a href="https://github.com/BradHeff/Horizon_AD_User_tool"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/BradHeff/Arxis_AD_User_tool"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/bradheff/Horizon_AD_User_tool/issues">Report Bug</a>
+    <a href="https://github.com/bradheff/Arxis_AD_User_tool/issues">Report Bug</a>
     ·
-    <a href="https://github.com/bradheff/Horizon_AD_User_tool/issues">Request Feature</a>
+    <a href="https://github.com/bradheff/Arxis_AD_User_tool/issues">Request Feature</a>
   </p>
 </div>
 
@@ -78,7 +78,7 @@
 
 ## About The Project
 
-[![GUI Screen Shot][product-screenshot]](https://github.com/BradHeff/Horizon_AD_User_tool/blob/main/images/screenshot1.png)
+[![GUI Screen Shot][product-screenshot]](https://github.com/BradHeff/Arxis_AD_User_tool/blob/main/images/screenshot1.png)
 
 This tool is designed to streamline the management of Active Directory by providing an intuitive interface for creating, editing, and unlocking user accounts. It simplifies the administrative tasks associated with user management, allowing IT professionals to efficiently handle user account operations with ease. By offering a user-friendly platform, this tool enhances productivity and reduces the complexity of managing Active Directory environments, making it an invaluable resource for system administrators.<br/>
 
@@ -114,7 +114,7 @@ Software needed for this application to work
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/bradheff/Horizon_AD_User_tool.git && cd Horizon_AD_User_tool
+   git clone https://github.com/bradheff/Arxis_AD_User_tool.git && cd Arxis_AD_User_tool
    ```
 2. Install Requirements `python3 -m pip install -r requirements.txt`
 
@@ -133,7 +133,7 @@ make script executable
 then run the script file
 `./AADT`
 
-<!-- _For more examples, please refer to the [Documentation](https://github.com/BradHeff/Horizon_AD_User_tool/wiki)_ -->
+<!-- _For more examples, please refer to the [Documentation](https://github.com/BradHeff/Arxis_AD_User_tool/wiki)_ -->
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -151,7 +151,7 @@ then run the script file
   - [ ] Build Scripts for packaging
   - [ ] Create Logging for Debug and Testing
 
-See the [open issues](https://github.com/bradheff/Horizon_AD_User_tool/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/bradheff/Arxis_AD_User_tool/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -188,7 +188,7 @@ Distributed under the GPL-3.0 License. See `LICENSE` for more information.
 
 Brad Heffernan - [@bradheffernan](https://twitter.com/bradheffernan) - brad.heffernan83@outlook.com
 
-Project Link: [https://github.com/bradheff/Horizon_AD_User_tool](https://github.com/bradheff/Horizon_AD_User_tool)
+Project Link: [https://github.com/bradheff/Arxis_AD_User_tool](https://github.com/bradheff/Arxis_AD_User_tool)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -203,16 +203,16 @@ Project Link: [https://github.com/bradheff/Horizon_AD_User_tool](https://github.
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[contributors-shield]: https://img.shields.io/github/contributors/bradheff/Horizon_AD_User_tool.svg?style=for-the-badge
-[contributors-url]: https://github.com/bradheff/Horizon_AD_User_tool/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/bradheff/Horizon_AD_User_tool.svg?style=for-the-badge
-[forks-url]: https://github.com/bradheff/Horizon_AD_User_tool/network/members
-[stars-shield]: https://img.shields.io/github/stars/bradheff/Horizon_AD_User_tool.svg?style=for-the-badge
-[stars-url]: https://github.com/bradheff/Horizon_AD_User_tool/stargazers
-[issues-shield]: https://img.shields.io/github/issues/bradheff/Horizon_AD_User_tool.svg?style=for-the-badge
-[issues-url]: https://github.com/bradheff/Horizon_AD_User_tool/issues
-[license-shield]: https://img.shields.io/github/license/bradheff/Horizon_AD_User_tool.svg?style=for-the-badge
-[license-url]: https://github.com/BradHeff/Horizon_AD_User_tool/blob/master/LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/bradheff/Arxis_AD_User_tool.svg?style=for-the-badge
+[contributors-url]: https://github.com/bradheff/Arxis_AD_User_tool/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/bradheff/Arxis_AD_User_tool.svg?style=for-the-badge
+[forks-url]: https://github.com/bradheff/Arxis_AD_User_tool/network/members
+[stars-shield]: https://img.shields.io/github/stars/bradheff/Arxis_AD_User_tool.svg?style=for-the-badge
+[stars-url]: https://github.com/bradheff/Arxis_AD_User_tool/stargazers
+[issues-shield]: https://img.shields.io/github/issues/bradheff/Arxis_AD_User_tool.svg?style=for-the-badge
+[issues-url]: https://github.com/bradheff/Arxis_AD_User_tool/issues
+[license-shield]: https://img.shields.io/github/license/bradheff/Arxis_AD_User_tool.svg?style=for-the-badge
+[license-url]: https://github.com/BradHeff/Arxis_AD_User_tool/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/brad-heffernan83/
 [product-screenshot]: images/screenshot1.png
