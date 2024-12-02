@@ -126,6 +126,13 @@ class Mainz(ttk.Window):
             else:
                 if self.state:
                     f.widgetStatusFailed(self, True)
+        elif index == 2:
+            self.btn_unlockAll.configure(text="Edit User", state=ttk.NORMAL)
+            if self.state:
+                f.widgetStatusFailed(self, True)
+            else:
+                if self.state:
+                    f.widgetStatusFailed(self, True)
         else:
             print("ERROR!!! - Something went wrong!")
             # f.Toast("ERROR!!!", "Something went wrong!", "sad")
@@ -134,53 +141,75 @@ class Mainz(ttk.Window):
         curItem = self.tree.focus()
         self.selItem = self.tree.item(curItem)["values"]
 
+    def selectItem3(self, a):
+        curItem = self.tree4.focus()
+        self.selItem3 = self.tree4.item(curItem)["values"]
+
     def getCheck(self):
         grp = []
         for x in self.groups:
             grp.append(x)
         return grp
 
-    def posSelect(self, value):
+    def posSelect(self):
         self.clear_group()
         camp = "Balaklava"
         self.dep = "Balaklava Campus"
         isBalak = False
-
+        position_key = self.var.get()
+        capitalized_position_key = position_key.lower()
         self.dpass.insert(
             0, "".join(["Horizon", datetime.datetime.now().strftime("%Y")])
         )
-        if "clare" in self.campH.get():
+        if self.campH.get() == 0:
             isBalak = False
         else:
             isBalak = True
-
+        print(isBalak)
         if not isBalak:
-            if "Year" in self.var.get() or "Found" in self.var.get():
-                self.posOU = self.positionsOU[self.var.get() + "-Clare"]
-            elif "ESO" in self.var.get() or "Student Support" in self.var.get():
-                self.posOU = self.positionsOU["Student Support Clare"]
-            elif "Admin" in self.var.get() and "Temp" not in self.var.get():
-                self.posOU = self.positionsOU[self.var.get() + " Clare"]
-            self.groups = self.groupPos[self.var.get()]
+            print(self.positionsOU)
+            if (
+                "Year".lower() in capitalized_position_key
+                or "Found".lower() in capitalized_position_key
+            ):
+                self.posOU = self.positionsOU[capitalized_position_key + "-clare"]
+            elif (
+                "ESO" in capitalized_position_key
+                or "Student Support" in capitalized_position_key
+            ):
+                self.posOU = self.positionsOU["Student Support Clare".lower()]
+            elif (
+                "Admin" in capitalized_position_key
+                and "Temp" not in capitalized_position_key
+            ):
+                self.posOU = self.positionsOU[
+                    capitalized_position_key + " Clare".lower()
+                ]
+            self.groups = self.groupPos[capitalized_position_key]
             descDate = f"{self.date} Clare"
             camp = "Clare"
             self.dep = "Clare Campus"
+            print(self.posOU)
         else:
             descDate = self.date
-            if "Year" in self.var.get() or "Found" in self.var.get():
-                self.posOU = self.positionsOU[self.var.get()]
+            if (
+                "Year" in capitalized_position_key
+                or "Found" in capitalized_position_key
+            ):
+                self.posOU = self.positionsOU[capitalized_position_key]
                 self.desc.delete(0, "end")
-                self.desc.insert(0, f"{self.var.get()} - {descDate}")
+                self.desc.insert(0, f"{capitalized_position_key} - {descDate}")
             else:
-                self.posOU = self.positionsOU[self.var.get()]
+                self.posOU = self.positionsOU[capitalized_position_key]
                 self.desc.delete(0, "end")
                 self.desc.insert(0, descDate)
 
-            self.groups = self.groupPos[self.var.get()]
+            self.groups = self.groupPos[capitalized_position_key]
         style = Style()
         self.checkCount = 0
         self.checkRow = 0
-        # print(self.groups)
+        print(self.groups)
+        print(self.posOU)
         for x in self.groups:
             gn = x.split(",")[0].replace("CN=", "")
             self.chkBtns[gn] = ttk.IntVar()
@@ -199,7 +228,7 @@ class Mainz(ttk.Window):
         if not self.jobTitle.__len__() <= 3:
             try:
                 self.jobTitleEnt.delete(0, "end")
-                self.jobTitleEnt.insert(0, self.jobTitle[self.var.get()])
+                self.jobTitleEnt.insert(0, self.jobTitle[capitalized_position_key])
             except Exception as e:
                 print(e)
 
@@ -246,7 +275,7 @@ class Mainz(ttk.Window):
                         self.lbl_frameC,
                         text=x,
                         variable=self.campH,
-                        value=x,
+                        value=counter,
                         command=lambda: self.comboSelect("camp", "H"),
                     )
                     # balak_edit = ttk.Radiobutton(
@@ -317,6 +346,7 @@ class Mainz(ttk.Window):
         self.clear_pos()
         self.clear_group()
         self.tree.delete(*self.tree.get_children())
+        self.tree4.delete(*self.tree4.get_children())
         self.desc.delete(0, "end")
         self.dpass.delete(0, "end")
         self.jobTitleEnt.delete(0, "end")
@@ -334,44 +364,76 @@ class Mainz(ttk.Window):
                 row = 0
                 count2 = 0
                 row2 = 0
+                count3 = 0
+                row3 = 0
+                count4 = 0
+                row4 = 0
 
                 self.var = ttk.StringVar(None, "1")
+                self.var4 = ttk.StringVar(None, "1")
                 for x in self.positions:
                     for y in self.positions[x]:
                         prog = 1
                         self.progress["maximum"] = float(self.positions.__len__())
                         self.progress["value"] = prog
 
-                        if not x == "Students":
-                            rbtn = ttk.Radiobutton(
-                                self.lbl_frame,
-                                text=y,
-                                variable=self.var,
-                                command=lambda: self.posSelect(value),
-                                value=y,
-                            )
-                            rbtn.grid(row=row, column=count, padx=10, pady=10)
-                            rbtn.selection_clear()
+                        rbtn = ttk.Radiobutton(
+                            self.lbl_frame,
+                            text=y,
+                            variable=self.var,
+                            command=self.posSelect,
+                            value=y,
+                        )
+                        rbtn.grid(row=row, column=count, padx=10, pady=10)
+                        rbtn.selection_clear()
 
-                            count += 1
-                            if count > 3:
-                                count = 0
-                                row += 1
-                        else:
-                            rbtn2 = ttk.Radiobutton(
-                                self.lbl_frame4,
-                                text=y,
-                                variable=self.var,
-                                command=lambda: self.posSelect(value),
-                                value=y,
-                            )
-                            rbtn2.grid(row=row2, column=count2, padx=10, pady=10)
-                            rbtn2.selection_clear()
+                        rbtn4 = ttk.Radiobutton(
+                            self.lbl_frame9,
+                            text=y,
+                            variable=self.var4,
+                            command=self.posSelect,
+                            value=y,
+                        )
+                        rbtn4.grid(row=row4, column=count4, padx=10, pady=10)
+                        rbtn4.selection_clear()
 
-                            count2 += 1
-                            if count2 > 6:
-                                count2 = 0
-                                row2 += 1
+                        count += 1
+                        count4 += 1
+                        if count > 3:
+                            count = 0
+                            row += 1
+                        if count4 > 2:
+                            count4 = 0
+                            row4 += 1
+                        # else:
+                        #     rbtn2 = ttk.Radiobutton(
+                        #         self.lbl_frame4,
+                        #         text=y,
+                        #         variable=self.var,
+                        #         command=lambda: self.posSelect(value),
+                        #         value=y,
+                        #     )
+                        #     rbtn2.grid(row=row2, column=count2, padx=10, pady=10)
+                        #     rbtn2.selection_clear()
+
+                        #     rbtn3 = ttk.Radiobutton(
+                        #         self.lbl_frame10,
+                        #         text=y,
+                        #         variable=self.var4,
+                        #         command=lambda: self.posSelect(value),
+                        #         value=y,
+                        #     )
+                        #     rbtn3.grid(row=row3, column=count3, padx=10, pady=10)
+                        #     rbtn3.selection_clear()
+
+                        #     count2 += 1
+                        #     count3 += 1
+                        #     if count2 > 6:
+                        #         count2 = 0
+                        #         row2 += 1
+                        #     if count3 > 3:
+                        #         count3 = 0
+                        #         row3 += 1
                         prog += 1
             except Exception as e:
                 print("ERROR POS")
