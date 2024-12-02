@@ -8,6 +8,9 @@
 /scrap
 /Upload
 /Tmp
+/Old
+/usr/lib/Arxis_AD_Tool/compile.py
+/usr/lib/Arxis_AD_Tool/updateSettings.py
 /usr/*/*/*.spec
 /usr/*/*.spec
 /usr/*.spec
