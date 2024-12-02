@@ -80,7 +80,13 @@ class Mainz(ttk.Window):
 
         self.title("".join(["Arxis AD Tool v", f.Version[4 : f.Version.__len__()]]))
 
+        scaling = self.tk.call("tk", "scaling")  # Get current scaling
+        print(f"Current scaling: {scaling}")
+        dpi = self.winfo_fpixels("1i")  # Get DPI
+        print(f"Detected DPI: {dpi}")
+        self.dpi = dpi
         Gui.baseGUI(self)
+        Gui.adjust_scaling(self)
 
     def setLoad(self):
         print(f"Load state: {self.load.get()}")

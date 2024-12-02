@@ -1,5 +1,10 @@
-#!/usr/bin/bash
+#!/bin/bash
+DEBUG=false  # Change this value to toggle debug mode
 
-# python3 /usr/lib/Arxis_AD_Tool/Main.pyw
-
-python3 ../../lib/Arxis_AD_Tool/Main.py
+if [[ "$DEBUG" == "true" ]]; then
+    echo "Running in debug mode..."
+    python3 ../../lib/Arxis_AD_Tool/Main.py
+else
+    echo "Running in production mode..."
+    python3 /usr/lib/Arxis_AD_Tool/Main.py
+fi

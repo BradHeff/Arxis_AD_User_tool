@@ -1,13 +1,79 @@
 #!/bin/bash
+# Stop script on errors
+set -e
 
-python3 compile.py build_ext --inplace
+APP_NAME="AADT"
+APP_LIB_DIR="Arxis_AD_Tool"
 
-pyinstaller --onefile --name=AADT --hidden-import=PIL._tkinter_finder --hidden-import=PIL.ImageTk --hidden-import=ttkbootstrap --hidden-import=ldap3 --hidden-import=pyOpenSSL --hidden-import=configparser_crypt --hidden-import=requests --hidden-import=tinyaes --hidden-import=tkthread --hidden-import=ttkbootstrap.toast Main.py
 
-cp -a dist/AADT ~/rpmbuild/BUILD/AADT/
+# Define source and build directories
+EXEC_DIR=$(pwd)
 
-rpmbuild -ba ~/rpmbuild/SPECS/AADT.spec
+# Calculate the parent directory two levels up
+PARENT_X3_DIR=$(dirname "$(dirname "$(dirname "$EXEC_DIR")")")
 
+# Define source and build directories
+SOURCE_DIR=$EXEC_DIR
+BUILD_DIR=~/rpmbuild/BUILD/$APP_NAME
+SPEC_DIR=~/rpmbuild/SPECS
+ZIP_DIR=~/rpmbuild/SOURCES
+BASH_SCRIPT="../../local/bin"
+USRSOURCE="$PARENT_X3_DIR"
+FUNCTIONS="$SOURCE_DIR/Functions.py"
+
+# Ensure build directory exists
+mkdir -p $BUILD_DIR
+
+# Step 1: Update DEBUG variable in the Bash script
+echo "Setting DEBUG to false in the Bash script..."
+sed -i 's/^DEBUG=true/DEBUG=false/' $BASH_SCRIPT/$APP_NAME
+
+# Automatically increment the version number in the .spec file
+echo "Incrementing version number in the .spec file..."
+sed -i -E 's/^(Version:[[:space:]]*)([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/echo "\1\2.\3.\4.$((\5+1))"/e' $SPEC_DIR/$APP_NAME.spec
+sed -i -E 's/^(Version[[:space:]]=[[:space:]]*)([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)/echo "\1\2.\3.\4.$((\5+1))"/e' $FUNCTIONS
+
+# Extract the version number from the .spec file
+VERSION=$(grep -E '^Version:[[:space:]]*' $SPEC_DIR/$APP_NAME.spec | awk '{print $2}')
+
+# Step 2: Compress the PROJECT-ROOT/usr directory
+echo "Compressing the $USRSOURCE/usr directory..."
+if [ -d "$USRSOURCE/usr" ]; then
+    tar -czf $APP_NAME-$VERSION.tar.gz -C "$USRSOURCE" usr
+else
+    echo "Error: Directory $USRSOURCE/usr does not exist."
+    exit 1
+fi
+
+# Step 3: Copy the .tar.gz to ZIP_DIR
+echo "Copying the .tar.gz to ZIP_DIR..."
+cp $APP_NAME-$VERSION.tar.gz $ZIP_DIR/
+
+rm $APP_NAME-$VERSION.tar.gz
+
+# Step 2: Compile Python modules using Cython (optional if needed)
+# echo "Compiling Python modules..."
+# python3 compile.py build_ext --inplace
+
+# Step 3: Create standalone executable with PyInstaller
+# echo "Building standalone executable..."
+# pyinstaller --onefile --name=AADT --hidden-import=PIL._tkinter_finder --hidden-import=PIL.ImageTk --hidden-import=ttkbootstrap --hidden-import=ldap3 --hidden-import=pyOpenSSL --hidden-import=configparser_crypt --hidden-import=requests --hidden-import=tinyaes --hidden-import=tkthread --hidden-import=ttkbootstrap.toast Main.py
+
+# Step 4: Copy built executable and other files to RPM build directory
+echo "Copying files to RPM build directory..."
+cp -a ../../local/bin/* $BUILD_DIR/ || echo "No local binaries found to copy."
+cp -a ../../share/applications/* $BUILD_DIR/ || echo "No .desktop files found to copy."
+cp -a ../../share/pixmaps/* $BUILD_DIR/ || echo "No pixmap icons found to copy."
+cp -a ../../lib/$APP_LIB_DIR/* $BUILD_DIR/ || echo "No python files found to copy."
+cp -a *.py $BUILD_DIR/
+rm -f $BUILD_DIR/compile.py  # Remove compile script from package
+rm -f $BUILD_DIR/updateSettings.py 
+
+# Step 5: Build the RPM package
+echo "Building RPM package..."
+rpmbuild -ba $SPEC_DIR/$APP_NAME.spec
+
+echo "Build completed successfully!"
 
 
 

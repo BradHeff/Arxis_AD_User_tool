@@ -8,7 +8,10 @@ from icon import image
 
 
 def Window(self):
-    self.W, self.H = 1855, 980
+    if self.dpi > 96:
+        self.W, self.H = 1355, 740
+    else:
+        self.W, self.H = 1855, 980
     screen_width = self.winfo_screenwidth() / 2
     screen_width2 = screen_width + (screen_width / 2)
     screen_height = self.winfo_screenheight()
@@ -16,7 +19,7 @@ def Window(self):
     center_x = int(screen_width2 - (self.W / 2))
     center_y = int(screen_height / 2 - (self.H / 2))
     self.geometry(f"{self.W}x{self.H}+{center_x}+{center_y}")
-    self.minsize(1855, 980)
+    # self.minsize(1855, 980)
     self.attributes("-fullscreen", False)
     # self.resizable(False, False)
 
@@ -31,6 +34,15 @@ def Icon(self):
 def _tabNaming(tab_name):
     # print(f"{tab_name:<0}{' ':>{15 - len(tab_name)}}")
     return f"{tab_name:<0}{' ':>{15 - len(tab_name)}}"
+
+
+def adjust_scaling(self):
+
+    # Dynamically set scaling factor based on DPI
+    if self.dpi > 96:  # Higher DPI (e.g., 150% scaling)
+        self.tk.call("tk", "scaling", self.dpi / 96)
+    else:
+        self.tk.call("tk", "scaling", 1.0)
 
 
 def baseGUI(self):
@@ -101,7 +113,7 @@ def baseGUI(self):
     self.tabControl.add(self.tab2, text=_tabNaming("New Users"), compound="left")
     # self.tabControl.add(tab3, text="Disabled User")
     # self.tabControl.add(tab4, text="Move User")
-    self.tabControl.add(tab5, text="Edit User")
+    # self.tabControl.add(tab5, text="Edit User")
     # self.tabControl.add(tab6, text="Disable User")
     self.tabControl.bind("<<NotebookTabChanged>>", self.alterButton)
     self.tabControl.grid(sticky=ttk.NSEW, columnspan=4, row=0)
