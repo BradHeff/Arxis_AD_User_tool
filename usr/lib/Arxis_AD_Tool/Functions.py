@@ -34,6 +34,7 @@ else:
     api_url = "http://api.trincloud.cc"
 # creds = "URip96k9xsm8pUaJ6f8fJPjGbTxxSxzQ4udC2kmmZCCcw2d77d.dat"
 UAC = 32 + 65536
+home = str(Path.home())
 
 tls_configuration = Tls(
     validate=OpenSSL.SSL.VERIFY_NONE, version=OpenSSL.SSL.TLSv1_1_METHOD
@@ -42,7 +43,7 @@ server = None
 exe_dir = str(Path(__file__).parents[2])
 # print(f"Executable Directory: {exe_dir}")
 
-settings_dir = "".join([exe_dir, "/share/Arxis_AD_Tool/"])
+settings_dir = "".join([home, "/.config/arxis-ad-tool/"])
 temp_dir = "".join([exe_dir, "/lib/Arxis_AD_Tool/Tmp/"])
 
 

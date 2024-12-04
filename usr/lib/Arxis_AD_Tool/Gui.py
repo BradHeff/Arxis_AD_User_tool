@@ -8,7 +8,7 @@ from icon import image
 
 
 def Window(self):
-    if self.dpi > 96:
+    if self.dpi >= 96.015:
         self.W, self.H = 1355, 740
     else:
         self.W, self.H = 1855, 980
@@ -56,7 +56,8 @@ def baseGUI(self):
     menubar = ttk.Menu(self, background="#4a4a59", fg="#ededef")
 
     self.load = ttk.BooleanVar(menubar, value=True)
-    self.file = ttk.Menu(menubar, tearoff=0, background="#4a4a59", fg="#ededef")
+    self.file = ttk.Menu(menubar, tearoff=1, background="#060607", fg="#ededef")
+    self.about = ttk.Menu(menubar, tearoff=0, background="#060607", fg="#ededef")
 
     self.file.add_checkbutton(
         label="Auto Load", variable=self.load, command=self.setLoad
@@ -68,6 +69,11 @@ def baseGUI(self):
 
     menubar.add_cascade(label="File", menu=self.file)
     self.config(menu=menubar, background="#4a4a59")
+    menubar.add_cascade(label="Help", menu=self.about)
+
+    self.about.add_command(label="Github", command=lambda: self.navGithub())
+    self.file.add_separator()
+    self.about.add_command(label="About", command=lambda: self.aboutBox())
 
     self.columnconfigure(1, weight=1)
     self.columnconfigure(0, weight=0, pad=70)

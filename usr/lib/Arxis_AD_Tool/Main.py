@@ -8,6 +8,7 @@ from ttkbootstrap import Style
 import Functions as f
 import Gui
 from ttkbootstrap.dialogs.dialogs import Messagebox
+import webbrowser
 
 
 class Mainz(ttk.Window):
@@ -368,10 +369,10 @@ class Mainz(ttk.Window):
                 self.progress["value"] = 20
                 count = 0
                 row = 0
-                count2 = 0
-                row2 = 0
-                count3 = 0
-                row3 = 0
+                # count2 = 0
+                # row2 = 0
+                # count3 = 0
+                # row3 = 0
                 count4 = 0
                 row4 = 0
 
@@ -688,6 +689,24 @@ class Mainz(ttk.Window):
                 parent=self,
                 alert=False,
             )
+
+    def navGithub(self):
+        webbrowser.open_new_tab("https://github.com/BradHeff/Arxis-Pentester")
+        self.logger.info("Navigated to GitHub repository")
+
+    def aboutBox(self):
+        Messagebox.show_info(
+            title="About Arxis AD Tool",
+            message=(
+                "Arxis AD Tool is a comprehensive application designed for Active Directory management.\n\n"
+                "Purpose:\n"
+                "The application helps create users, search for locked accounts, and list them for unlocking.\n\n"
+                f"Version: {f.Version}\n"
+                "Company: Arxis Security Solutions\n"
+                "Website: https://www.arxis.com.au\n"
+            ),
+        )
+        print("About box shown")
 
 
 if __name__ == "__main__":
