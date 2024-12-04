@@ -151,6 +151,42 @@ class Mainz(ttk.Window):
     def selectItem3(self, a):
         curItem = self.tree4.focus()
         self.selItem3 = self.tree4.item(curItem)["values"]
+        self.entDomain["state"] = "normal"
+        self.entDesc.delete(0, "end")
+        self.entJobTitle.delete(0, "end")
+        self.entSamname.delete(0, "end")
+        self.entDomain.delete(0, "end")
+        self.lname_entry.delete(0, "end")
+        self.fname_entry.delete(0, "end")
+        # print(self.updateList[self.selItem3[0]]['proxyAddresses'])
+        try:
+            domain = str(self.updateList[self.selItem3[0]]["userPrincipalName"])
+            domain = domain.split("@")[1].strip()
+            self.entDomain.insert(0, domain)
+        except Exception:
+            pass
+        try:
+            self.entJobTitle.insert(0, self.updateList[self.selItem3[0]]["title"])
+        except Exception:
+            pass
+        try:
+            self.lname_entry.insert(0, self.updateList[self.selItem3[0]]["fname"])
+        except Exception:
+            pass
+        try:
+            self.fname_entry.insert(0, self.updateList[self.selItem3[0]]["lname"])
+        except Exception:
+            pass
+        try:
+            self.entSamname.insert(0, self.selItem3[0])
+        except Exception:
+            pass
+        try:
+            desc = self.updateList[self.selItem3[0]]["description"][0]
+            self.entDesc.insert(0, str(desc))
+        except Exception:
+            pass
+        self.entDomain["state"] = "readonly"
 
     def getCheck(self):
         grp = []
@@ -158,22 +194,17 @@ class Mainz(ttk.Window):
             grp.append(x)
         return grp
 
-    def posSelect(self):
+    def posSelect(self, panel):
         self.clear_group()
         camp = "Balaklava"
         self.dep = "Balaklava Campus"
-        isBalak = False
         position_key = self.var.get()
+
         capitalized_position_key = position_key.lower()
         self.dpass.insert(
             0, "".join(["Horizon", datetime.datetime.now().strftime("%Y")])
         )
         if self.campH.get() == 0:
-            isBalak = False
-        else:
-            isBalak = True
-        print(isBalak)
-        if not isBalak:
             print(self.positionsOU)
             if (
                 "Year".lower() in capitalized_position_key
@@ -192,22 +223,24 @@ class Mainz(ttk.Window):
                 self.posOU = self.positionsOU[
                     capitalized_position_key + " Clare".lower()
                 ]
+
             self.groups = self.groupPos[capitalized_position_key]
             descDate = f"{self.date} Clare"
             camp = "Clare"
             self.dep = "Clare Campus"
             print(self.posOU)
         else:
-            descDate = self.date
             if (
                 "Year" in capitalized_position_key
                 or "Found" in capitalized_position_key
             ):
                 self.posOU = self.positionsOU[capitalized_position_key]
+                descDate = self.date
                 self.desc.delete(0, "end")
                 self.desc.insert(0, f"{capitalized_position_key} - {descDate}")
             else:
                 self.posOU = self.positionsOU[capitalized_position_key]
+                descDate = self.date
                 self.desc.delete(0, "end")
                 self.desc.insert(0, descDate)
 
@@ -217,6 +250,7 @@ class Mainz(ttk.Window):
         self.checkRow = 0
         print(self.groups)
         print(self.posOU)
+
         for x in self.groups:
             gn = x.split(",")[0].replace("CN=", "")
             self.chkBtns[gn] = ttk.IntVar()
@@ -224,7 +258,9 @@ class Mainz(ttk.Window):
 
             cBtnY = ttk.Label(self.lbl_frame2, text=gn)
             cBtnY.configure(
-                background=style.colors.primary, foreground=style.colors.bg, padding=10
+                background=style.colors.primary,
+                foreground=style.colors.bg,
+                padding=10,
             )
             cBtnY.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
             self.checkCount += 1
@@ -247,6 +283,50 @@ class Mainz(ttk.Window):
                 self.orgCompEnt.insert(0, f"Horizon Christian School {camp}")
             except Exception as e:
                 print(e)
+
+    def updateSelect(self):
+        self.entDomain["state"] = "normal"
+        self.entDesc.delete(0, "end")
+        self.entJobTitle.delete(0, "end")
+        self.entSamname.delete(0, "end")
+        self.entDomain.delete(0, "end")
+        self.lname_entry.delete(0, "end")
+        self.fname_entry.delete(0, "end")
+        self.entDomain["state"] = "readonly"
+        t = threading.Thread(target=self.editOption)
+        t.daemon = True
+        t.start()
+
+    def editOption(self):
+        # f.pythoncom.CoInitialize()
+        # self.tree3.delete(*self.tree3.get_children())
+        # self.var2.set(None)
+        # listz = self.lbl_frame8.grid_slaves()
+        # for la in listz:
+        #     la.destroy()
+        position_key = self.var4.get()
+
+        capitalized_position_key = position_key.lower()
+        if self.EcampH.get() == 0:
+            posi = self.positionsOU[capitalized_position_key + "-clare"]
+        else:
+            posi = self.positionsOU[capitalized_position_key]
+
+        self.status["text"] = "Loading Users ...."
+        self.updateList = f.listUsers2(self, posi)
+        self.tree4.delete(*self.tree4.get_children())
+        self.progress["maximum"] = self.updateList.__len__()
+        count = 0
+        for i in self.updateList:
+            count += 1
+            self.progress["value"] = count
+            self.tree4.insert(
+                "",
+                "end",
+                values=(i, self.updateList[i]["name"], self.updateList[i]["ou"]),
+            )
+        self.progress["value"] = 0
+        self.status["text"] = "Idle..."
 
     def clear_group(self):
         list = self.lbl_frame2.grid_slaves()
@@ -285,13 +365,13 @@ class Mainz(ttk.Window):
                         value=counter,
                         command=lambda: self.comboSelect("camp", "H"),
                     )
-                    # balak_edit = ttk.Radiobutton(
-                    #     self.lbl_frameG,
-                    #     text=x,
-                    #     variable=self.EcampH,
-                    #     value=x,
-                    #     command=lambda: self.comboSelect("camp", "E"),
-                    # )
+                    balak_edit = ttk.Radiobutton(
+                        self.lbl_frameG,
+                        text=x,
+                        variable=self.EcampH,
+                        value=counter,
+                        command=lambda: self.comboSelect("camp", "E"),
+                    )
                     # balak_move = ttk.Radiobutton(
                     #     self.lbl_frameF,
                     #     text=x,
@@ -314,9 +394,9 @@ class Mainz(ttk.Window):
                     # )
                     if counter == 1:
                         balak.pack(side="left", fill="y", expand=True, padx=10, pady=10)
-                        # balak_edit.pack(
-                        #     side="left", fill="y", expand=True, padx=10, pady=10
-                        # )
+                        balak_edit.pack(
+                            side="left", fill="y", expand=True, padx=10, pady=10
+                        )
                         # balak_move.pack(
                         #     side="left", fill="y", expand=True, padx=10, pady=10
                         # )
@@ -330,9 +410,9 @@ class Mainz(ttk.Window):
                         balak.pack(
                             side="right", fill="y", expand=True, padx=10, pady=10
                         )
-                        # balak_edit.pack(
-                        #     side="right", fill="y", expand=True, padx=10, pady=10
-                        # )
+                        balak_edit.pack(
+                            side="right", fill="y", expand=True, padx=10, pady=10
+                        )
                         # balak_move.pack(
                         #     side="right", fill="y", expand=True, padx=10, pady=10
                         # )
@@ -388,7 +468,7 @@ class Mainz(ttk.Window):
                             self.lbl_frame,
                             text=y,
                             variable=self.var,
-                            command=self.posSelect,
+                            command=lambda: self.posSelect(0),
                             value=y,
                         )
                         rbtn.grid(row=row, column=count, padx=10, pady=10)
@@ -398,7 +478,7 @@ class Mainz(ttk.Window):
                             self.lbl_frame9,
                             text=y,
                             variable=self.var4,
-                            command=self.posSelect,
+                            command=self.updateSelect,
                             value=y,
                         )
                         rbtn4.grid(row=row4, column=count4, padx=10, pady=10)

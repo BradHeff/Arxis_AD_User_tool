@@ -9,7 +9,7 @@ from icon import image
 
 def Window(self):
     if self.dpi >= 96.015:
-        self.W, self.H = 1355, 740
+        self.W, self.H = 1355, 785
     else:
         self.W, self.H = 1855, 980
     screen_width = self.winfo_screenwidth() / 2
@@ -119,7 +119,7 @@ def baseGUI(self):
     self.tabControl.add(self.tab2, text=_tabNaming("New Users"), compound="left")
     # self.tabControl.add(tab3, text="Disabled User")
     # self.tabControl.add(tab4, text="Move User")
-    # self.tabControl.add(tab5, text="Edit User")
+    self.tabControl.add(tab5, text="Edit User")
     # self.tabControl.add(tab6, text="Disable User")
     self.tabControl.bind("<<NotebookTabChanged>>", self.alterButton)
     self.tabControl.grid(sticky=ttk.NSEW, columnspan=4, row=0)
@@ -469,6 +469,9 @@ def Tab5(self, tab5):
 
     lframe5 = ttk.Frame(tab5)
     rframe5 = ttk.Frame(tab5)
+    lframe5.grid(sticky="nsew", column=0, row=1, pady=10)
+    rframe5.grid(sticky="nsew", column=1, row=1, pady=10, padx=10)
+    # bframe5.grid(sticky="sew", columnspan=4, pady=10, padx=10)
 
     rframe5.rowconfigure(0, weight=1)
     lframe5.rowconfigure(2, weight=1)
@@ -477,15 +480,12 @@ def Tab5(self, tab5):
     # rframe5.columnconfigure(0, weight=1)
     # lframe5.columnconfigure(0, weight=1)
 
-    lframe5.grid(sticky="nsew", column=0, row=1, pady=10)
-    rframe5.grid(sticky="nsew", column=1, row=1, pady=10, padx=10)
-    # bframe5.grid(sticky="sew", columnspan=4, pady=10, padx=10)
-
     self.lbl_frameG = ttk.Labelframe(lframe5, text="Campus")
     self.lbl_frameG.grid(sticky=ttk.EW, columnspan=2, row=0, padx=10, pady=5)
-    self.EcampH = ttk.StringVar(self.lbl_frameG, "balaklava")
+
+    self.EcampH = ttk.IntVar(self.lbl_frameG, 1)
     self.lbl_frame9 = ttk.Labelframe(lframe5, text="User OU's")
-    self.lbl_frame9.grid(sticky="new", columnspan=2, row=2, padx=10, pady=5)
+    self.lbl_frame9.grid(sticky="new", columnspan=2, row=1, padx=10, pady=5)
 
     # self.lbl_frame10 = ttk.Labelframe(lframe5, text="Student User OU's")
     # self.lbl_frame10.grid(sticky="new", columnspan=2, row=3, padx=10, pady=5)
@@ -498,14 +498,14 @@ def Tab5(self, tab5):
     self.tree4.bind("<ButtonRelease-1>", self.selectItem3)
     scrollbar = ttk.Scrollbar(rframe5, orient=ttk.VERTICAL, bootstyle="primary-round")
     scrollbar.config(command=self.tree4.yview)
-    scrollbar.grid(sticky=ttk.NS, row=0, column=2, rowspan=2, pady=5)
+    scrollbar.grid(sticky=ttk.NS, row=0, column=4, rowspan=2, pady=5)
     scrollbar2 = ttk.Scrollbar(
         rframe5, orient=ttk.HORIZONTAL, bootstyle="primary-round"
     )
     scrollbar2.config(command=self.tree4.xview)
-    scrollbar2.grid(sticky=ttk.EW, columnspan=2, row=2, padx=15)
-    self.tree4.grid(sticky=ttk.EW, columnspan=4, row=0, rowspan=2, padx=15, pady=5)
-    ttk.Treeview().configure()
+    scrollbar2.grid(sticky=ttk.EW, columnspan=4, row=2, padx=15)
+    self.tree4.grid(sticky=ttk.NSEW, columnspan=4, row=0, rowspan=2, padx=15, pady=5)
+    # ttk.Treeview().configure()
     lbl_frame11 = ttk.Labelframe(lframe5, text="Attributes")
     lbl_frame11.grid(sticky="new", row=3, column=0, padx=5, pady=5)
 
