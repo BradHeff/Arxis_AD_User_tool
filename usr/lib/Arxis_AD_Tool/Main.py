@@ -166,7 +166,9 @@ class Mainz(ttk.Window):
         except Exception:
             pass
         try:
-            self.entJobTitle.insert(0, self.updateList[self.selItem3[0]]["title"])
+            self.entJobTitle.insert(
+                0, self.updateList[self.selItem3[0]]["title"].capitalize()
+            )
         except Exception:
             pass
         try:
@@ -271,7 +273,9 @@ class Mainz(ttk.Window):
         if not self.jobTitle.__len__() <= 3:
             try:
                 self.jobTitleEnt.delete(0, "end")
-                self.jobTitleEnt.insert(0, self.jobTitle[capitalized_position_key])
+                self.jobTitleEnt.insert(
+                    0, self.jobTitle[capitalized_position_key].capitalize()
+                )
             except Exception as e:
                 print(e)
 
