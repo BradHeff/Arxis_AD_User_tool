@@ -79,7 +79,7 @@ class Mainz(ttk.Window):
         date = currentDateTime.date()
         self.date = date.strftime("%Y")
 
-        self.title("".join(["Arxis AD Tool v", f.Version[4 : f.Version.__len__()]]))
+        self.title("".join(["Arxis AD Tool v", f.Version]))
 
         scaling = self.tk.call("tk", "scaling")  # Get current scaling
         print(f"Current scaling: {scaling}")
@@ -88,6 +88,7 @@ class Mainz(ttk.Window):
         self.dpi = dpi
         Gui.baseGUI(self)
         Gui.adjust_scaling(self)
+        f.checkConfig(self)
 
     def setLoad(self):
         print(f"Load state: {self.load.get()}")
@@ -167,7 +168,7 @@ class Mainz(ttk.Window):
             pass
         try:
             self.entJobTitle.insert(
-                0, self.updateList[self.selItem3[0]]["title"].capitalize()
+                0, self.updateList[self.selItem3[0]]["title"].title()
             )
         except Exception:
             pass
@@ -184,7 +185,7 @@ class Mainz(ttk.Window):
         except Exception:
             pass
         try:
-            desc = self.updateList[self.selItem3[0]]["description"][0]
+            desc = self.updateList[self.selItem3[0]]["description"][0].title()
             self.entDesc.insert(0, str(desc))
         except Exception:
             pass
@@ -239,7 +240,7 @@ class Mainz(ttk.Window):
                 self.posOU = self.positionsOU[capitalized_position_key]
                 descDate = self.date
                 self.desc.delete(0, "end")
-                self.desc.insert(0, f"{capitalized_position_key} - {descDate}")
+                self.desc.insert(0, f"{capitalized_position_key} - {descDate}").title()
             else:
                 self.posOU = self.positionsOU[capitalized_position_key]
                 descDate = self.date
@@ -274,7 +275,7 @@ class Mainz(ttk.Window):
             try:
                 self.jobTitleEnt.delete(0, "end")
                 self.jobTitleEnt.insert(
-                    0, self.jobTitle[capitalized_position_key].capitalize()
+                    0, self.jobTitle[capitalized_position_key].title()
                 )
             except Exception as e:
                 print(e)
@@ -282,9 +283,9 @@ class Mainz(ttk.Window):
         if not self.dep.__len__() <= 3:
             try:
                 self.depEnt.delete(0, "end")
-                self.depEnt.insert(0, f"{camp} Campus")
+                self.depEnt.insert(0, f"{camp} Campus").title()
                 self.orgCompEnt.delete(0, "end")
-                self.orgCompEnt.insert(0, f"Horizon Christian School {camp}")
+                self.orgCompEnt.insert(0, f"Horizon Christian School {camp}").title()
             except Exception as e:
                 print(e)
 
@@ -312,7 +313,23 @@ class Mainz(ttk.Window):
 
         capitalized_position_key = position_key.lower()
         if self.EcampH.get() == 0:
-            posi = self.positionsOU[capitalized_position_key + "-clare"]
+            if (
+                "Year".lower() in capitalized_position_key
+                or "Found".lower() in capitalized_position_key
+            ):
+                posi = self.positionsOU[capitalized_position_key + "-clare"]
+            elif (
+                "ESO".lower() in capitalized_position_key
+                or "Student Support".lower() in capitalized_position_key
+            ):
+                posi = self.positionsOU["Student Support Clare".lower()]
+            elif (
+                "Admin".lower() in capitalized_position_key
+                and "Temp".lower() not in capitalized_position_key
+            ):
+                posi = self.positionsOU["Admin Clare".lower()]
+            else:
+                posi = self.positionsOU[capitalized_position_key]
         else:
             posi = self.positionsOU[capitalized_position_key]
 
@@ -626,107 +643,139 @@ class Mainz(ttk.Window):
         f.widgetStatus(self, ttk.DISABLED)
         data = dict()
         index = self.tabControl.index(self.tabControl.select())
+
         if index == 0:
-            if self.tree.get_children() == ():
-                f.widgetStatus(self, ttk.NORMAL)
+            self.handleTabIndexZero(data)
+        elif index == 1:
+            self.handleTabIndexOne(data)
+        elif index == 2:
+            self.handleTabIndexTwo(data)
+        else:
+            f.widgetStatus(self, ttk.NORMAL)
+            self.messageBox("ERROR!!", "Your Settings are incomplete\nfor this TAB!")
 
-                tkt.call_nosync(
-                    self.messageBox, "ERROR!!", "List cannot be empty!", "error"
-                )
-                return
+    def handleTabIndexZero(self, data):
+        if not self.tree.get_children():
+            f.widgetStatus(self, ttk.NORMAL)
+            tkt.call_nosync(
+                self.messageBox, "ERROR!!", "List cannot be empty!", "error"
+            )
+            return
 
-            for line in self.tree.get_children():
-                self.data[self.tree.item(line)["values"][0]] = {
-                    "name": self.tree.item(line)["values"][1],
-                    "ou": self.tree.item(line)["values"][2],
-                }
-            maxs = self.tree.get_children().__len__()
-            self.progress["maximum"] = float(maxs)
-            self.all = maxs
-            t = threading.Thread(target=f.unlockAll, args=[self, self.data])
+        for line in self.tree.get_children():
+            self.data[self.tree.item(line)["values"][0]] = {
+                "name": self.tree.item(line)["values"][1],
+                "ou": self.tree.item(line)["values"][2],
+            }
+        maxs = self.tree.get_children().__len__()
+        self.progress["maximum"] = float(maxs)
+        self.all = maxs
+        t = threading.Thread(target=f.unlockAll, args=[self, self.data])
+        t.daemon = True
+        t.start()
+
+    def handleTabIndexOne(self, data):
+        f.widgetStatus(self, ttk.DISABLED)
+        if self.fname.get().__len__() < 2 or self.lname.get().__len__() < 2:
+            self.showErrorAndReturn("First and Lastname must\nbe filled!")
+            return
+        if self.dpass.get().__len__() < 8:
+            self.showErrorAndReturn("Must enter Password\nor password 8 characters min")
+            return
+        if "Select" in self.primary_domain.get():
+            self.showErrorAndReturn("You must select domain\nHomeDrive and HomePath")
+            return
+
+        self.progress["value"] = 10
+        self.status["text"] = "Rebuilding groups..."
+        groups = self.getCheck()
+        self.status["text"] = "Setting login name..."
+        samname = self.getSamName()
+        self.status["text"] = "Rebuilding data..."
+        self.populateDataForTabIndexOne(data, samname, groups)
+        self.progress["value"] = 20
+        try:
+            t = threading.Thread(target=f.createUser, args=(self, data))
             t.daemon = True
             t.start()
-        elif index == 1:
-            f.widgetStatus(self, ttk.DISABLED)
-            if self.fname.get().__len__() >= 2 and self.lname.get().__len__() >= 2:
-                if self.dpass.get().__len__() < 8:
-                    f.widgetStatus(self, ttk.NORMAL)
+        except Exception as e:
+            print(f"ERROR: {e}")
 
-                    tkt.call_nosync(
-                        self.messageBox,
-                        "ERROR!!",
-                        "Must enter Password\n\
-                    or password 8 characters min",
-                        "error",
-                    )
-                    return
-                if "Select" in self.primary_domain.get():
-                    f.widgetStatus(self, ttk.NORMAL)
-                    self.status["text"] = "Idle..."
+    def handleTabIndexTwo(self, data):
+        if self.entPass.get().__len__() < 8 and self.entPass.get().__len__() >= 1:
+            self.showErrorAndReturn("Password must be 8 characters long")
+            return
+        if self.tree4.get_children() == ():
+            self.showErrorAndReturn("Must select a position")
+            return
+        if self.selItem3.__len__() <= 0:
+            self.showErrorAndReturn("Must select a user!")
+            return
+        if self.fname_entry.get().__len__() <= 1:
+            self.showErrorAndReturn("First Name cannot be empty!")
+            return
 
-                    tkt.call_nosync(
-                        self.messageBox,
-                        "ERROR!!",
-                        "You must select domain\n\
-                                    HomeDrive and HomePath",
-                        "error",
-                    )
-                    return
-                self.progress["value"] = 10
-                self.status["text"] = "Rebuilding groups..."
-                groups = self.getCheck()
-                self.status["text"] = "Setting login name..."
-                index2 = self.samFormat.get()
-                if index2 == "flastname":
-                    samname = "".join(
-                        [
-                            self.fname.get().strip()[0:1],
-                            self.lname.get().strip(),
-                        ]
-                    )
-                elif index2 == "firstlastname":
-                    samname = "".join(
-                        [self.fname.get().strip(), self.lname.get().strip()]
-                    )
-                else:
-                    samname = "".join(
-                        [
-                            self.fname.get().strip(),
-                            ".",
-                            self.lname.get().strip(),
-                        ]
-                    )
-                self.status["text"] = "Rebuilding data..."
-                data["login"] = samname.lower()
-                data["first"] = self.fname.get().strip().capitalize()
-                data["last"] = self.lname.get().strip().capitalize()
-                data["password"] = self.dpass.get()
-                data["domain"] = self.primary_domain.get()
-                data["proxy"] = self.domains["secondary"]
-                data["groups"] = groups
-                data["description"] = self.desc.get()
-                data["title"] = self.jobTitleEnt.get()
-                data["department"] = self.depEnt.get()
-                data["company"] = self.orgCompEnt.get()
-                self.progress["value"] = 20
-                try:
-                    t = threading.Thread(target=f.createUser, args=(self, data))
-                    t.daemon = True
-                    t.start()
-                except Exception as e:
-                    print(f"ERROR: {e}")
-            else:
-                f.widgetStatus(self, ttk.NORMAL)
+        f.widgetStatus(self, ttk.DISABLED)
+        self.progress["value"] = 10
+        self.status["text"] = "Gathering Information..."
+        self.populateDataForTabIndexTwo(data)
+        self.progress["value"] = 20
+        t = threading.Thread(target=f.update_user, args=[self, data])
+        t.daemon = True
+        t.start()
 
-                tkt.call_nosync(
-                    self.messageBox,
-                    "ERROR!!",
-                    "First and Lastname must\n\
-                be filled!",
-                    "error",
-                )
+    def showErrorAndReturn(self, message):
+        f.widgetStatus(self, ttk.NORMAL)
+        tkt.call_nosync(self.messageBox, "ERROR!!", message, "error")
+
+    def getSamName(self):
+        index2 = self.samFormat.get()
+        if index2 == "flastname":
+            return "".join([self.fname.get().strip()[0:1], self.lname.get().strip()])
+        elif index2 == "firstlastname":
+            return "".join([self.fname.get().strip(), self.lname.get().strip()])
         else:
-            print("")
+            return "".join([self.fname.get().strip(), ".", self.lname.get().strip()])
+
+    def populateDataForTabIndexOne(self, data, samname, groups):
+        data["login"] = samname.lower()
+        data["first"] = self.fname.get().strip().capitalize()
+        data["last"] = self.lname.get().strip().capitalize()
+        data["password"] = self.dpass.get()
+        data["domain"] = self.primary_domain.get()
+        data["proxy"] = self.domains["secondary".lower()]
+        data["groups"] = groups
+        data["description"] = self.desc.get()
+        data["title"] = self.jobTitleEnt.get()
+        data["department"] = self.depEnt.get()
+        data["company"] = self.orgCompEnt.get()
+
+    def populateDataForTabIndexTwo(self, data):
+        data["login"] = self.entSamname.get()
+        data["first"] = self.fname_entry.get().capitalize()
+        data["last"] = self.lname_entry.get().capitalize()
+        data["domain"] = self.entDomain.get()
+        data["description"] = self.entDesc.get()
+        data["title"] = self.entJobTitle.get()
+        data["ou"] = self.updateList[self.selItem3[0]]["ou"]
+        data["password"] = self.entPass.get()
+
+        if not self.updateList[self.selItem3[0]]["proxyAddresses"] is None:
+            for x in self.updateList[self.selItem3[0]]["proxyAddresses"]:
+                if self.entDomain.get() not in x and x.__len__() > 5:
+                    data["proxy"] = x.split("@")[1]
+                else:
+                    data["proxy"] = (
+                        self.domains["Secondary".lower()]
+                        if not self.domains["Secondary".lower()].__len__() <= 3
+                        else ""
+                    )
+        else:
+            data["proxy"] = (
+                self.domains["Secondary".lower()]
+                if not self.domains["Secondary".lower()].__len__() <= 3
+                else ""
+            )
 
     def resetProgress(self):
         self.progress["value"] = 0
