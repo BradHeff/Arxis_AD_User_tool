@@ -41,7 +41,6 @@ tls_configuration = Tls(
 )
 server = None
 exe_dir = str(Path(__file__).parents[2])
-# print(f"Executable Directory: {exe_dir}")
 
 settings_dir = "".join([home, "/.config/arxis-ad-tool/"])
 temp_dir = "".join([exe_dir, "/lib/Arxis_AD_Tool/Tmp/"])
@@ -67,31 +66,29 @@ def Toast(title, message, types="happy"):
     toast.show_toast()
 
 
-def parseStatus(self, json_data):
-    # print(json_data)
+def parse_status(self, json_data):
     ndata = json_data
-    # print(f"Status: {ndata['server']}")
     parsed = json.loads(
         str(ndata).replace("'", '"').lower(),
     )
     return parsed
 
 
-def getStatus(self):
+def get_status(self):
     # res = requests.get("http://api.trincloud.cc/api/syncer")
     res = requests.get("".join([api_url, "/v1/data/LDAP"]))
     res.raise_for_status()
     return res.json()
 
 
-def getUpdate(self):
+def get_update(self):
     # res = requests.get("http://api.trincloud.cc/api/syncer")
     res = requests.get("".join([api_url, "/v1/data/Programs"]))
     res.raise_for_status()
     return res.json()
 
 
-def checkConfig(self):
+def verify_configuration(self):
     if not path.isdir(settings_dir):
         mkdir(settings_dir)
 
@@ -108,7 +105,8 @@ def ldap_connection(self):
             use_ssl=True,
             tls=tls_configuration,
         )
-        print("Connected to LDAP server...")
+        if DEBUG:
+            print("Connected to LDAP server...")
         return Connection(
             server,
             self.username.strip(),
@@ -118,7 +116,6 @@ def ldap_connection(self):
         )
     except Exception as e:
         print(f"ERROR: {e}")
-        # self.lbl_login["text"] = "No"
         return None
 
 
@@ -389,12 +386,13 @@ def resetPassword(self, ou, newpass):
         self.tree.delete(selected_item)
         self.selItem = []
         widgetStatus(self, NORMAL)
-        # Toast("SUCCESS!!", "Password set and user unlocked!", "happy")
-        print("Password reset and user unlocked successfully.")
-    except:  # noqa
+        Toast("SUCCESS!!", "Password set and user unlocked!", "happy")
+        if DEBUG:
+            print("Password reset and user unlocked successfully.")
+    except Exception:
         self.selItem = []
         widgetStatus(self, NORMAL)
-        # Toast("ERROR!!", "An error has occured!", "angry")
+        Toast("ERROR!!", "An error has occured!", "angry")
         print("An error occurred while resetting password.")
 
 
@@ -449,9 +447,7 @@ def listLocked(self):
             )
             results = c.entries
         except core.exceptions.LDAPException as e:
-            print(e)
-        # print(results)
-        # print(self.ou)
+            print(f"LIST UNLOCKED: {e}")
 
         for x in results:
             res = x["attributes"]
@@ -462,7 +458,8 @@ def listLocked(self):
         lockedaccounts = [str(y) for y in results]
         if lockedaccounts.__len__() >= 1:
             lockedaccounts = [x for x in lockedaccounts["attributes"]]
-            print(lockedaccounts)
+            if DEBUG:
+                print(f"LOCKED ACCOUNTS: {lockedaccounts}")
     return users
 
 
@@ -590,14 +587,14 @@ def createUser(self, data):
         self.progress["value"] = 100
         widgetStatus(self, NORMAL)
         self.status["text"] = "User Created!"
-        # Toast("SUCCESS!!", "User Created!", "happy")
+        Toast("SUCCESS!!", "User Created!", "happy")
         self.progress["value"] = 0
     except Exception as e:
         print("ERRORS:", str(e))
         self.status["text"] = "Idle..."
         widgetStatus(self, NORMAL)
         self.progress["value"] = 0
-        # Toast("ERROR!!", "An error has occured!", "angry")
+        Toast("ERROR!!", "An error has occured!", "angry")
 
 
 # def remove_groups(self):
@@ -711,4 +708,4 @@ def removeHomedrive(paths):
         if path.exists(paths):
             removedirs(paths)
     except Exception as e:
-        print(e)
+        print(f"ERROR REMOVE HOMEPATH: {e}")

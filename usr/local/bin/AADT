@@ -1,5 +1,5 @@
 #!/bin/bash
-DEBUG=false  # Change this value to toggle debug mode
+DEBUG=true  # Change this value to toggle debug mode
 
 OS=""
 if [ -f /etc/os-release ]; then

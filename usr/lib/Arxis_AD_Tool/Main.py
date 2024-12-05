@@ -102,7 +102,7 @@ class Mainz(ttk.Window):
             self.server = "192.168.3.34"
         else:
             self.server = self.api_config["server"]  # f.getServer(self, self.company)
-        print(self.server)
+
         self.domains = self.api_config["domains"]
         self.jobTitle = self.api_config["title"]
         self.disOU = self.api_config["expiredous"]
@@ -159,7 +159,7 @@ class Mainz(ttk.Window):
         self.entDomain.delete(0, "end")
         self.lname_entry.delete(0, "end")
         self.fname_entry.delete(0, "end")
-        # print(self.updateList[self.selItem3[0]]['proxyAddresses'])
+
         try:
             domain = str(self.updateList[self.selItem3[0]]["userPrincipalName"])
             domain = domain.split("@")[1].strip()
@@ -208,7 +208,7 @@ class Mainz(ttk.Window):
             0, "".join(["Horizon", datetime.datetime.now().strftime("%Y")])
         )
         if self.campH.get() == 0:
-            print(self.positionsOU)
+
             if (
                 "Year".lower() in capitalized_position_key
                 or "Found".lower() in capitalized_position_key
@@ -231,7 +231,7 @@ class Mainz(ttk.Window):
             descDate = f"{self.date} Clare"
             camp = "Clare"
             self.dep = "Clare Campus"
-            print(self.posOU)
+
         else:
             if (
                 "Year" in capitalized_position_key
@@ -251,8 +251,6 @@ class Mainz(ttk.Window):
         style = Style()
         self.checkCount = 0
         self.checkRow = 0
-        print(self.groups)
-        print(self.posOU)
 
         for x in self.groups:
             gn = x.split(",")[0].replace("CN=", "")
@@ -278,16 +276,16 @@ class Mainz(ttk.Window):
                     0, self.jobTitle[capitalized_position_key].title()
                 )
             except Exception as e:
-                print(e)
+                print(f"JOB TITLE: {e}")
 
         if not self.dep.__len__() <= 3:
             try:
                 self.depEnt.delete(0, "end")
-                self.depEnt.insert(0, f"{camp} Campus").title()
+                self.depEnt.insert(0, f"{camp} Campus")
                 self.orgCompEnt.delete(0, "end")
-                self.orgCompEnt.insert(0, f"Horizon Christian School {camp}").title()
+                self.orgCompEnt.insert(0, f"Horizon Christian School {camp}")
             except Exception as e:
-                print(e)
+                print(f"DEP: {e}")
 
     def updateSelect(self):
         self.entDomain["state"] = "normal"
@@ -544,8 +542,7 @@ class Mainz(ttk.Window):
                         #         row3 += 1
                         prog += 1
             except Exception as e:
-                print("ERROR POS")
-                print(e)
+                print(f"ERROR POS: {e}")
 
         if not self.domains["primary"].__len__() <= 0:
             try:
@@ -554,8 +551,7 @@ class Mainz(ttk.Window):
                 self.combo_domain["values"] = self.pdomains
                 self.primary_domain.set("horizon.sa.edu.au")
             except Exception as e:
-                print("ERROR DOMAIN")
-                print(e)
+                print(f"ERROR DOMAIN: {e}")
                 pass
 
         if not self.groupOU.__len__() <= 3:
@@ -782,8 +778,7 @@ class Mainz(ttk.Window):
 
     def handler(self):
         msg = "Ctrl-c was pressed. Exiting now... "
-        print(msg)
-        print("")
+        print(f"{msg}\n")
         self.destroy()
 
     def messageBox(self, txttitle, message, typez):
@@ -839,7 +834,6 @@ class Mainz(ttk.Window):
                 "Website: https://www.arxis.com.au\n"
             ),
         )
-        print("About box shown")
 
 
 if __name__ == "__main__":

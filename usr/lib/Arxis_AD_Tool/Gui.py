@@ -15,7 +15,7 @@ def Window(self):
     screen_width = self.winfo_screenwidth() / 2
     screen_width2 = screen_width + (screen_width / 2)
     screen_height = self.winfo_screenheight()
-    print(screen_width2)
+    # print(screen_width2)
     center_x = int(screen_width2 - (self.W / 2))
     center_y = int(screen_height / 2 - (self.H / 2))
     self.geometry(f"{self.W}x{self.H}+{center_x}+{center_y}")
@@ -45,7 +45,7 @@ def adjust_scaling(self):
         self.tk.call("tk", "scaling", 1.0)
 
 
-def baseGUI(self):
+def initialize_base_gui(self):
     Window(self)
     Icon(self)
 
