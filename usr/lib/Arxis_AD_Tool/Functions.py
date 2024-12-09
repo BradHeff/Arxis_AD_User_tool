@@ -25,24 +25,28 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
 
 DEBUG_SVR = False
 DEBUG = True
-Version = "2.0.11.3"
+Version = "v2.0.10.7"
 key = b"\xb1]\xdbM\xed\xc9d\x86\xfe\xc9\x97\x15\x93&R\xba\x9a\xb9#\xadh\x83\xc9D\xa6\xba\xdbX$\xb3TJ"
-# settings_file = "Settings.dat"
+settings_file = "Settings.dat"
 if DEBUG_SVR:
     api_url = "http://localhost:5000"
 else:
     api_url = "http://api.trincloud.cc"
-# creds = "URip96k9xsm8pUaJ6f8fJPjGbTxxSxzQ4udC2kmmZCCcw2d77d.dat"
+creds = "URip96k9xsm8pUaJ6f8fJPjGbTxxSxzQ4udC2kmmZCCcw2d77d.dat"
 UAC = 32 + 65536
-home = str(Path.home())
+ICT_Admins = {
+    "IT": ["bheffernan", "brad.heff.desktop"],
+    "Management": ["djohnson", "dan.desktop"],
+}
 
 tls_configuration = Tls(
     validate=OpenSSL.SSL.VERIFY_NONE, version=OpenSSL.SSL.TLSv1_1_METHOD
 )
 server = None
 exe_dir = str(Path(__file__).parents[2])
+# print(f"Executable Directory: {exe_dir}")
 
-settings_dir = "".join([home, "/.config/arxis-ad-tool/"])
+settings_dir = "".join([exe_dir, "/share/Arxis_AD_Tool/"])
 temp_dir = "".join([exe_dir, "/lib/Arxis_AD_Tool/Tmp/"])
 
 
@@ -66,35 +70,46 @@ def Toast(title, message, types="happy"):
     toast.show_toast()
 
 
-def parse_status(self, json_data):
+def parseStatus(self, json_data):
+    print(json_data)
     ndata = json_data
+    # print(f"Status: {ndata['server']}")
     parsed = json.loads(
         str(ndata).replace("'", '"').lower(),
     )
     return parsed
 
 
-def get_status(self):
+def getStatus(self):
     # res = requests.get("http://api.trincloud.cc/api/syncer")
     res = requests.get("".join([api_url, "/v1/data/LDAP"]))
     res.raise_for_status()
     return res.json()
 
 
-def get_update(self):
+def getUpdate(self):
     # res = requests.get("http://api.trincloud.cc/api/syncer")
     res = requests.get("".join([api_url, "/v1/data/Programs"]))
     res.raise_for_status()
     return res.json()
 
 
-def verify_configuration(self):
-    if not path.isdir(settings_dir):
-        mkdir(settings_dir)
-
-
 def clear_console():
     system("cls")
+
+
+def Switch(string, lists):
+    if string.lower() in lists:
+        return True
+    else:
+        return False
+
+
+def checkSettings(self, company):
+    if company.__len__() >= 2:
+        return True
+    else:
+        return False
 
 
 def ldap_connection(self):
@@ -105,8 +120,7 @@ def ldap_connection(self):
             use_ssl=True,
             tls=tls_configuration,
         )
-        if DEBUG:
-            print("Connected to LDAP server...")
+        print("Connected to LDAP server...")
         return Connection(
             server,
             self.username.strip(),
@@ -116,6 +130,7 @@ def ldap_connection(self):
         )
     except Exception as e:
         print(f"ERROR: {e}")
+        # self.lbl_login["text"] = "No"
         return None
 
 
@@ -146,20 +161,21 @@ def get_operation_result(connection, operation_result):
 def saveConfig(self):
     parser = cCrypt.ConfigParserCrypt()
     parser["config"] = {}
+    if "Select" not in self.options.get():
+        parser["config"]["autoload"] = str(self.load.get())
+        parser["config"]["company"] = self.options.get()
+        parser["config"]["tab"] = str(self.tabControl.index(self.tabControl.select()))
 
-    parser["config"]["autoload"] = str(self.load.get())
-    parser["config"]["tab"] = str(self.tabControl.index(self.tabControl.select()))
-
-    if not self.var.get() == "1":
-        parser["newuser"] = {}
-        data = getnewuser(self)
-        parser["newuser"]["domain"] = data["domain"]
-        parser["newuser"]["campus"] = data["campus"]
-        parser["newuser"]["password"] = data["password"]
-        parser["newuser"]["format"] = data["format"]
-        parser["newuser"]["pos"] = data["pos"]
-        parser["newuser"]["desc"] = data["desc"]
-        parser["newuser"]["title"] = data["title"]
+        if not self.var.get() == "1":
+            parser["newuser"] = {}
+            data = getnewuser(self)
+            parser["newuser"]["domain"] = data["domain"]
+            parser["newuser"]["campus"] = data["campus"]
+            parser["newuser"]["password"] = data["password"]
+            parser["newuser"]["format"] = data["format"]
+            parser["newuser"]["pos"] = data["pos"]
+            parser["newuser"]["desc"] = data["desc"]
+            parser["newuser"]["title"] = data["title"]
 
     with open(settings_dir + "Config.ini", "w") as w:
         parser.write(w)
@@ -189,21 +205,21 @@ def loadConfig(self, check=False):
             self.loaded = True
 
 
-# def getServer(self, section):  # noqa
-#     parser = cCrypt.ConfigParserCrypt()
-#     parser.aes_key = key
-#     parser.read_encrypted(settings_dir + settings_file)
-#     if parser.has_section(section):
-#         if parser.has_option(section, "server"):
-#             return parser.get(section, "server")
+def getServer(self, section):  # noqa
+    parser = cCrypt.ConfigParserCrypt()
+    parser.aes_key = key
+    parser.read_encrypted(settings_dir + settings_file)
+    if parser.has_section(section):
+        if parser.has_option(section, "server"):
+            return parser.get(section, "server")
 
 
-# def getSettings(self):
-#     parser = cCrypt.ConfigParserCrypt()
-#     parser.aes_key = key
-#     parser.read_encrypted(settings_dir + settings_file)
-#     if parser.has_section("Settings"):
-#         return parser.get("Settings", "company")
+def getSettings(self):
+    parser = cCrypt.ConfigParserCrypt()
+    parser.aes_key = key
+    parser.read_encrypted(settings_dir + settings_file)
+    if parser.has_section("Settings"):
+        return parser.get("Settings", "company")
 
 
 # def getConfig(self, section):  # noqa
@@ -341,6 +357,8 @@ def getnewuser(self):
     data["campus"] = str(self.campH.get())
     data["domain"] = self.primary_domain.get()
     data["password"] = self.dpass.get()
+    data["hdrive"] = self.hdrive.get()
+    data["hpath"] = self.paths.get()
     data["desc"] = self.desc.get()
     data["title"] = self.jobTitleEnt.get()
     return data
@@ -386,13 +404,12 @@ def resetPassword(self, ou, newpass):
         self.tree.delete(selected_item)
         self.selItem = []
         widgetStatus(self, NORMAL)
-        Toast("SUCCESS!!", "Password set and user unlocked!", "happy")
-        if DEBUG:
-            print("Password reset and user unlocked successfully.")
-    except Exception:
+        # Toast("SUCCESS!!", "Password set and user unlocked!", "happy")
+        print("Password reset and user unlocked successfully.")
+    except:  # noqa
         self.selItem = []
         widgetStatus(self, NORMAL)
-        Toast("ERROR!!", "An error has occured!", "angry")
+        # Toast("ERROR!!", "An error has occured!", "angry")
         print("An error occurred while resetting password.")
 
 
@@ -447,7 +464,9 @@ def listLocked(self):
             )
             results = c.entries
         except core.exceptions.LDAPException as e:
-            print(f"LIST UNLOCKED: {e}")
+            print(e)
+        print(results)
+        print(self.ou)
 
         for x in results:
             res = x["attributes"]
@@ -458,75 +477,74 @@ def listLocked(self):
         lockedaccounts = [str(y) for y in results]
         if lockedaccounts.__len__() >= 1:
             lockedaccounts = [x for x in lockedaccounts["attributes"]]
-            if DEBUG:
-                print(f"LOCKED ACCOUNTS: {lockedaccounts}")
+            print(lockedaccounts)
     return users
 
 
-def update_user(self, data):
-    try:
-        self.status["text"] = "".join(["Updating ", data["first"], " ", data["last"]])
-        with ldap_connection(self) as c:
-            self.progress["value"] = 60
+# def update_user(self, data):
+#     try:
+#         self.status["text"] = "".join(["Updating ", data["first"], " ", data["last"]])
+#         with ldap_connection(self) as c:
+#             self.progress["value"] = 60
 
-            if data["proxy"] is None:
-                proxy = "".join(
-                    ["smtp:", data["login"], "@", self.domains["secondary"]]
-                )
-            else:
-                proxy = "".join(["smtp:", data["login"], "@", data["proxy"]])
+#             if data["proxy"] is None:
+#                 proxy = "".join(
+#                     ["smtp:", data["login"], "@", self.domains["secondary"]]
+#                 )
+#             else:
+#                 proxy = "".join(["smtp:", data["login"], "@", data["proxy"]])
 
-            attributes = {
-                "givenName": (MODIFY_REPLACE, [data["first"]]),
-                "sAMAccountName": (MODIFY_REPLACE, [data["login"]]),
-                "sn": (MODIFY_REPLACE, [data["last"]]),
-                "DisplayName": (
-                    MODIFY_REPLACE,
-                    ["".join([data["first"], " ", data["last"]])],
-                ),
-                "title": (MODIFY_REPLACE, [data["title"]]),
-                "description": (MODIFY_REPLACE, [data["description"]]),
-                "userPrincipalName": (
-                    MODIFY_REPLACE,
-                    ["".join([data["login"], "@", data["domain"]])],
-                ),
-                "mail": (
-                    MODIFY_REPLACE,
-                    ["".join([data["login"], "@", data["domain"]])],
-                ),
-                "proxyAddresses": [
-                    (
-                        MODIFY_REPLACE,
-                        ["".join(["SMTP:", data["login"], "@", data["domain"]])],
-                    ),
-                    (MODIFY_REPLACE, [proxy]),
-                ],
-            }
-            result = c.modify(
-                dn=data["ou"],
-                changes=attributes,
-            )
-            if not result:
-                msg = "ERROR: User '{0}' was not created: {1}".format(
-                    "".join([data["first"], " ", data["last"]]),
-                    c.result.get("description"),
-                )
-                raise Exception(msg)
-        if data["password"].__len__() >= 8:
-            c.extend.microsoft.modify_password(
-                user=data["ou"], new_password=data["password"], old_password=None
-            )
-        self.progress["value"] = 100
-        widgetStatus(self, NORMAL)
-        self.status["text"] = "User Updated!"
-        # Toast("SUCCESS!!", "User Updated!", "happy")
-        self.progress["value"] = 0
-        self.editSelect("E")
-    except:  # noqa
-        self.status["text"] = "Idle..."
-        widgetStatus(self, NORMAL)
-        # Toast("ERROR!!", "An error has occured!", "angry")
-        self.progress["value"] = 0
+#             attributes = {
+#                 "givenName": (MODIFY_REPLACE, [data["first"]]),
+#                 "sAMAccountName": (MODIFY_REPLACE, [data["login"]]),
+#                 "sn": (MODIFY_REPLACE, [data["last"]]),
+#                 "DisplayName": (
+#                     MODIFY_REPLACE,
+#                     ["".join([data["first"], " ", data["last"]])],
+#                 ),
+#                 "title": (MODIFY_REPLACE, [data["title"]]),
+#                 "description": (MODIFY_REPLACE, [data["description"]]),
+#                 "userPrincipalName": (
+#                     MODIFY_REPLACE,
+#                     ["".join([data["login"], "@", data["domain"]])],
+#                 ),
+#                 "mail": (
+#                     MODIFY_REPLACE,
+#                     ["".join([data["login"], "@", data["domain"]])],
+#                 ),
+#                 "proxyAddresses": [
+#                     (
+#                         MODIFY_REPLACE,
+#                         ["".join(["SMTP:", data["login"], "@", data["domain"]])],
+#                     ),
+#                     (MODIFY_REPLACE, [proxy]),
+#                 ],
+#             }
+#             result = c.modify(
+#                 dn=data["ou"],
+#                 changes=attributes,
+#             )
+#             if not result:
+#                 msg = "ERROR: User '{0}' was not created: {1}".format(
+#                     "".join([data["first"], " ", data["last"]]),
+#                     c.result.get("description"),
+#                 )
+#                 raise Exception(msg)
+#         if data["password"].__len__() >= 8:
+#             c.extend.microsoft.modify_password(
+#                 user=data["ou"], new_password=data["password"], old_password=None
+#             )
+#         self.progress["value"] = 100
+#         widgetStatus(self, NORMAL)
+#         self.status["text"] = "User Updated!"
+#         # Toast("SUCCESS!!", "User Updated!", "happy")
+#         self.progress["value"] = 0
+#         self.editSelect("E")
+#     except:  # noqa
+#         self.status["text"] = "Idle..."
+#         widgetStatus(self, NORMAL)
+#         # Toast("ERROR!!", "An error has occured!", "angry")
+#         self.progress["value"] = 0
 
 
 def createUser(self, data):
@@ -587,14 +605,14 @@ def createUser(self, data):
         self.progress["value"] = 100
         widgetStatus(self, NORMAL)
         self.status["text"] = "User Created!"
-        Toast("SUCCESS!!", "User Created!", "happy")
+        # Toast("SUCCESS!!", "User Created!", "happy")
         self.progress["value"] = 0
     except Exception as e:
         print("ERRORS:", str(e))
         self.status["text"] = "Idle..."
         widgetStatus(self, NORMAL)
         self.progress["value"] = 0
-        Toast("ERROR!!", "An error has occured!", "angry")
+        # Toast("ERROR!!", "An error has occured!", "angry")
 
 
 # def remove_groups(self):
@@ -623,7 +641,7 @@ def createUser(self, data):
 #                     self.tree2.delete(child)
 #     except Exception as e:
 #         print(e)
-#         self.messageBox("ERROR!", "An error has occurred!", "error")
+#         self.messageBox("ERROR!", "An error has occurred!")
 #     widgetStatus(self, NORMAL)
 #     self.status["text"] = "Idle..."
 #     self.after(1000, self.resetProgress)
@@ -708,4 +726,4 @@ def removeHomedrive(paths):
         if path.exists(paths):
             removedirs(paths)
     except Exception as e:
-        print(f"ERROR REMOVE HOMEPATH: {e}")
+        print(e)
