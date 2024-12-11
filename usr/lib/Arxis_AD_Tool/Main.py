@@ -77,7 +77,7 @@ class Mainz(ttk.Window):
         date = currentDateTime.date()
         self.date = date.strftime("%Y")
 
-        self.title("".join(["Arxis AD Tool v", f.Version[4 : f.Version.__len__()]]))
+        self.title("".join(["Arxis AD Tool v", f.Version]))
 
         Gui.baseGUI(self)
 

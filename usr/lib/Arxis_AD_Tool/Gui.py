@@ -113,7 +113,7 @@ def baseGUI(self):
 
     self.status = ttk.Label(frmbtn, text="Idle...")
     self.status.grid(sticky="w", column=0, row=1, padx=10, pady=2)
-    version = ttk.Label(frmbtn, text=Version)
+    version = ttk.Label(frmbtn, text="v{}".format(Version))
     version.grid(sticky="e", column=3, row=1, padx=10, pady=2)
     self.progress = ttk.Progressbar(frmbtn)
     self.progress.grid(sticky="wes", columnspan=4, row=2, pady=5)
