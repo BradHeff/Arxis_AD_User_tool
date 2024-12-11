@@ -33,7 +33,7 @@ sed -i -E 's/^(Version:[[:space:]]*)([0-9]+)\.([0-9]+)/echo "\1\2.$((\3+1))"/e' 
 
 # Increment version number in Functions.py
 echo "Incrementing version number in Functions.py..."
-sed -i -E 's/^(Version[[:space:]]*=[[:space:]]*")([0-9]+\.[0-9]+\.[0-9]+)\.([0-9]+)"/echo "\1\2.$((\4+1))\""/e' "$FUNCTIONS"
+sed -i -E 's/^(Version[[:space:]]*=[[:space:]]*")([0-9]+\.[0-9]+)\.([0-9]+)"/echo "\1\2.$((\3+1))\""/e' "$FUNCTIONS"
 
 # Extract the version number from the .spec file
 VERSION=$(grep -E '^Version:[[:space:]]*' $SPEC_DIR/$APP_NAME.spec | awk '{print $2}')
