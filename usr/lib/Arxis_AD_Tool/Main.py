@@ -94,6 +94,7 @@ class Mainz(ttk.Window):
         self.pdomains = self.api_config["domains"]
         self.campus = self.api_config["campus"]
         self.ou = self.api_config["userou"]
+        self.user_ou = self.api_config["users"]
         self.domainName = self.api_config["domainname"]
         self.groupOU = self.api_config["groupsou"]
         self.groupPos = self.api_config["groups"]
@@ -204,34 +205,22 @@ class Mainz(ttk.Window):
             except Exception as e:
                 print(e)
 
+    # Use list comprehension for clearing widgets
+
+    def clear_position_widgets(self, lbl_positions):
+        [widget.destroy() for widget in lbl_positions.grid_slaves()]
+
     def clear_group(self):
-        list = self.lbl_frame2.grid_slaves()
-        for la in list:
-            la.destroy()
+        [widget.destroy() for widget in self.lbl_frame2.grid_slaves()]
 
-    def clear_campus(self):
-        list = self.lbl_frameC.pack_slaves()
-        # listF = self.lbl_frameF.pack_slaves()
-        listG = self.lbl_frameG.pack_slaves()
-        for la in list:
-            la.destroy()
-        # for l in listF:
-        #     l.destroy()
-        for la in listG:
-            la.destroy()
-
-    def clear_pos(self):
-        list = self.lbl_frame.grid_slaves()
-        for la in list:
-            la.destroy()
-        list = self.lbl_frame4.grid_slaves()
-        for la in list:
-            la.destroy()
+    def clear_campus(self, lbl_positions):
+        [widget.destroy() for widget in lbl_positions.grid_slaves()]
 
     def comboSelect(self, widget, value="H"):
         if "camp" not in str(widget):
             # f.getConfig(self, self.company)
-            # self.clear_campus()
+            # self.clear_campus(self.frameC)
+            # self.clear_campus(self.frameG)
             # if (
             #     not f.self.campus
             #     .split(",")[0]
@@ -314,7 +303,8 @@ class Mainz(ttk.Window):
 
     def comboLoad(self, value):  # noqa
         self.status["text"] = "Loading..."
-        self.clear_pos()
+        self.clear_position_widgets(self.lbl_frame)
+        # self.clear_position_widgets(self.lbl_frame4)
         self.clear_group()
         self.tree.delete(*self.tree.get_children())
         self.desc.delete(0, "end")
@@ -323,59 +313,50 @@ class Mainz(ttk.Window):
         self.depEnt.delete(0, "end")
         self.orgCompEnt.delete(0, "end")
         self.desc.insert(0, self.date)
+        progress_value = 1
 
         for x in self.disOU:
             self.disName.append(x)
 
         if not self.positions.__len__() <= 0:
             try:
-                self.progress["value"] = 20
-                count = 0
-                row = 0
-                count2 = 0
-                row2 = 0
+                row = count = 0
+                # row2 = count2 = 0
+
+                self.progress["maximum"] = float(self.positions.__len__())
 
                 self.var = ttk.StringVar(None, "1")
-                for x in self.positions:
-                    for y in self.positions[x]:
-                        prog = 1
-                        self.progress["maximum"] = float(self.positions.__len__())
-                        self.progress["value"] = prog
+                for position_group, positions in self.positions.items():
+                    for position in positions:
+                        self.progress["value"] = progress_value
+                        position_radio_button = ttk.Radiobutton(
+                            self.lbl_frame,
+                            text=position,
+                            variable=self.var,
+                            command=lambda: self.posSelect(value),
+                            value=position,
+                        )
+                        # edit_position_radio_button = ttk.Radiobutton(
+                        #     self.lbl_user_ou,
+                        #     text=position,
+                        #     variable=self.edit_position_selection,
+                        #     command=lambda: self.position_selected(),
+                        #     value=position,
+                        # )
 
-                        if not x == "Students":
-                            rbtn = ttk.Radiobutton(
-                                self.lbl_frame,
-                                text=y,
-                                variable=self.var,
-                                command=lambda: self.posSelect(value),
-                                value=y,
-                            )
-                            rbtn.grid(row=row, column=count, padx=10, pady=10)
-                            rbtn.selection_clear()
-
-                            count += 1
-                            if count > 3:
-                                count = 0
-                                row += 1
-                        else:
-                            rbtn2 = ttk.Radiobutton(
-                                self.lbl_frame4,
-                                text=y,
-                                variable=self.var,
-                                command=lambda: self.posSelect(value),
-                                value=y,
-                            )
-                            rbtn2.grid(row=row2, column=count2, padx=10, pady=10)
-                            rbtn2.selection_clear()
-
-                            count2 += 1
-                            if count2 > 6:
-                                count2 = 0
-                                row2 += 1
-                        prog += 1
-            except Exception as e:
-                print("ERROR POS")
-                print(e)
+                        position_radio_button.grid(
+                            row=row, column=count, padx=10, pady=10
+                        )
+                        # edit_position_radio_button.grid(
+                        #     row=row, column=column, padx=10, pady=10
+                        # )
+                        progress_value += 1
+                        count += 1
+                        if count > 3:
+                            count = 0
+                            row += 1
+            except Exception as error:
+                print(f"Error populating position selection: {error}")
 
         if not self.domains["primary"].__len__() <= 0:
             try:
@@ -389,9 +370,9 @@ class Mainz(ttk.Window):
                 pass
 
         if not self.groupOU.__len__() <= 3:
-            self.progress["value"] = 80
-            prog = 1
-        self.progress["value"] = 0
+            self.progress["value"] = progress_value
+            progress_value = 0
+        self.progress["value"] = progress_value
         self.status["text"] = "Idle..."
         if f.path.isfile(f.settings_dir + "Config.ini") and not self.loaded:
             f.loadConfig(self)
@@ -423,7 +404,11 @@ class Mainz(ttk.Window):
         try:
             self.status["text"] = "Searching locked users ..."
             locked = f.listLocked(self)
-            if locked.__len__() <= 0:
+
+            if not isinstance(locked, dict):
+                raise ValueError("Expected a dictionary from listLocked function")
+
+            if len(locked) <= 0:
                 f.widgetStatus(self, ttk.NORMAL)
                 self.status["text"] = "Idle..."
                 tkt.call_nosync(f.Toast, "COMPLETE!", "No Locked Users!", "happy")
@@ -431,8 +416,11 @@ class Mainz(ttk.Window):
             else:
                 self.status["text"] = "Populating list..."
                 for x in locked:
+                    user_info = locked[x]
                     self.tree.insert(
-                        "", "end", values=(x, locked[x]["name"], locked[x]["ou"])
+                        "",
+                        "end",
+                        values=(x, user_info["name"], user_info["ou"]),
                     )
         except Exception as e:
             print("ERROR LOAD USERS, ", str(e))
