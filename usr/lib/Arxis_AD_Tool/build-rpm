@@ -19,6 +19,19 @@ ZIP_DIR=$HOME/rpmbuild/SOURCES
 BASH_SCRIPT="../../local/bin"
 USRSOURCE="$PARENT_X3_DIR"
 FUNCTIONS="$SOURCE_DIR/Functions.py"
+SPEC_FILE="$SPEC_DIR/$APP_NAME.spec"
+
+if [ ! -f "$SPEC_FILE" ]; then
+    echo "Error: Spec file not found at $SPEC_FILE"
+    exit 1
+fi
+
+# Read the current version
+CURRENT_VERSION=$(grep -E '^Version:[[:space:]]*' "$SPEC_FILE" | awk '{print $2}')
+if [ -z "$CURRENT_VERSION" ]; then
+    echo "Error: Unable to find Version in spec file"
+    exit 1
+fi
 
 # Ensure build directory exists
 mkdir -p $BUILD_DIR
@@ -27,17 +40,32 @@ mkdir -p $BUILD_DIR
 echo "Setting DEBUG to false in the Bash script..."
 sed -i 's/^DEBUG=true/DEBUG=false/' $BASH_SCRIPT/$APP_NAME
 
-# Automatically increment the version number in the .spec file
-echo "Incrementing version number in the .spec file..."
-sed -i -E 's/^(Version:[[:space:]]*)([0-9]+)\.([0-9]+)/echo "\1\2.$((\3+1))"/e' "$SPEC_DIR/$APP_NAME.spec"
 
-# Increment version number in Functions.py
-echo "Incrementing version number in Functions.py..."
-sed -i -E 's/^(Version[[:space:]]*=[[:space:]]*")([0-9]+\.[0-9]+)\.([0-9]+)"/echo "\1\2.$((\3+1))\""/e' "$FUNCTIONS"
+# Increment the version
+IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+MAJOR=${VERSION_PARTS[0]}
+MINOR=${VERSION_PARTS[1]}
+PATCH=$((VERSION_PARTS[2] + 1))
+NEW_VERSION="$MAJOR.$MINOR.$PATCH"
 
-# Extract the version number from the .spec file
+# Update the version in the spec file
+sed -i "s/^Version:.*$/Version: $NEW_VERSION/" "$SPEC_FILE"
+
+echo "Version updated from $CURRENT_VERSION to $NEW_VERSION"
+
+# Update version number in Functions.py
+echo "Updating version number in Functions.py..."
+sed -i "s/^Version[[:space:]]*=[[:space:]]*\".*\"/Version = \"$NEW_VERSION\"/" "$FUNCTIONS"
+
+echo "Version updated to $NEW_VERSION in Functions.py"
+
+# Extract the version number from the .spec file to confirm
 VERSION=$(grep -E '^Version:[[:space:]]*' $SPEC_DIR/$APP_NAME.spec | awk '{print $2}')
-echo $VERSION
+echo "Confirmed version in spec file: $VERSION"
+
+# Extract the version number from Functions.py to confirm
+FUNC_VERSION=$(grep -E '^Version[[:space:]]*=' "$FUNCTIONS" | cut -d'"' -f2)
+echo "Confirmed version in Functions.py: $FUNC_VERSION"
 
 # Step 2: Compress the PROJECT-ROOT/usr directory
 echo "Compressing the $USRSOURCE/usr directory..."
@@ -68,8 +96,7 @@ cp -a ../../local/bin/* $BUILD_DIR/ || echo "No local binaries found to copy."
 cp -a ../../share/applications/* $BUILD_DIR/ || echo "No .desktop files found to copy."
 cp -a ../../share/pixmaps/* $BUILD_DIR/ || echo "No pixmap icons found to copy."
 cp -a *.py $BUILD_DIR/ || echo "No python files found to copy."
-rm -f $BUILD_DIR/compile.py  # Remove compile script from package
-rm -f $BUILD_DIR/updateSettings.py 
+
 
 # Step 5: Build the RPM package
 echo "Building RPM package..."

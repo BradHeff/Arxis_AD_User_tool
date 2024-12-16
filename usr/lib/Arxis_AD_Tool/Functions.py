@@ -25,13 +25,13 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
 
 DEBUG_SVR = False
 DEBUG = True
-Version = "2.0.11.3"
+Version = "2.0.19"
 key = b"\xb1]\xdbM\xed\xc9d\x86\xfe\xc9\x97\x15\x93&R\xba\x9a\xb9#\xadh\x83\xc9D\xa6\xba\xdbX$\xb3TJ"
 settings_file = "Settings.dat"
 if DEBUG_SVR:
     api_url = "http://localhost:5000"
 else:
-    api_url = "http://api.trincloud.cc"
+    api_url = "https://api.trincloud.cc"
 creds = "URip96k9xsm8pUaJ6f8fJPjGbTxxSxzQ4udC2kmmZCCcw2d77d.dat"
 UAC = 32 + 65536
 # Use a set for ICT_Admins to optimize membership checks

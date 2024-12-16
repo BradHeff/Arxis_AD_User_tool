@@ -7,7 +7,6 @@ Exec=AADT
 Icon=/usr/share/pixmaps/Arxis.png
 Terminal=false
 Type=Application
-Categories=GTK;Settings;Security;X-GNOME-Settings-Panel;X-GNOME-SystemSettings;X-Unity-Settings-Panel;X-XFCE-SettingsDialog;X-XFCE-SystemSettings;
 Keywords=Arxis;arxis;ad;AD;tool;netowrk;networking;
 StartupNotify=true
 Categories=GTK;;Security;X-GNOME-Settings-Panel;X-GNOME-SystemSettings;X-Unity-Settings-Panel;X-XFCE-SettingsDialog;X-XFCE-SystemSettings;Utility;Networking;

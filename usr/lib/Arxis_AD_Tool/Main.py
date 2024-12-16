@@ -69,24 +69,28 @@ class Mainz(ttk.Window):
         self.groupPos = {}
         self.positionsOU = {}
 
-        t = threading.Thread(target=self.fetchData)
-        t.daemon = True
-        t.start()
-
         currentDateTime = datetime.datetime.now()
         date = currentDateTime.date()
         self.date = date.strftime("%Y")
 
-        self.title("".join(["Arxis AD Tool v", f.Version]))
-
         Gui.baseGUI(self)
+
+        t = threading.Thread(target=self.fetchData)
+        t.daemon = True
+        t.start()
+
+        self.title("".join(["Arxis AD Tool v", f.Version]))
 
     def fetchData(self):
         self.dataz = f.getStatus(self)
         self.updatez = f.getUpdate(self)
         self.api_config = f.parseStatus(self, self.dataz)
         self.api_updates = f.parseStatus(self, self.updatez)
-        self.server = self.api_config["server"]  # f.getServer(self, self.company)
+        # print(self.api_config)
+        if f.DEBUG_SVR:
+            self.server = "192.168.3.34"
+        else:
+            self.server = self.api_config["server"]  # f.getServer(self, self.company)
         self.domains = self.api_config["domains"]
         self.jobTitle = self.api_config["title"]
         self.disOU = self.api_config["expiredous"]
