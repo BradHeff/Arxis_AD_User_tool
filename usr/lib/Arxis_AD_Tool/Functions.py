@@ -32,7 +32,7 @@ settings_file = "Settings.dat"
 if DEBUG_SVR:
     api_url = "http://localhost:5000"
 else:
-    api_url = "https://api.trincloud.cc"
+    api_url = "https://api.trincloud.cc/public/syncer.json"
 creds = "URip96k9xsm8pUaJ6f8fJPjGbTxxSxzQ4udC2kmmZCCcw2d77d.dat"
 UAC = 32 + 65536
 # Use a set for ICT_Admins to optimize membership checks
@@ -94,10 +94,13 @@ def parseStatus(self, json_data):
 
 
 def getStatus(self):
-    # res = requests.get("".join([api_url, "/v1/data/LDAP"]))
-    # res.raise_for_status()
-    with open("syncer.json", "r") as file:
-        res = json.load(file)
+    if DEBUG:
+        with open("syncer.json", "r") as file:
+            res = json.load(file)
+    else:
+        res = requests.get(api_url)
+        res.raise_for_status()
+
     return res["LDAP"]
 
 
