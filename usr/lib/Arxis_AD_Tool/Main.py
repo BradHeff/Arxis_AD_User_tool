@@ -6,33 +6,40 @@ import base64
 import ttkbootstrap as ttk
 from ttkbootstrap import Style
 import Functions as f
-import Gui
+from Gui import baseGUI
+
+# Constants
+WINDOW_TITLE = "Arxis AD Tool v{}"
+DEFAULT_COMPANY = "Horizon"
+DEFAULT_PASSWORD = "Horizon{}"
+DEBUG_SERVER = "192.168.3.34"
 
 
-class Mainz(ttk.Window):
+class ADUnlocker(ttk.Window):
     """Main Class for AD Unlocker"""
 
     def __init__(self):
-        super(Mainz, self).__init__(themename="trinity-dark")
-        self.bind_all("<Control-c>", self.handler)
-        signal(SIGINT, lambda x, y: print("") or self.handler())
-        # self.after(500, self.check)
-        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+        super(ADUnlocker, self).__init__(themename="trinity-dark")
+        self._initialize_attributes()
+        self._setup_window()
+        self._load_data()
 
-        self.company = "Horizon"
+    def _initialize_attributes(self):
+        self.company = DEFAULT_COMPANY
         self.username = base64.b64decode(
             "Y249cHl0aG9uIHNlcnZpY2UgYWNjb3VudCxvdT1zZXJ2aWNlcyxvdT11c2VycyxvdT1ob3Jpem9uLGRjPWhvcml6b24sZGM9bG9jYWw="
         ).decode("UTF-8")
         self.password = str(base64.b64decode("Qm9vbURvZ2d5MTIz").decode("UTF-8"))
 
         self.isTeacher = False
-        self.data = dict()
-        self.chkBtns = dict()
-        self.updateList = dict()
-        self.fullGroups = dict()
+        self.data = {}
+        self.chkBtns = {}
+        self.updateList = {}
+        self.fullGroups = {}
 
         self.disName = []
         self.selItem = []
+        self.selItem3 = []
         self.groups = []
 
         self.posOU = ""
@@ -57,7 +64,7 @@ class Mainz(ttk.Window):
         self.api_config = {}
         self.api_updates = {}
         self.server = ""
-        self.domains = []
+        self.domains = {}
         self.jobTitle = []
         self.disOU = {}
         self.positions = {}
@@ -69,41 +76,52 @@ class Mainz(ttk.Window):
         self.groupPos = {}
         self.positionsOU = {}
 
-        currentDateTime = datetime.datetime.now()
-        date = currentDateTime.date()
-        self.date = date.strftime("%Y")
+        self.date = datetime.datetime.now().date().strftime("%Y")
 
-        Gui.baseGUI(self)
+    def _setup_window(self):
+        self.bind_all("<Control-c>", self.handler)
+        signal(SIGINT, lambda x, y: print("") or self.handler())
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
+        baseGUI(self)
+
+        f.ensure_directory_exists(f.settings_dir)
+
+        self.title(WINDOW_TITLE.format(f.Version))
+
+    def _load_data(self):
         t = threading.Thread(target=self.fetchData)
         t.daemon = True
         t.start()
 
-        self.title("".join(["Arxis AD Tool v", f.Version]))
-
     def fetchData(self):
-        self.dataz = f.getStatus(self)
-        self.updatez = f.getUpdate(self)
-        self.api_config = f.parseStatus(self, self.dataz)
-        self.api_updates = f.parseStatus(self, self.updatez)
-        # print(self.api_config)
-        if f.DEBUG_SVR:
-            self.server = "192.168.3.34"
-        else:
-            self.server = self.api_config["server"]  # f.getServer(self, self.company)
-        self.domains = self.api_config["domains"]
-        self.jobTitle = self.api_config["title"]
-        self.disOU = self.api_config["expiredous"]
-        self.positions = self.api_config["positions"]
-        self.pdomains = self.api_config["domains"]
-        self.campus = self.api_config["campus"]
-        self.ou = self.api_config["userou"]
-        self.user_ou = self.api_config["users"]
-        self.domainName = self.api_config["domainname"]
-        self.groupOU = self.api_config["groupsou"]
-        self.groupPos = self.api_config["groups"]
-        self.positionsOU = self.api_config["positionsou"]
-        self.comboSelect("", "H")
+        try:
+            self.api_config = f.getStatus(self)
+            # self.api_config = f.parseStatus(self, self.dataz)
+            # print(self.api_config)
+            # Use get() method with default values to avoid KeyError
+            self.server = (
+                self.api_config.get("server", "") if not f.DEBUG else DEBUG_SERVER
+            )
+            self.jobTitle = self.api_config.get("title", [])
+            self.disOU = self.api_config.get("expiredous", {})
+            self.domains = self.api_config.get("domains", {})
+            self.positions = self.api_config.get("positions", {})
+            self.campus = self.api_config.get("campus", []).split(",")
+            self.ou = self.api_config.get("userou", {})
+            self.user_ou = self.api_config.get("users", "")
+            self.domainName = self.api_config.get("domainname", [])
+            self.groupOU = self.api_config.get("groupsou", {})
+            self.groupPos = self.api_config.get("groups", {})
+            self.positionsOU = self.api_config.get("positionsou", {})
+
+            # Print for debugging
+            # print("API Config:", self.api_config)
+
+            self._setup_campus()
+            self.comboLoad("")
+        except Exception as e:
+            print(f"Error fetching data: {e}")
 
     def on_closing(self):
         print("Thanks for using Arxis AD Tool!\n")
@@ -114,22 +132,91 @@ class Mainz(ttk.Window):
         index = self.tabControl.index(self.tabControl.select())
         if index == 0:
             self.btn_unlockAll.configure(text="Unlock All", state=ttk.NORMAL)
-            if self.state:
-                f.widgetStatusFailed(self, True)
         elif index == 1:
             self.btn_unlockAll.configure(text="Create User", state=ttk.NORMAL)
-            if self.state:
-                f.widgetStatusFailed(self, True)
-            else:
-                if self.state:
-                    f.widgetStatusFailed(self, True)
+        elif index == 2:
+            self.btn_unlockAll.configure(text="Update User", state=ttk.NORMAL)
         else:
             print("ERROR!!! - Something went wrong!")
-            # f.Toast("ERROR!!!", "Something went wrong!", "sad")
+
+        if self.state:
+            f.widgetStatusFailed(self, True)
 
     def selectItem(self, a):
         curItem = self.tree.focus()
         self.selItem = self.tree.item(curItem)["values"]
+
+    def selectItem3(self, a):
+        curItem = self.tree4.focus()
+        if curItem:
+            self.selItem3 = self.tree4.item(curItem)["values"]
+            print(self.selItem3)
+            self._options_clear()
+            self.fetch_user_info_thread()
+
+    def populate_user_fields(self, user_info):
+        if not user_info:
+            return
+
+        username = list(user_info.keys())[0]
+        info = user_info[username]
+
+        self.fname_entry.delete(0, ttk.END)
+        self.fname_entry.insert(0, info["fname"])
+
+        self.lname_entry.delete(0, ttk.END)
+        self.lname_entry.insert(0, info["lname"])
+
+        self.entDomain.configure(state="normal")
+        self.entDomain.delete(0, ttk.END)
+        self.entDomain.insert(0, info["userPrincipalName"].split("@")[1])
+        self.entDomain.configure(state="readonly")
+
+        self.entSamname.delete(0, ttk.END)
+        self.entSamname.insert(0, username)
+
+        self.entDesc.delete(0, ttk.END)
+        self.entDesc.insert(0, info["description"])
+
+        self.entJobTitle.delete(0, ttk.END)
+        self.entJobTitle.insert(0, info["title"])
+
+    def fetch_user_info_thread(self):
+        def thread_function():
+            try:
+                self.entDomain["state"] = "normal"
+                domain = str(self.updateList[self.selItem3[0]]["userPrincipalName"])
+                print(domain)
+                domain = domain.split("@")[1].strip()
+                print(domain)
+                self.entDomain.insert(0, domain)
+            except Exception:
+                pass
+            try:
+                self.entJobTitle.insert(0, self.updateList[self.selItem3[0]]["title"])
+            except Exception:
+                pass
+            try:
+                self.lname_entry.insert(0, self.updateList[self.selItem3[0]]["fname"])
+            except Exception:
+                pass
+            try:
+                self.fname_entry.insert(0, self.updateList[self.selItem3[0]]["lname"])
+            except Exception:
+                pass
+            try:
+                self.entSamname.insert(0, self.selItem3[0])
+            except Exception:
+                pass
+            try:
+                desc = self.updateList[self.selItem3[0]]["description"][0]
+                self.entDesc.insert(0, str(desc))
+            except Exception:
+                pass
+            self.entDomain["state"] = "readonly"
+
+        thread = threading.Thread(target=thread_function)
+        thread.start()
 
     def getCheck(self):
         grp = []
@@ -137,47 +224,88 @@ class Mainz(ttk.Window):
             grp.append(x)
         return grp
 
-    def posSelect(self, value):
-        self.clear_group()
-        camp = "Balaklava"
-        self.dep = "Balaklava Campus"
-        isBalak = False
+    def _options_clear(self):
+        self.entDomain["state"] = "normal"
+        self.entDesc.delete(0, "end")
+        self.entJobTitle.delete(0, "end")
+        self.entSamname.delete(0, "end")
+        self.entDomain.delete(0, "end")
+        self.lname_entry.delete(0, "end")
+        self.fname_entry.delete(0, "end")
+        self.entDomain["state"] = "readonly"
 
-        self.dpass.insert(
-            0, "".join(["Horizon", datetime.datetime.now().strftime("%Y")])
-        )
-        if "clare" in self.campH.get():
-            isBalak = False
-        else:
-            isBalak = True
+    def editOption(self):
+        # self.clear_position_widgets(self.lbl_frame9)
+        self.status["text"] = "Loading Users ...."
+        self.updateList = f.listUsersEdit(self, self.positionsOU[self.var3.get()])
+        self.tree4.delete(*self.tree4.get_children())
+        self.progress["maximum"] = self.updateList.__len__()
+        count = 0
+        for i in self.updateList:
+            count += 1
+            self.progress["value"] = count
+            self.tree4.insert(
+                "",
+                "end",
+                values=(i, self.updateList[i]["name"], self.updateList[i]["ou"]),
+            )
+        self.progress["value"] = 0
+        self.status["text"] = "Idle..."
+
+    def posSelectEdit(self):
+        # isBalak = "clare" not in self.EcampH.get().lower()
+        # if not isBalak:
+        #     self._setup_clare_position(self.var3.get())
+        # else:
+        #     self._setup_balaklava_position(self.var3.get())
+        self._options_clear()
+        t = threading.Thread(target=self.editOption)
+        t.daemon = True
+        t.start()
+
+    def posSelect(self):
+
+        self.clear_group()
+        self.dep = "Balaklava Campus"
+        isBalak = "clare" not in self.campH.get().lower()
+
+        self.dpass.delete(0, "end")
+        self.dpass.insert(0, DEFAULT_PASSWORD.format(self.date))
 
         if not isBalak:
-            if "Year" in self.var.get() or "Found" in self.var.get():
-                self.posOU = self.positionsOU[self.var.get() + "-Clare"]
-            elif "ESO" in self.var.get() or "Student Support" in self.var.get():
-                self.posOU = self.positionsOU["Student Support Clare"]
-            elif "Admin" in self.var.get() and "Temp" not in self.var.get():
-                self.posOU = self.positionsOU[self.var.get() + " Clare"]
-            self.groups = self.groupPos[self.var.get()]
-            descDate = f"{self.date} Clare"
-            camp = "Clare"
-            self.dep = "Clare Campus"
+            self._setup_clare_position(self.var.get())
         else:
-            descDate = self.date
-            if "Year" in self.var.get() or "Found" in self.var.get():
-                self.posOU = self.positionsOU[self.var.get()]
-                self.desc.delete(0, "end")
-                self.desc.insert(0, f"{self.var.get()} - {descDate}")
-            else:
-                self.posOU = self.positionsOU[self.var.get()]
-                self.desc.delete(0, "end")
-                self.desc.insert(0, descDate)
+            self._setup_balaklava_position(self.var.get())
 
-            self.groups = self.groupPos[self.var.get()]
+        self._setup_group_checkboxes()
+
+    def _setup_clare_position(self, var):
+        if "Year" in var or "Found" in var:
+            self.posOU = self.positionsOU[var + "-Clare"]
+        elif "ESO" in var or "Student Support" in var:
+            self.posOU = self.positionsOU["Student Support Clare"]
+        elif "Admin" in var and "Temp" not in var:
+            self.posOU = self.positionsOU[var + " Clare"]
+        self.groups = self.groupPos[var]
+        self.descDate = f"{self.date} Clare"
+        self.dep = "Clare Campus"
+
+    def _setup_balaklava_position(self, var):
+        descDate = self.date
+        if "Year" in var or "Found" in var:
+            self.posOU = self.positionsOU[var]
+            self.desc.delete(0, "end")
+            self.desc.insert(0, f"{var} - {descDate}")
+        else:
+            self.posOU = self.positionsOU[var]
+            self.desc.delete(0, "end")
+            self.desc.insert(0, descDate)
+        self.groups = self.groupPos[var]
+
+    def _setup_group_checkboxes(self):
         style = Style()
         self.checkCount = 0
         self.checkRow = 0
-        print(self.groups)
         for x in self.groups:
             gn = x.split(",")[0].replace("CN=", "")
             self.chkBtns[gn] = ttk.IntVar()
@@ -187,29 +315,96 @@ class Mainz(ttk.Window):
             cBtnY.configure(
                 background=style.colors.primary, foreground=style.colors.bg, padding=10
             )
-            cBtnY.grid(row=self.checkRow, column=self.checkCount, padx=10, pady=10)
-            self.checkCount += 1
-            if self.checkCount > 2:
+            cBtnY.grid(
+                row=self.checkRow, column=self.checkCount, sticky="nsew", padx=5, pady=5
+            )
+
+            cBtn = ttk.Checkbutton(
+                self.lbl_frame2, variable=self.chkBtns[gn], style="success-round-toggle"
+            )
+            cBtn.grid(
+                row=self.checkRow,
+                column=self.checkCount + 1,
+                sticky="nsew",
+                padx=5,
+                pady=5,
+            )
+
+            self.checkCount += 2
+            if self.checkCount > 3:
                 self.checkCount = 0
                 self.checkRow += 1
 
-        if not self.jobTitle.__len__() <= 3:
-            try:
-                self.jobTitleEnt.delete(0, "end")
-                self.jobTitleEnt.insert(0, self.jobTitle[self.var.get()])
-            except Exception as e:
-                print(e)
-
-        if not self.dep.__len__() <= 3:
-            try:
-                self.depEnt.delete(0, "end")
-                self.depEnt.insert(0, f"{camp} Campus")
-                self.orgCompEnt.delete(0, "end")
-                self.orgCompEnt.insert(0, f"Horizon Christian School {camp}")
-            except Exception as e:
-                print(e)
-
-    # Use list comprehension for clearing widgets
+    def _setup_campus(self):
+        if self.campus.__len__() > 0:
+            print(self.campus)
+            # self.clear_campus(self.frameC)
+            # self.clear_campus(self.frameG)
+            counter = 1
+            for x in self.campus:
+                balak = ttk.Radiobutton(
+                    self.lbl_frameC,
+                    text=x,
+                    variable=self.campH,
+                    value=x,
+                    command=lambda: self.comboSelect("H"),
+                )
+                balak_edit = ttk.Radiobutton(
+                    self.lbl_frameG,
+                    text=x,
+                    variable=self.EcampH,
+                    value=x,
+                    command=lambda: self.comboSelect("E"),
+                )
+                # balak_move = ttk.Radiobutton(
+                #     self.lbl_frameF,
+                #     text=x,
+                #     variable=self.McampH,
+                #     value=x,
+                #     command=lambda: self.comboSelect("M"),
+                # )
+                # balak_move2 = ttk.Radiobutton(
+                #     self.lbl_frameF2,
+                #     text=x,
+                #     variable=self.McampH2,
+                #     value=x,
+                # )
+                # balakB = ttk.Radiobutton(
+                #     self.lbl_frameC6,
+                #     text=x,
+                #     variable=self.McampH6,
+                #     value=x,
+                #     command=lambda: self.comboSelect("D"),
+                # )
+                if counter == 1:
+                    balak.pack(side="left", fill="y", expand=True, padx=10, pady=10)
+                    balak_edit.pack(
+                        side="left", fill="y", expand=True, padx=10, pady=10
+                    )
+                    # balak_move.pack(
+                    #     side="left", fill="y", expand=True, padx=10, pady=10
+                    # )
+                    # balak_move2.pack(
+                    #     side="left", fill="y", expand=True, padx=10, pady=10
+                    # )
+                    # balakB.pack(
+                    #     side="left", fill="y", expand=True, padx=10, pady=10
+                    # )
+                else:
+                    balak.pack(side="right", fill="y", expand=True, padx=10, pady=10)
+                    balak_edit.pack(
+                        side="right", fill="y", expand=True, padx=10, pady=10
+                    )
+                    # balak_move.pack(
+                    #     side="right", fill="y", expand=True, padx=10, pady=10
+                    # )
+                    # balak_move2.pack(
+                    #     side="right", fill="y", expand=True, padx=10, pady=10
+                    # )
+                    # balakB.pack(
+                    #     side="right", fill="y", expand=True, padx=10, pady=10
+                    # )
+                counter -= 1
 
     def clear_position_widgets(self, lbl_positions):
         [widget.destroy() for widget in lbl_positions.grid_slaves()]
@@ -220,107 +415,39 @@ class Mainz(ttk.Window):
     def clear_campus(self, lbl_positions):
         [widget.destroy() for widget in lbl_positions.grid_slaves()]
 
-    def comboSelect(self, widget, value="H"):
-        if "camp" not in str(widget):
-            # f.getConfig(self, self.company)
-            # self.clear_campus(self.frameC)
-            # self.clear_campus(self.frameG)
-            # if (
-            #     not f.self.campus
-            #     .split(",")[0]
-            #     .__len__()
-            #     <= 0
-            # ):
-            if self.campus.split(",")[0].__len__() > 0:
-                #     .__len__().__len__() <= 0:
-                counter = 1
-                for x in self.campus.split(","):
-                    balak = ttk.Radiobutton(
-                        self.lbl_frameC,
-                        text=x,
-                        variable=self.campH,
-                        value=x,
-                        command=lambda: self.comboSelect("camp", "H"),
-                    )
-                    # balak_edit = ttk.Radiobutton(
-                    #     self.lbl_frameG,
-                    #     text=x,
-                    #     variable=self.EcampH,
-                    #     value=x,
-                    #     command=lambda: self.comboSelect("camp", "E"),
-                    # )
-                    # balak_move = ttk.Radiobutton(
-                    #     self.lbl_frameF,
-                    #     text=x,
-                    #     variable=self.McampH,
-                    #     value=x,
-                    #     command=lambda: self.comboSelect("camp", "M"),
-                    # )
-                    # balak_move2 = ttk.Radiobutton(
-                    #     self.lbl_frameF2,
-                    #     text=x,
-                    #     variable=self.McampH2,
-                    #     value=x,
-                    # )
-                    # balakB = ttk.Radiobutton(
-                    #     self.lbl_frameC6,
-                    #     text=x,
-                    #     variable=self.McampH6,
-                    #     value=x,
-                    #     command=lambda: self.comboSelect("camp", "D"),
-                    # )
-                    if counter == 1:
-                        balak.pack(side="left", fill="y", expand=True, padx=10, pady=10)
-                        # balak_edit.pack(
-                        #     side="left", fill="y", expand=True, padx=10, pady=10
-                        # )
-                        # balak_move.pack(
-                        #     side="left", fill="y", expand=True, padx=10, pady=10
-                        # )
-                        # balak_move2.pack(
-                        #     side="left", fill="y", expand=True, padx=10, pady=10
-                        # )
-                        # balakB.pack(
-                        #     side="left", fill="y", expand=True, padx=10, pady=10
-                        # )
-                    else:
-                        balak.pack(
-                            side="right", fill="y", expand=True, padx=10, pady=10
-                        )
-                        # balak_edit.pack(
-                        #     side="right", fill="y", expand=True, padx=10, pady=10
-                        # )
-                        # balak_move.pack(
-                        #     side="right", fill="y", expand=True, padx=10, pady=10
-                        # )
-                        # balak_move2.pack(
-                        #     side="right", fill="y", expand=True, padx=10, pady=10
-                        # )
-                        # balakB.pack(
-                        #     side="right", fill="y", expand=True, padx=10, pady=10
-                        # )
-                    counter -= 1
-
+    def comboSelect(self, value="H"):
         t = threading.Thread(target=self.comboLoad, args=(value))
         t.daemon = True
         t.start()
 
     def comboLoad(self, value):  # noqa
         self.status["text"] = "Loading..."
-        self.clear_position_widgets(self.lbl_frame)
-        # self.clear_position_widgets(self.lbl_frame4)
-        self.clear_group()
-        self.tree.delete(*self.tree.get_children())
-        self.desc.delete(0, "end")
-        self.dpass.delete(0, "end")
-        self.jobTitleEnt.delete(0, "end")
-        self.depEnt.delete(0, "end")
-        self.orgCompEnt.delete(0, "end")
-        self.desc.insert(0, self.date)
         progress_value = 1
+        if value == "H":
+            self.clear_position_widgets(self.lbl_frame)
+            self.clear_group()
+            self.tree.delete(*self.tree.get_children())
 
-        for x in self.disOU:
-            self.disName.append(x)
+            self.desc.delete(0, "end")
+            self.dpass.delete(0, "end")
+            self.jobTitleEnt.delete(0, "end")
+            self.depEnt.delete(0, "end")
+            self.orgCompEnt.delete(0, "end")
+            self.desc.insert(0, self.date)
+
+            for x in self.disOU:
+                self.disName.append(x)
+        elif value == "E":
+            self.clear_position_widgets(self.lbl_frame9)
+            self.tree4.delete(*self.tree4.get_children())
+            self.entDomain["state"] = "normal"
+            self.entDesc.delete(0, "end")
+            self.entJobTitle.delete(0, "end")
+            self.entSamname.delete(0, "end")
+            self.entDomain.delete(0, "end")
+            self.lname_entry.delete(0, "end")
+            self.fname_entry.delete(0, "end")
+            self.entDomain["state"] = "readonly"
 
         if not self.positions.__len__() <= 0:
             try:
@@ -330,54 +457,72 @@ class Mainz(ttk.Window):
                 self.progress["maximum"] = float(self.positions.__len__())
 
                 self.var = ttk.StringVar(None, "1")
+                self.var3 = ttk.StringVar(None, "1")
                 for position_group, positions in self.positions.items():
                     for position in positions:
                         self.progress["value"] = progress_value
-                        position_radio_button = ttk.Radiobutton(
-                            self.lbl_frame,
-                            text=position,
-                            variable=self.var,
-                            command=lambda: self.posSelect(value),
-                            value=position,
-                        )
-                        # edit_position_radio_button = ttk.Radiobutton(
-                        #     self.lbl_user_ou,
-                        #     text=position,
-                        #     variable=self.edit_position_selection,
-                        #     command=lambda: self.position_selected(),
-                        #     value=position,
-                        # )
+                        if value == "H" or value == "":
+                            position_radio_button = ttk.Radiobutton(
+                                self.lbl_frame,
+                                text=position,
+                                variable=self.var,
+                                command=self.posSelect,
+                                value=position,
+                            )
+                            position_radio_button.grid(
+                                row=row, column=count, padx=10, pady=10
+                            )
+                        if value == "E" or value == "":
+                            edit_position_radio_button = ttk.Radiobutton(
+                                self.lbl_frame9,
+                                text=position,
+                                variable=self.var3,
+                                command=self.posSelectEdit,
+                                value=position,
+                            )
 
-                        position_radio_button.grid(
-                            row=row, column=count, padx=10, pady=10
-                        )
-                        # edit_position_radio_button.grid(
-                        #     row=row, column=column, padx=10, pady=10
-                        # )
+                            edit_position_radio_button.grid(
+                                row=row, column=count, padx=10, pady=10
+                            )
+
                         progress_value += 1
                         count += 1
                         if count > 3:
                             count = 0
                             row += 1
+
             except Exception as error:
                 print(f"Error populating position selection: {error}")
 
-        if not self.domains["primary"].__len__() <= 0:
+        if hasattr(self, "domains") and isinstance(self.domains, dict):
             try:
                 self.progress["value"] = 60
-                self.pdomains = self.domains["primary"]
-                self.combo_domain["values"] = self.pdomains
-                self.primary_domain.set("horizon.sa.edu.au")
+                self.pdomains = self.domains.get("Primary", [])
+                print(self.domains)
+                if self.pdomains:
+                    self.combo_domain["values"] = self.pdomains
+                    self.primary_domain.set("horizon.sa.edu.au")
+                else:
+                    # print("Warning: No primary domains found.")
+                    self.combo_domain["values"] = ["horizon.sa.edu.au"]  # Default value
+                    self.primary_domain.set("horizon.sa.edu.au")
+                    # print(self.primary_domain.get())
+
             except Exception as e:
-                print("ERROR DOMAIN")
-                print(e)
-                pass
+                print(f"ERROR DOMAIN: {e}")
+                self.combo_domain["values"] = ["horizon.sa.edu.au"]  # Default value
+                self.primary_domain.set("horizon.sa.edu.au")
+        else:
+            print("Warning: self.domains is not a dictionary or doesn't exist.")
+            self.combo_domain["values"] = ["horizon.sa.edu.au"]  # Default value
+            self.primary_domain.set("horizon.sa.edu.au")
 
         if not self.groupOU.__len__() <= 3:
             self.progress["value"] = progress_value
             progress_value = 0
         self.progress["value"] = progress_value
         self.status["text"] = "Idle..."
+
         if f.path.isfile(f.settings_dir + "Config.ini") and not self.loaded:
             f.loadConfig(self)
 
@@ -445,11 +590,11 @@ class Mainz(ttk.Window):
 
         f.widgetStatus(self, ttk.DISABLED)
         self.status["text"] = "".join(["Unlocking ", self.selItem[1]])
-        t = threading.Thread(target=self.unlocker, args=[])
+        t = threading.Thread(target=self._unlock, args=[])
         t.daemon = True
         t.start()
 
-    def unlocker(self):
+    def _unlock(self):
         f.unlockUser(self, self.selItem[2])
         selected_item = self.tree.selection()[0]
         self.tree.delete(selected_item)
@@ -457,106 +602,107 @@ class Mainz(ttk.Window):
         self.status["text"] = "Idle..."
         tkt.call_nosync(f.Toast, "COMPLETE!", "Users Unlocked!", "happy")
 
-    def unlockAll(self):
+    def global_button(self):
         f.widgetStatus(self, ttk.DISABLED)
-        data = dict()
+
         index = self.tabControl.index(self.tabControl.select())
         if index == 0:
-            if self.tree.get_children() == ():
-                f.widgetStatus(self, ttk.NORMAL)
-
-                tkt.call_nosync(self.messageBox, "ERROR!!", "List cannot be empty!")
-                return
-
-            for line in self.tree.get_children():
-                self.data[self.tree.item(line)["values"][0]] = {
-                    "name": self.tree.item(line)["values"][1],
-                    "ou": self.tree.item(line)["values"][2],
-                }
-            maxs = self.tree.get_children().__len__()
-            self.progress["maximum"] = float(maxs)
-            self.all = maxs
-            t = threading.Thread(target=f.unlockAll, args=[self, self.data])
-            t.daemon = True
-            t.start()
+            self._handle_unlock_all()
         elif index == 1:
-            f.widgetStatus(self, ttk.DISABLED)
-            if self.fname.get().__len__() >= 2 and self.lname.get().__len__() >= 2:
-                if self.dpass.get().__len__() < 8:
-                    f.widgetStatus(self, ttk.NORMAL)
-
-                    tkt.call_nosync(
-                        self.messageBox,
-                        "ERROR!!",
-                        "Must enter Password\n\
-                    or password 8 characters min",
-                    )
-                    return
-                if "Select" in self.primary_domain.get():
-                    f.widgetStatus(self, ttk.NORMAL)
-                    self.status["text"] = "Idle..."
-
-                    tkt.call_nosync(
-                        self.messageBox,
-                        "ERROR!!",
-                        "You must select domain\n\
-                                    HomeDrive and HomePath",
-                    )
-                    return
-                self.progress["value"] = 10
-                self.status["text"] = "Rebuilding groups..."
-                groups = self.getCheck()
-                self.status["text"] = "Setting login name..."
-                index2 = self.samFormat.get()
-                if index2 == "flastname":
-                    samname = "".join(
-                        [
-                            self.fname.get().strip()[0:1],
-                            self.lname.get().strip(),
-                        ]
-                    )
-                elif index2 == "firstlastname":
-                    samname = "".join(
-                        [self.fname.get().strip(), self.lname.get().strip()]
-                    )
-                else:
-                    samname = "".join(
-                        [
-                            self.fname.get().strip(),
-                            ".",
-                            self.lname.get().strip(),
-                        ]
-                    )
-                self.status["text"] = "Rebuilding data..."
-                data["login"] = samname.lower()
-                data["first"] = self.fname.get().strip().capitalize()
-                data["last"] = self.lname.get().strip().capitalize()
-                data["password"] = self.dpass.get()
-                data["domain"] = self.primary_domain.get()
-                data["proxy"] = self.domains["secondary"]
-                data["groups"] = groups
-                data["description"] = self.desc.get()
-                data["title"] = self.jobTitleEnt.get()
-                data["department"] = self.depEnt.get()
-                data["company"] = self.orgCompEnt.get()
-                self.progress["value"] = 20
-                try:
-                    t = threading.Thread(target=f.createUser, args=(self, data))
-                    t.daemon = True
-                    t.start()
-                except Exception as e:
-                    print(f"ERROR: {e}")
-            else:
-                f.widgetStatus(self, ttk.NORMAL)
-
-                tkt.call_nosync(
-                    self.messageBox,
-                    "ERROR!!",
-                    "First and Lastname must\n\
-                be filled!",
-                )
+            self._handle_create_user()
+        elif index == 2:
+            self._handle_update_user()
         else:
             print("")
+
+    def _handle_unlock_all(self):
+        if not self.tree.get_children():
+            f.widgetStatus(self, ttk.NORMAL)
+            tkt.call_nosync(self.messageBox, "ERROR!!", "List cannot be empty!")
+            return
+
+        self.data = {
+            self.tree.item(line)["values"][0]: {
+                "name": self.tree.item(line)["values"][1],
+                "ou": self.tree.item(line)["values"][2],
+            }
+            for line in self.tree.get_children()
+        }
+        maxs = len(self.tree.get_children())
+        self.progress["maximum"] = float(maxs)
+        self.all = maxs
+        t = threading.Thread(target=f.unlockAll, args=[self, self.data])
+        t.daemon = True
+        t.start()
+
+    def _handle_create_user(self):
+        if not self._validate_create_user_input():
+            return
+
+        data = self._prepare_create_user_data()
+        try:
+            t = threading.Thread(target=f.createUser, args=(self, data))
+            t.daemon = True
+            t.start()
+        except Exception as e:
+            print(f"ERROR: {e}")
+
+    def _handle_update_user(self):
+        if not self._validate_update_user_input():
+            return
+
+        data = self._prepare_update_user_data()
+        print(data)
+        # t = threading.Thread(target=f.update_user, args=[self, data])
+        # t.daemon = True
+        # t.start()
+
+    def _validate_update_user_input(self):
+        if self.entPass.get().__len__() < 8 and self.entPass.get().__len__() != 0:
+            self.messageBox(
+                "ERROR!!", "Password must be at least 8 characters or empty!"
+            )
+            return False
+        if not self.tree4.get_children():
+            self.messageBox("ERROR!!", "Must select a position")
+            return False
+        if not self.selItem3:
+            self.messageBox("ERROR!!", "Must select a user!")
+            return False
+        if len(self.fname_entry.get()) <= 1:
+            self.messageBox("ERROR!!", "First Name cannot be empty!")
+            return False
+        return True
+
+    def _prepare_update_user_data(self):
+        data = {
+            "login": self.entSamname.get(),
+            "first": self.fname_entry.get().capitalize(),
+            "last": self.lname_entry.get().capitalize(),
+            "domain": self.entDomain.get(),
+            "description": self.entDesc.get(),
+            "title": self.entJobTitle.get(),
+            "ou": self.updateList[self.selItem3[0]]["ou"],
+            "password": self.entPass.get(),
+        }
+
+        if self.updateList[self.selItem3[0]]["proxyAddresses"] is not None:
+            for x in self.updateList[self.selItem3[0]]["proxyAddresses"]:
+                if self.entDomain.get() not in x and len(x) > 5:
+                    data["proxy"] = x.split("@")[1]
+                    break
+            else:
+                data["proxy"] = (
+                    self.domains["Secondary"]
+                    if len(self.domains["Secondary"]) > 3
+                    else ""
+                )
+        else:
+            data["proxy"] = (
+                self.domains["Secondary"] if len(self.domains["Secondary"]) > 3 else ""
+            )
+
+        return data
 
     def resetProgress(self):
         self.progress["value"] = 0
@@ -595,5 +741,5 @@ class Mainz(ttk.Window):
 
 
 if __name__ == "__main__":
-    root = Mainz()
+    root = ADUnlocker()
     root.mainloop()

@@ -55,7 +55,7 @@ def baseGUI(self):
     self.tab2 = ttk.Frame(self.tabControl)
     # tab3 = ttk.Frame(self.tabControl)
     # tab4 = ttk.Frame(self.tabControl)
-    # tab5 = ttk.Frame(self.tabControl)
+    tab5 = ttk.Frame(self.tabControl)
     # tab6 = ttk.Frame(self.tabControl, padding=(0, 0, 5, 0))
 
     self.tab2.rowconfigure(1, weight=0, pad=30)
@@ -74,7 +74,7 @@ def baseGUI(self):
     self.tabControl.add(self.tab2, text="New Users")
     # self.tabControl.add(tab3, text="Disabled User")
     # self.tabControl.add(tab4, text="Move User")
-    # self.tabControl.add(tab5, text="Edit User")
+    self.tabControl.add(tab5, text="Edit User")
     # self.tabControl.add(tab6, text="Disable User")
     self.tabControl.bind("<<NotebookTabChanged>>", self.alterButton)
     self.tabControl.grid(sticky=ttk.NSEW, columnspan=4, row=0)
@@ -83,7 +83,7 @@ def baseGUI(self):
     Tab2(self, self.tab2)
     # Tab3(self, tab3)
     # Tab4(self, tab4)
-    # Tab5(self, tab5)
+    Tab5(self, tab5)
     # Tab6(self, tab6)
 
     frmbtn = ttk.Frame(self)
@@ -91,7 +91,7 @@ def baseGUI(self):
     frmbtn.rowconfigure(0, weight=0, pad=26)
     frmbtn.columnconfigure(0, weight=1)
     self.btn_unlockAll = ttk.Button(
-        frmbtn, text="Unlock All", width=20, command=self.unlockAll
+        frmbtn, text="Unlock All", width=20, command=self.global_button
     )
     self.btn_unlockAll.grid(sticky="e", column=3, row=0, padx=10, pady=5)
     self.btn_unlockAll.configure(state=ttk.DISABLED)
@@ -235,8 +235,8 @@ def Tab2(self, tab2):
     self.lbl_frame = ttk.LabelFrame(lframe, text="Staff Position")
     self.lbl_frame.grid(sticky="ew", columnspan=4, row=4, padx=10, pady=5)
 
-    self.lbl_frame4 = ttk.LabelFrame(lframe, text="Students Position")
-    self.lbl_frame4.grid(sticky="ew", columnspan=4, row=5, padx=10, pady=5)
+    # self.lbl_frame4 = ttk.LabelFrame(lframe, text="Students Position")
+    # self.lbl_frame4.grid(sticky="ew", columnspan=4, row=5, padx=10, pady=5)
 
     self.lbl_frame3 = ttk.LabelFrame(rframe, text="Profile")
     self.lbl_frame3.columnconfigure(2, weight=1)
@@ -413,105 +413,105 @@ def Tab2(self, tab2):
 #     self.lbl_frame8.grid(column=0, columnspan=2, sticky="new", padx=10, pady=5)
 
 
-# def Tab5(self, tab5):
-#     lbl_title5 = ttk.Label(tab5, text="Active Directory Edit Users")
-#     lbl_title5.grid(sticky="n", columnspan=4, padx=10)
+def Tab5(self, tab5):
+    lbl_title5 = ttk.Label(tab5, text="Active Directory Edit Users")
+    lbl_title5.grid(sticky="n", columnspan=4, padx=10)
 
-#     tab5.columnconfigure(0, weight=1)
-#     tab5.columnconfigure(1, weight=1)
+    tab5.columnconfigure(0, weight=1)
+    tab5.columnconfigure(1, weight=1)
 
-#     lframe5 = ttk.Frame(tab5)
-#     rframe5 = ttk.Frame(tab5)
+    lframe5 = ttk.Frame(tab5)
+    rframe5 = ttk.Frame(tab5)
 
-#     rframe5.rowconfigure(0, weight=1)
-#     rframe5.rowconfigure(1, weight=1)
-#     rframe5.columnconfigure(0, weight=1)
+    rframe5.rowconfigure(0, weight=1)
+    rframe5.rowconfigure(1, weight=1)
+    rframe5.columnconfigure(0, weight=1)
 
-#     lframe5.columnconfigure(0, weight=1)
+    lframe5.columnconfigure(0, weight=1)
 
-#     lframe5.grid(sticky="nsew", column=0, row=1, pady=10)
-#     rframe5.grid(sticky="nsew", column=1, row=1, pady=10, padx=10)
+    lframe5.grid(sticky="nsew", column=0, row=1, pady=10)
+    rframe5.grid(sticky="nsew", column=1, row=1, pady=10, padx=10)
 
-#     self.lbl_frameG = ttk.Labelframe(lframe5, text="Campus")
-#     self.lbl_frameG.grid(sticky=ttk.EW, columnspan=2, row=0, padx=10, pady=5)
-#     self.EcampH = ttk.StringVar(self.lbl_frameG, "balaklava")
-#     self.lbl_frame9 = ttk.Labelframe(lframe5, text="Staff User OU's")
-#     self.lbl_frame9.grid(sticky="new", columnspan=2, row=2, padx=10, pady=5)
+    self.lbl_frameG = ttk.Labelframe(lframe5, text="Campus")
+    self.lbl_frameG.grid(sticky=ttk.EW, columnspan=2, row=0, padx=10, pady=5)
+    self.EcampH = ttk.StringVar(self.lbl_frameG, "balaklava")
+    self.lbl_frame9 = ttk.Labelframe(lframe5, text="Staff User OU's")
+    self.lbl_frame9.grid(sticky="new", columnspan=2, row=2, padx=10, pady=5)
 
-#     self.lbl_frame10 = ttk.Labelframe(lframe5, text="Student User OU's")
-#     self.lbl_frame10.grid(sticky="new", columnspan=2, row=3, padx=10, pady=5)
+    # self.lbl_frame10 = ttk.Labelframe(lframe5, text="Student User OU's")
+    # self.lbl_frame10.grid(sticky="new", columnspan=2, row=3, padx=10, pady=5)
 
-#     self.tree4 = ttk.Treeview(rframe5, column=("c1", "c2"), show="headings", height=18)
-#     self.tree4.column("# 1", anchor=ttk.CENTER)
-#     self.tree4.heading("# 1", text="USERNAME")
-#     self.tree4.column("# 2", anchor=ttk.CENTER)
-#     self.tree4.heading("# 2", text="DISPLAY NAME")
-#     self.tree4.bind("<ButtonRelease-1>", self.selectItem3)
-#     scrollbar = ttk.Scrollbar(rframe5, orient=ttk.VERTICAL, bootstyle="primary-round")
-#     scrollbar.config(command=self.tree4.yview)
-#     scrollbar.grid(sticky=ttk.NS, row=0, column=2, rowspan=2, pady=5)
-#     scrollbar2 = ttk.Scrollbar(
-#         rframe5, orient=ttk.HORIZONTAL, bootstyle="primary-round"
-#     )
-#     scrollbar2.config(command=self.tree4.xview)
-#     scrollbar2.grid(sticky=ttk.EW, row=2, columnspan=3, padx=15)
-#     self.tree4.grid(sticky=ttk.EW, columnspan=3, row=0, rowspan=2, padx=15, pady=5)
+    self.tree4 = ttk.Treeview(rframe5, column=("c1", "c2"), show="headings", height=18)
+    self.tree4.column("# 1", anchor=ttk.CENTER)
+    self.tree4.heading("# 1", text="USERNAME")
+    self.tree4.column("# 2", anchor=ttk.CENTER)
+    self.tree4.heading("# 2", text="DISPLAY NAME")
+    self.tree4.bind("<ButtonRelease-1>", self.selectItem3)
+    scrollbar = ttk.Scrollbar(rframe5, orient=ttk.VERTICAL, bootstyle="primary-round")
+    scrollbar.config(command=self.tree4.yview)
+    scrollbar.grid(sticky=ttk.NS, row=0, column=2, rowspan=2, pady=5)
+    scrollbar2 = ttk.Scrollbar(
+        rframe5, orient=ttk.HORIZONTAL, bootstyle="primary-round"
+    )
+    scrollbar2.config(command=self.tree4.xview)
+    scrollbar2.grid(sticky=ttk.EW, row=2, columnspan=3, padx=15)
+    self.tree4.grid(sticky=ttk.EW, columnspan=3, row=0, rowspan=2, padx=15, pady=5)
 
-#     lbl_frame11 = ttk.Labelframe(rframe5, text="Attributes")
-#     lbl_frame11.grid(sticky="new", row=3, columnspan=3, padx=5, pady=5)
+    lbl_frame11 = ttk.Labelframe(rframe5, text="Attributes")
+    lbl_frame11.grid(sticky="new", row=3, columnspan=3, padx=5, pady=5)
 
-#     lbl_frame11.rowconfigure(0, weight=0, pad=20)
-#     lbl_frame11.rowconfigure(1, weight=0, pad=20)
-#     lbl_frame11.rowconfigure(2, weight=0, pad=20)
+    lbl_frame11.rowconfigure(0, weight=0, pad=20)
+    lbl_frame11.rowconfigure(1, weight=0, pad=20)
+    lbl_frame11.rowconfigure(2, weight=0, pad=20)
 
-#     lblfname = ttk.Label(lbl_frame11, text="Firstname")
-#     lblfname.grid(sticky="nw", column=0, row=0, padx=10, pady=5)
+    lblfname = ttk.Label(lbl_frame11, text="Firstname")
+    lblfname.grid(sticky="nw", column=0, row=0, padx=10, pady=5)
 
-#     lbllname = ttk.Label(lbl_frame11, text="Lastname")
-#     lbllname.grid(sticky="nw", column=1, row=0, padx=10, pady=5)
+    lbllname = ttk.Label(lbl_frame11, text="Lastname")
+    lbllname.grid(sticky="nw", column=1, row=0, padx=10, pady=5)
 
-#     lbldomain = ttk.Label(lbl_frame11, text="Domain")
-#     lbldomain.grid(sticky="nw", column=2, row=0, padx=10, pady=5)
+    lbldomain = ttk.Label(lbl_frame11, text="Domain")
+    lbldomain.grid(sticky="nw", column=2, row=0, padx=10, pady=5)
 
-#     self.fname_entry = ttk.Entry(lbl_frame11, width=20)
-#     self.fname_entry.grid(sticky="sew", column=0, row=0, padx=10, pady=5)
+    self.fname_entry = ttk.Entry(lbl_frame11, width=20)
+    self.fname_entry.grid(sticky="sew", column=0, row=0, padx=10, pady=5)
 
-#     self.lname_entry = ttk.Entry(lbl_frame11, width=30)
-#     self.lname_entry.grid(sticky="sew", column=1, row=0, padx=10, pady=5)
+    self.lname_entry = ttk.Entry(lbl_frame11, width=30)
+    self.lname_entry.grid(sticky="sew", column=1, row=0, padx=10, pady=5)
 
-#     self.entDomain = ttk.Entry(lbl_frame11, width=35)
-#     self.entDomain["state"] = "readonly"
-#     self.entDomain.grid(sticky="sew", column=2, row=0, padx=10, pady=5)
+    self.entDomain = ttk.Entry(lbl_frame11, width=35)
+    self.entDomain["state"] = "readonly"
+    self.entDomain.grid(sticky="sew", column=2, row=0, padx=10, pady=5)
 
-#     lbllsname = ttk.Label(lbl_frame11, text="Login")
-#     lbllsname.grid(sticky="nw", column=0, row=1, padx=10, pady=5)
+    lbllsname = ttk.Label(lbl_frame11, text="Login")
+    lbllsname.grid(sticky="nw", column=0, row=1, padx=10, pady=5)
 
-#     self.entSamname = ttk.Entry(lbl_frame11, width=20)
-#     self.entSamname.grid(sticky="sew", column=0, row=1, padx=10, pady=5)
+    self.entSamname = ttk.Entry(lbl_frame11, width=20)
+    self.entSamname.grid(sticky="sew", column=0, row=1, padx=10, pady=5)
 
-#     lbllPass = ttk.Label(lbl_frame11, text="Password")
-#     lbllPass.grid(sticky="nw", column=1, row=1, padx=10, pady=5)
+    lbllPass = ttk.Label(lbl_frame11, text="Password")
+    lbllPass.grid(sticky="nw", column=1, row=1, padx=10, pady=5)
 
-#     self.entPass = ttk.Entry(lbl_frame11, width=30)
-#     self.entPass.grid(sticky="sew", column=1, row=1, padx=10, pady=5)
+    self.entPass = ttk.Entry(lbl_frame11, width=30)
+    self.entPass.grid(sticky="sew", column=1, row=1, padx=10, pady=5)
 
-#     lbllDesc = ttk.Label(lbl_frame11, text="Description")
-#     lbllDesc.grid(sticky="nw", column=2, row=1, padx=10, pady=5)
+    lbllDesc = ttk.Label(lbl_frame11, text="Description")
+    lbllDesc.grid(sticky="nw", column=2, row=1, padx=10, pady=5)
 
-#     self.entDesc = ttk.Entry(lbl_frame11, width=35)
-#     self.entDesc.grid(sticky="sew", column=2, row=1, padx=10, pady=5)
+    self.entDesc = ttk.Entry(lbl_frame11, width=35)
+    self.entDesc.grid(sticky="sew", column=2, row=1, padx=10, pady=5)
 
-#     lbltitle = ttk.Label(lbl_frame11, text="Title (Signature)")
-#     lbltitle.grid(sticky="nw", column=0, row=2, padx=10, pady=5)
+    lbltitle = ttk.Label(lbl_frame11, text="Title (Signature)")
+    lbltitle.grid(sticky="nw", column=0, row=2, padx=10, pady=5)
 
-#     self.entJobTitle = ttk.Entry(lbl_frame11)
-#     self.entJobTitle.grid(sticky="sew", column=0, row=2, columnspan=2, padx=10, pady=5)
+    self.entJobTitle = ttk.Entry(lbl_frame11)
+    self.entJobTitle.grid(sticky="sew", column=0, row=2, columnspan=2, padx=10, pady=5)
 
-#     lbldep = ttk.Label(lbl_frame11, text="Department (Signature sub title)")
-#     lbldep.grid(sticky="nw", column=2, row=2, padx=10, pady=5)
+    lbldep = ttk.Label(lbl_frame11, text="Department (Signature sub title)")
+    lbldep.grid(sticky="nw", column=2, row=2, padx=10, pady=5)
 
-#     self.entDep = ttk.Entry(lbl_frame11, width=35)
-#     self.entDep.grid(sticky="sew", column=2, row=2, padx=10, pady=5)
+    self.entDep = ttk.Entry(lbl_frame11, width=35)
+    self.entDep.grid(sticky="sew", column=2, row=2, padx=10, pady=5)
 
 
 # def Tab6(self, tab6):

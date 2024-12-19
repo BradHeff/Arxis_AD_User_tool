@@ -1,7 +1,7 @@
 import configparser_crypt as cCrypt
 
 import OpenSSL
-from os import mkdir, path, removedirs, system, name  # noqa
+from os import mkdir, path, removedirs, system, name, makedirs  # noqa
 import json
 import requests
 
@@ -22,6 +22,7 @@ from ldap3 import (
 from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
+
 
 DEBUG_SVR = False
 DEBUG = True
@@ -47,8 +48,19 @@ server = None
 exe_dir = str(Path(__file__).parents[2])
 # print(f"Executable Directory: {exe_dir}")
 
-settings_dir = "".join([exe_dir, "/share/Arxis_AD_Tool/"])
+settings_dir = path.join(path.expanduser("~"), ".config", "Arxis_AD_Tool")
 temp_dir = "".join([exe_dir, "/lib/Arxis_AD_Tool/Tmp/"])
+
+
+def ensure_directory_exists(directory):
+    """
+    Check if the directory exists, and create it if it doesn't.
+    """
+    if not path.exists(directory):
+        makedirs(directory)
+        print(f"Created directory: {directory}")
+    else:
+        print(f"Directory already exists: {directory}")
 
 
 def Toast(title, message, types="happy"):
@@ -82,10 +94,11 @@ def parseStatus(self, json_data):
 
 
 def getStatus(self):
-    # res = requests.get("http://api.trincloud.cc/api/syncer")
-    res = requests.get("".join([api_url, "/v1/data/LDAP"]))
-    res.raise_for_status()
-    return res.json()
+    # res = requests.get("".join([api_url, "/v1/data/LDAP"]))
+    # res.raise_for_status()
+    with open("syncer.json", "r") as file:
+        res = json.load(file)
+    return res["LDAP"]
 
 
 def getUpdate(self):
@@ -549,7 +562,7 @@ def listUsers(self, ou):
     return users
 
 
-def listUsers2(self, ou):
+def listUsersEdit(self, ou):
     users = {}
     with ldap_connection(self) as c:
         status, result, response, _ = c.search(
