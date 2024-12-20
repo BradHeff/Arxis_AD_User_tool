@@ -5,7 +5,7 @@ from os import mkdir, path, removedirs, system, name, makedirs  # noqa
 import json
 import requests
 
-
+import tkthread as tkt
 from pathlib import Path
 from ttkbootstrap import DISABLED, NORMAL
 from ttkbootstrap.toast import ToastNotification
@@ -288,20 +288,27 @@ def resetPassword(self, ou, newpass):
                 )
                 raise Exception(msg)
 
-        self.tree.delete(selected_item)
+        self.after(0, lambda: self.tree.delete(selected_item))
         self.selItem = []
-        widgetStatus(self, NORMAL)
+        self.after(0, lambda: widgetStatus(self, NORMAL))
         # Toast("SUCCESS!!", "Password set and user unlocked!", "happy")
         print("Password reset and user unlocked successfully.")
     except:  # noqa
         self.selItem = []
-        widgetStatus(self, NORMAL)
+        self.after(0, lambda: widgetStatus(self, NORMAL))
         # Toast("ERROR!!", "An error has occured!", "angry")
         print("An error occurred while resetting password.")
 
 
 def unlockUser(self, ou, all=0):
-    self.status["text"] = "".join(["Unlocking ", ou.split(",")[0].replace("CN=", "")])
+
+    self.after(
+        0,
+        lambda: update_gui(
+            self,
+            status_text="".join(["Unlocking ", ou.split(",")[0].replace("CN=", "")]),
+        ),
+    )
     with ldap_connection(self) as c:
         result = c.modify(
             dn=ou,
@@ -314,7 +321,7 @@ def unlockUser(self, ou, all=0):
             raise Exception(msg)
 
     if all == 0:
-        widgetStatus(self, NORMAL)
+        self.after(0, lambda: widgetStatus(self, NORMAL))
 
 
 def unlockAll(self, locked):
@@ -324,59 +331,72 @@ def unlockAll(self, locked):
         count += 1
         if count == self.all:
             props = 0
-        self.status["text"] = "".join(["Unlocking ", locked[x]["name"]])
-        self.progress["value"] = count
+        self.after(
+            0,
+            lambda: update_gui(
+                self,
+                status_text="".join(["Unlocking ", locked[x]["name"]]),
+                progress_value=count,
+            ),
+        )
         unlockUser(self, locked[x]["ou"], all=props)
-    self.tree.delete(*self.tree.get_children())
-    widgetStatus(self, NORMAL)
-    self.status["text"] = "Idle..."
-    # Toast("SUCCESS!!", "Unlock Complete!", "happy")
-    self.progress["value"] = 0
+    self.after(0, lambda: self.tree.delete(*self.tree.get_children()))
+    self.after(0, lambda: widgetStatus(self, NORMAL))
+    self.after(1000, lambda: update_gui(self, progress_value=0, status_text="Idle..."))
+    self.after(0, lambda: Toast("SUCCESS!!", "Unlock Complete!", "happy"))
 
 
 def listLocked(self):
     users = {}
-    results = {}
     print(self.ou)
     with ldap_connection(self) as c:
         try:
-            results = c.search(
-                search_base=str(self.user_ou),
-                search_filter="(&(objectClass=user)(lockoutTime>=1))",
+            status, result, response, _ = c.search(
+                search_base=str(self.ou),
+                search_filter=("(&(objectClass=user)(lockoutTime>=1))"),
                 attributes=[
                     "displayName",
                     "lockoutTime",
                     "distinguishedName",
                     "sAMAccountName",
                 ],
+                search_scope=SUBTREE,
+                get_operational_attributes=True,
             )
-            # Print the results to understand its structure
-            # print("Search Results:", results)
-            entries = results[2]
-            # print("Entries:", entries)
+            print(response)
+            # if not status:
+            #     raise Exception(f"Search failed: {c.result}")
+
+            for entry in response:
+                if "attributes" in entry:
+                    attrs = entry["attributes"]
+                    sam_account_name = attrs.get("sAMAccountName")
+                    if sam_account_name:
+                        users[sam_account_name] = {
+                            "name": attrs.get("displayName", [""])[0],
+                            "ou": attrs.get("distinguishedName", [""])[0],
+                        }
+            print(users)
         except core.exceptions.LDAPException as e:
             print(f"LDAP Exception: {e}")
+            print(f"LDAP result: {c.result}")
         except Exception as e:
             print(f"General Exception: {e}")
 
-        # Iterate over the entries to extract attributes
-        for entry in entries:
-            # print(entry)
-            res = entry["attributes"]
-            print("Entry Attributes:", res)
-            users[res["sAMAccountName"]] = {
-                "name": res["displayName"],
-                "ou": res["distinguishedName"],
-            }
-    # print(users)
     return users
 
 
 def update_user(self, data):
     try:
-        self.status["text"] = "".join(["Updating ", data["first"], " ", data["last"]])
+        self.after(
+            0,
+            lambda: update_gui(
+                self,
+                status_text="".join(["Updating ", data["first"], " ", data["last"]]),
+            ),
+        )
         with ldap_connection(self) as c:
-            self.progress["value"] = 60
+            self.after(0, lambda: update_gui(self, progress_value=60))
 
             if data["proxy"] is None:
                 proxy = "".join(
@@ -425,22 +445,39 @@ def update_user(self, data):
             c.extend.microsoft.modify_password(
                 user=data["ou"], new_password=data["password"], old_password=None
             )
-        self.progress["value"] = 100
-        widgetStatus(self, NORMAL)
-        self.status["text"] = "User Updated!"
-        # Toast("SUCCESS!!", "User Updated!", "happy")
-        self.progress["value"] = 0
-        self.editSelect("E")
+        self.after(
+            0, lambda: update_gui(self, progress_value=100, status_text="User Updated!")
+        )
+        self.after(0, lambda: widgetStatus(self, NORMAL))
+        Toast("SUCCESS!!", "User Updated!", "happy")
+        self.after(1000, lambda: update_gui(self, progress_value=0))
+        self.after(0, lambda: self.comboSelect("E"))
     except:  # noqa
-        self.status["text"] = "Idle..."
-        widgetStatus(self, NORMAL)
-        # Toast("ERROR!!", "An error has occured!", "angry")
-        self.progress["value"] = 0
+        self.after(
+            0, lambda: update_gui(self, progress_value=100, status_text="Idle...")
+        )
+        self.after(0, lambda: widgetStatus(self, NORMAL))
+        Toast("ERROR!!", "An error has occured!", "angry")
+        self.after(1000, lambda: update_gui(self, progress_value=0))
+
+
+def update_gui(self, progress_value=None, status_text=None):
+    if progress_value is not None:
+        self.progress["value"] = progress_value
+    if status_text is not None:
+        self.status["text"] = status_text
+    self.update_idletasks()
 
 
 def createUser(self, data):
     try:
-        self.status["text"] = "".join(["Creating ", data["first"], " ", data["last"]])
+        self.after(
+            0,
+            lambda: update_gui(
+                self, status_text=f"Creating {data['first']} {data['last']}"
+            ),
+        )
+
         result = "NOTHING"
         with ldap_connection(self) as c:
             attributes = {
@@ -463,22 +500,22 @@ def createUser(self, data):
             user_dn = "".join(
                 ["CN=", data["first"], " ", data["last"], ",", self.posOU]
             )
+            print(user_dn)
             result = c.add(
                 dn=user_dn,
                 object_class=["top", "person", "organizationalPerson", "user"],
                 attributes=attributes,
             )
             if result[0] is not True:
-                msg = "ERROR: User '{0}' was not created: {1}".format(
-                    "".join([data["first"], " ", data["last"]]),
-                    c.result.get("description"),
+                msg = f"ERROR: User '{data['first']} {data['last']}' was not created: {c.result.get('description')}"
+                self.after(
+                    0, lambda: update_gui(self, progress_value=100, status_text=msg)
                 )
-                self.progress["value"] = 100
-                widgetStatus(self, NORMAL)
-                self.status["text"] = msg
-                self.progress["value"] = 0
+                self.after(0, lambda: widgetStatus(self, NORMAL))
+                self.after(1000, lambda: update_gui(self, progress_value=0))
                 return
-        self.progress["value"] = 30
+
+        self.after(0, lambda: update_gui(self, progress_value=30))
         c.extend.microsoft.unlock_account(user=user_dn)
         c.extend.microsoft.modify_password(
             user=user_dn, new_password=data["password"], old_password=None
@@ -486,54 +523,77 @@ def createUser(self, data):
         enable_account = {"userAccountControl": (MODIFY_REPLACE, [UAC])}
         c.modify(user_dn, changes=enable_account)
 
-        self.progress["value"] = 50
-        self.status["text"] = "".join(
-            ["Adding ", data["first"], " ", data["last"], " to groups"]
+        self.after(
+            0,
+            lambda: update_gui(
+                self,
+                progress_value=50,
+                status_text=f"Adding {data['first']} {data['last']} to groups",
+            ),
         )
         c.extend.microsoft.add_members_to_groups([user_dn], data["groups"])
-        self.progress["value"] = 80
 
-        self.progress["value"] = 100
-        widgetStatus(self, NORMAL)
-        self.status["text"] = "User Created!"
-        # Toast("SUCCESS!!", "User Created!", "happy")
-        self.progress["value"] = 0
+        self.after(0, lambda: update_gui(self, progress_value=80))
+
+        self.after(
+            0, lambda: update_gui(self, progress_value=100, status_text="User Created!")
+        )
+        self.after(0, lambda: widgetStatus(self, NORMAL))
+        self.after(1000, lambda: update_gui(self, progress_value=0))
     except Exception as e:
         print("ERRORS:", str(e))
-        self.status["text"] = "Idle..."
-        widgetStatus(self, NORMAL)
-        self.progress["value"] = 0
-        # Toast("ERROR!!", "An error has occured!", "angry")
+        self.after(0, lambda: update_gui(self, status_text="Idle..."))
+        self.after(0, lambda: widgetStatus(self, NORMAL))
+        self.after(0, lambda: update_gui(self, progress_value=0))
+        # Toast("ERROR!!", "An error has occurred!", "angry")
 
 
 def remove_groups(self):
     try:
         userlist = listUsers(self, self.expiredOU)
         maxs = userlist.__len__()
-        self.status["text"] = "Loading Users..."
+        self.after(0, lambda: update_gui(self, status_text="Loading Users..."))
         userCount = 1
         for x in userlist:
-            self.tree2.insert(
-                "", "end", values=(x, userlist[x]["name"], userlist[x]["homeDir"])
+            self.after(
+                0,
+                lambda: self.tree2.insert(
+                    "",
+                    "end",
+                    values=(x, userlist[x]["name"], userlist[x]["homeDir"]),
+                ),
             )
-            self.progress["value"] = userCount
+            self.after(0, lambda: update_gui(self, progress_value=userCount))
         count = 1
-        self.progress["value"] = count
-        self.status["text"] = "Cleaning Users: " + str(count) + "/" + str(maxs)
-        self.progress["maximum"] = float(maxs)
+        self.after(
+            0,
+            lambda: update_gui(
+                self,
+                status_text="Cleaning Users: " + str(count) + "/" + str(maxs),
+                progress_value=count,
+            ),
+        )
+
+        tkt.call_async(self.progress["maximum"], float(maxs))
         for y in userlist:
             count += 1
-            self.progress["value"] = count
-            self.status["text"] = "Cleaning Users: " + str(count) + "/" + str(maxs)
+            self.after(
+                0,
+                lambda: update_gui(
+                    self,
+                    status_text="Cleaning Users: " + str(count) + "/" + str(maxs),
+                    progress_value=count,
+                ),
+            )
             removeHomedrive(userlist[y]["homeDir"])
             for child in self.tree2.get_children():
                 if y in self.tree2.item(child)["values"]:
-                    self.tree2.delete(child)
+                    tkt.call_async(self.tree2.delete, child)
     except Exception as e:
         print(e)
-        self.messageBox("ERROR!", "An error has occurred!")
-    widgetStatus(self, NORMAL)
-    self.status["text"] = "Idle..."
+        # tkt.call_nosync(self.messageBox, "ERROR!", "An error has occurred!")
+    self.after(0, lambda: widgetStatus(self, NORMAL))
+    self.after(0, lambda: update_gui(self, status_text="Idle..."))
     self.after(1000, self.resetProgress)
 
 

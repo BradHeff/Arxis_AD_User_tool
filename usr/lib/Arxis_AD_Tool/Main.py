@@ -134,8 +134,10 @@ class ADUnlocker(ttk.Window):
             self.btn_unlockAll.configure(text="Unlock All", state=ttk.NORMAL)
         elif index == 1:
             self.btn_unlockAll.configure(text="Create User", state=ttk.NORMAL)
+            self.comboLoad("")
         elif index == 2:
             self.btn_unlockAll.configure(text="Update User", state=ttk.NORMAL)
+            self.comboLoad("")
         else:
             print("ERROR!!! - Something went wrong!")
 
@@ -155,31 +157,15 @@ class ADUnlocker(ttk.Window):
             self.fetch_user_info_thread()
 
     def populate_user_fields(self, user_info):
-        if not user_info:
-            return
 
-        username = list(user_info.keys())[0]
-        info = user_info[username]
+        self.jobTitleEnt.delete(0, ttk.END)
+        self.jobTitleEnt.insert(0, self.jobTitle[user_info])
 
-        self.fname_entry.delete(0, ttk.END)
-        self.fname_entry.insert(0, info["fname"])
+        self.depEnt.delete(0, ttk.END)
+        self.depEnt.insert(0, self.dep)
 
-        self.lname_entry.delete(0, ttk.END)
-        self.lname_entry.insert(0, info["lname"])
-
-        self.entDomain.configure(state="normal")
-        self.entDomain.delete(0, ttk.END)
-        self.entDomain.insert(0, info["userPrincipalName"].split("@")[1])
-        self.entDomain.configure(state="readonly")
-
-        self.entSamname.delete(0, ttk.END)
-        self.entSamname.insert(0, username)
-
-        self.entDesc.delete(0, ttk.END)
-        self.entDesc.insert(0, info["description"])
-
-        self.entJobTitle.delete(0, ttk.END)
-        self.entJobTitle.insert(0, info["title"])
+        self.orgCompEnt.delete(0, ttk.END)
+        self.orgCompEnt.insert(0, self.org)
 
     def fetch_user_info_thread(self):
         def thread_function():
@@ -253,12 +239,13 @@ class ADUnlocker(ttk.Window):
         self.status["text"] = "Idle..."
 
     def posSelectEdit(self):
-        # isBalak = "clare" not in self.EcampH.get().lower()
-        # if not isBalak:
-        #     self._setup_clare_position(self.var3.get())
-        # else:
-        #     self._setup_balaklava_position(self.var3.get())
         self._options_clear()
+        print(self.var3.get())
+        isBalak = "clare" not in self.EcampH.get().lower()
+        if not isBalak:
+            self._setup_clare_position(self.var3.get())
+        else:
+            self._setup_balaklava_position(self.var3.get())
         t = threading.Thread(target=self.editOption)
         t.daemon = True
         t.start()
@@ -278,20 +265,35 @@ class ADUnlocker(ttk.Window):
             self._setup_balaklava_position(self.var.get())
 
         self._setup_group_checkboxes()
+        self.populate_user_fields(self.var.get())
 
     def _setup_clare_position(self, var):
+        print(var)
+        text = "".join(
+            [
+                self.date,
+                " - ",
+                " Clare",
+            ]
+        )
         if "Year" in var or "Found" in var:
             self.posOU = self.positionsOU[var + "-Clare"]
+            text = "".join([var, " - ", " Clare ", self.date])
         elif "ESO" in var or "Student Support" in var:
             self.posOU = self.positionsOU["Student Support Clare"]
+            text = "".join([var, " - ", " Clare ", self.date])
         elif "Admin" in var and "Temp" not in var:
             self.posOU = self.positionsOU[var + " Clare"]
+            text = "".join([var, " - ", " Clare ", self.date])
         self.groups = self.groupPos[var]
-        self.descDate = f"{self.date} Clare"
         self.dep = "Clare Campus"
+        self.org = "Horizon Christian School Clare"
+        self.desc.delete(0, "end")
+        self.desc.insert(0, text)
 
     def _setup_balaklava_position(self, var):
         descDate = self.date
+        print(var)
         if "Year" in var or "Found" in var:
             self.posOU = self.positionsOU[var]
             self.desc.delete(0, "end")
@@ -301,6 +303,10 @@ class ADUnlocker(ttk.Window):
             self.desc.delete(0, "end")
             self.desc.insert(0, descDate)
         self.groups = self.groupPos[var]
+        print(self.groups)
+        print(self.posOU)
+        self.dep = "Balaklava Campus"
+        self.org = "Horizon Christian School Balaklava"
 
     def _setup_group_checkboxes(self):
         style = Style()
@@ -650,12 +656,25 @@ class ADUnlocker(ttk.Window):
     def _handle_update_user(self):
         if not self._validate_update_user_input():
             return
-
+        self.progress["value"] = 30
+        self.status["text"] = "Gathering User Data..."
         data = self._prepare_update_user_data()
-        print(data)
-        # t = threading.Thread(target=f.update_user, args=[self, data])
-        # t.daemon = True
-        # t.start()
+
+        # print(data)
+        t = threading.Thread(target=f.update_user, args=[self, data])
+        t.daemon = True
+        t.start()
+
+    def _validate_create_user_input(self):
+        if self.fname.get().__len__() <= 1 and self.lname.get().__len__() <= 1:
+            self.messageBox("ERROR!!", "Firstname and Lastname cannot be empty!")
+            return False
+        if self.dpass.get().__len__() < 8:
+            self.messageBox(
+                "ERROR!!", "Password must be at least 8 characters or empty!"
+            )
+            return False
+        return True
 
     def _validate_update_user_input(self):
         if self.entPass.get().__len__() < 8 and self.entPass.get().__len__() != 0:
@@ -673,6 +692,32 @@ class ADUnlocker(ttk.Window):
             self.messageBox("ERROR!!", "First Name cannot be empty!")
             return False
         return True
+
+    def _prepare_create_user_data(self):
+        if "flast" in self.samFormat.get():
+            samname = "".join([self.fname.get().strip()[0:1], self.lname.get().strip()])
+        elif "firstlast" in self.samFormat.get():
+            samname = "".join([self.fname.get().strip(), self.lname.get().strip()])
+        else:
+            samname = "".join([self.fname.get().strip(), ".", self.lname.get().strip()])
+
+        data = {
+            "login": samname.lower(),
+            "first": self.fname.get().capitalize(),
+            "last": self.lname.get().capitalize(),
+            "domain": self.primary_domain.get(),
+            "description": self.desc.get(),
+            "title": self.jobTitleEnt.get(),
+            "password": self.dpass.get(),
+            "department": self.depEnt.get(),
+            "company": self.orgCompEnt.get(),
+            "proxy": (
+                self.domains["Secondary"] if len(self.domains["Secondary"]) > 3 else ""
+            ),
+            "groups": self.groups,
+        }
+
+        return data
 
     def _prepare_update_user_data(self):
         data = {
