@@ -96,6 +96,7 @@ cp -a ../../local/bin/* $BUILD_DIR/ || echo "No local binaries found to copy."
 cp -a ../../share/applications/* $BUILD_DIR/ || echo "No .desktop files found to copy."
 cp -a ../../share/pixmaps/* $BUILD_DIR/ || echo "No pixmap icons found to copy."
 cp -a *.py $BUILD_DIR/ || echo "No python files found to copy."
+cp -a syncer.json $BUILD_DIR/ || echo "No python files found to copy."
 
 
 # Step 5: Build the RPM package

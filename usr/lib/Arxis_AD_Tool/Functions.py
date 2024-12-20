@@ -26,7 +26,7 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
 
 DEBUG_SVR = False
 DEBUG = True
-Version = "2.0.19"
+Version = "2.0.21"
 key = b"\xb1]\xdbM\xed\xc9d\x86\xfe\xc9\x97\x15\x93&R\xba\x9a\xb9#\xadh\x83\xc9D\xa6\xba\xdbX$\xb3TJ"
 settings_file = "Settings.dat"
 if DEBUG_SVR:

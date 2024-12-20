@@ -28,6 +28,7 @@ cp %{_topdir}/BUILD/AADT/Functions.py %{buildroot}/usr/lib/Arxis_AD_Tool/Functio
 cp %{_topdir}/BUILD/AADT/Main.py %{buildroot}/usr/lib/Arxis_AD_Tool/Main.py
 cp %{_topdir}/BUILD/AADT/Gui.py %{buildroot}/usr/lib/Arxis_AD_Tool/Gui.py
 cp %{_topdir}/BUILD/AADT/icon.py %{buildroot}/usr/lib/Arxis_AD_Tool/icon.py
+cp %{_topdir}/BUILD/AADT/syncer.json %{buildroot}/usr/lib/Arxis_AD_Tool/syncer.json
 
 
 %post
@@ -42,6 +43,7 @@ chmod +x /usr/local/bin/AADT
 /usr/lib/Arxis_AD_Tool/Gui.py
 /usr/lib/Arxis_AD_Tool/Functions.py
 /usr/lib/Arxis_AD_Tool/Main.py
+/usr/lib/Arxis_AD_Tool/syncer.json
 /usr/share/pixmaps/Arxis.png
 
 
