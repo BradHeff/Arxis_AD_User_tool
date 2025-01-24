@@ -133,7 +133,7 @@ def ldap_connection(self):
         server = Server(
             self.server.strip(),
             use_ssl=True,
-            tls=tls_configuration,
+            get_info=all,
         )
         print("Connected to LDAP server...")
         return Connection(
@@ -364,14 +364,15 @@ def listLocked(self):
                 get_operational_attributes=True,
             )
             print(response)
-            # if not status:
-            #     raise Exception(f"Search failed: {c.result}")
-
             for entry in response:
                 if "attributes" in entry:
                     attrs = entry["attributes"]
+                    print(f"Attributes: {attrs}")
                     sam_account_name = attrs.get("sAMAccountName")
                     if sam_account_name:
+                        # Ensure sam_account_name is a string
+                        if isinstance(sam_account_name, list):
+                            sam_account_name = sam_account_name[0]
                         users[sam_account_name] = {
                             "name": attrs.get("displayName", [""])[0],
                             "ou": attrs.get("distinguishedName", [""])[0],
@@ -382,7 +383,6 @@ def listLocked(self):
             print(f"LDAP result: {c.result}")
         except Exception as e:
             print(f"General Exception: {e}")
-
     return users
 
 
@@ -617,7 +617,12 @@ def listUsers(self, ou):
 
         for x in response:
             res = x["attributes"]
-            users[res["sAMAccountName"]] = {
+            sam_account_name = res["sAMAccountName"]
+            if sam_account_name:
+                # Ensure sam_account_name is a string
+                if isinstance(sam_account_name, list):
+                    sam_account_name = sam_account_name[0]
+            users[sam_account_name] = {
                 "name": res["displayName"],
                 "ou": res["distinguishedName"],
                 # "homeDir": res["homeDirectory"],
@@ -652,7 +657,12 @@ def listUsersEdit(self, ou):
 
         for x in response:
             res = x["attributes"]
-            users[res["sAMAccountName"]] = {
+            sam_account_name = res["sAMAccountName"]
+            if sam_account_name:
+                # Ensure sam_account_name is a string
+                if isinstance(sam_account_name, list):
+                    sam_account_name = sam_account_name[0]
+            users[sam_account_name] = {
                 "name": res["displayName"],
                 "ou": res["distinguishedName"],
                 "fname": res["givenName"],

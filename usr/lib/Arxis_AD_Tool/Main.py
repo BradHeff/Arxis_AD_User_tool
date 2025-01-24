@@ -12,7 +12,7 @@ from Gui import baseGUI
 WINDOW_TITLE = "Arxis AD Tool v{}"
 DEFAULT_COMPANY = "Horizon"
 DEFAULT_PASSWORD = "Horizon{}"
-DEBUG_SERVER = "192.168.3.34"
+DEBUG_LDAP = "192.168.3.33"
 
 
 class ADUnlocker(ttk.Window):
@@ -101,7 +101,7 @@ class ADUnlocker(ttk.Window):
             # print(self.api_config)
             # Use get() method with default values to avoid KeyError
             self.server = (
-                self.api_config.get("server", "") if not f.DEBUG else DEBUG_SERVER
+                self.api_config.get("server", "") if not f.DEBUG else DEBUG_LDAP
             )
             self.jobTitle = self.api_config.get("title", [])
             self.disOU = self.api_config.get("expiredous", {})
@@ -173,13 +173,20 @@ class ADUnlocker(ttk.Window):
                 self.entDomain["state"] = "normal"
                 domain = str(self.updateList[self.selItem3[0]]["userPrincipalName"])
                 print(domain)
-                domain = domain.split("@")[1].strip()
+                domain = domain.split("@")[1].strip().strip("{}").strip("[]").strip("'")
                 print(domain)
                 self.entDomain.insert(0, domain)
             except Exception:
                 pass
             try:
-                self.entJobTitle.insert(0, self.updateList[self.selItem3[0]]["title"])
+                self.entJobTitle.insert(
+                    0,
+                    str(self.updateList[self.selItem3[0]]["title"])
+                    .strip()
+                    .strip("{}")
+                    .strip("[]")
+                    .strip("'"),
+                )
             except Exception:
                 pass
             try:
@@ -196,7 +203,9 @@ class ADUnlocker(ttk.Window):
                 pass
             try:
                 desc = self.updateList[self.selItem3[0]]["description"][0]
-                self.entDesc.insert(0, str(desc))
+                self.entDesc.insert(
+                    0, str(desc.strip().strip("{}").strip("[]").strip("'"))
+                )
             except Exception:
                 pass
             self.entDomain["state"] = "readonly"
@@ -230,10 +239,12 @@ class ADUnlocker(ttk.Window):
         for i in self.updateList:
             count += 1
             self.progress["value"] = count
+            name = str(self.updateList[i]["name"]).strip("{}").strip("[]").strip("'")
+            ou = str(self.updateList[i]["ou"]).strip("{}").strip("[]").strip("'")
             self.tree4.insert(
                 "",
                 "end",
-                values=(i, self.updateList[i]["name"], self.updateList[i]["ou"]),
+                values=(i, name, ou),
             )
         self.progress["value"] = 0
         self.status["text"] = "Idle..."
@@ -566,24 +577,34 @@ class ADUnlocker(ttk.Window):
             if len(locked) <= 0:
                 f.widgetStatus(self, ttk.NORMAL)
                 self.status["text"] = "Idle..."
-                tkt.call_nosync(f.Toast, "COMPLETE!", "No Locked Users!", "happy")
                 return
-            else:
-                self.status["text"] = "Populating list..."
-                for x in locked:
-                    user_info = locked[x]
-                    self.tree.insert(
-                        "",
-                        "end",
-                        values=(x, user_info["name"], user_info["ou"]),
-                    )
-        except Exception as e:
-            print("ERROR LOAD USERS, ", str(e))
-            tkt.call_nosync(self.messageBox, "Error", "An error occurred, " + str(e))
-            tkt.call_nosync(f.Toast, "ERROR!", "An error occurred", "angry")
 
-        f.widgetStatus(self, ttk.NORMAL)
-        self.status["text"] = "Idle..."
+            # Debugging: Print the locked users dictionary
+            print("Locked users:", locked)
+
+            for user, details in locked.items():
+                print(f"User: {user}, Details: {details}")
+                # Ensure details is a dictionary
+                if not isinstance(details, dict):
+                    raise ValueError(
+                        f"Expected a dictionary for user details, got {type(details)}"
+                    )
+
+                # Add user to the tree view (assuming self.tree is a ttk.Treeview)
+                self.tree.insert(
+                    "", "end", text=user, values=(user, details["name"], details["ou"])
+                )
+
+            f.widgetStatus(self, ttk.NORMAL)
+            self.status["text"] = "Idle..."
+        except ValueError as ve:
+            print(f"ValueError: {ve}")
+            f.widgetStatus(self, ttk.NORMAL)
+            self.status["text"] = "Idle..."
+        except Exception as e:
+            print(f"General Exception: {e}")
+            f.widgetStatus(self, ttk.NORMAL)
+            self.status["text"] = "Idle..."
 
     def unlockUsers(self):
         if self.tree.get_children() == ():
