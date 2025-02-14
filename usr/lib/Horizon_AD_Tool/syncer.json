@@ -149,14 +149,14 @@
       ],
       "Foundation": [
         "CN=SG_Reception,OU=Year Levels,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",
-        "CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",
+        "CN=Office365-A1Plus-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",
         "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",
         "CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",
         "CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"
       ],
       "Year1": [
         "CN=SG_Year1,OU=Year Levels,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",
-        "CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",
+        "CN=Office365-A1Plus-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",
         "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",
         "CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",
         "CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"
@@ -218,7 +218,7 @@
         "CN=SG_WF_Student,OU=Firewall,OU=Groups,OU=Horizon,DC=HORIZON,DC=local"
       ],
       "Year10": [
-        "CN=SG_Year10,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",
+        "CN=SG_Year10,OU=Year Levels,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",
         "CN=Office365-A3-Student,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",
         "CN=Office365-AzureAD-P2,OU=Office 365,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",
         "CN=SG_Students,OU=User Groups,OU=Groups,OU=Horizon,DC=HORIZON,DC=local",

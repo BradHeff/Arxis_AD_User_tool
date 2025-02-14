@@ -1,13 +1,13 @@
 [Desktop Entry]
-Name=Arxis AD Tool
+Name=Horizon AD Tool
 GenericName=AD Tool
-X-GNOME-FullName=Arxis AD Tool
+X-GNOME-FullName=Horizon AD Tool
 Comment=Unlock and add users to Active Directory
-Exec=AADT
-Icon=/usr/share/pixmaps/Arxis.png
+Exec=HADT
+Icon=/usr/share/pixmaps/Horizon.png
 Terminal=false
 Type=Application
-Keywords=Arxis;arxis;ad;AD;tool;netowrk;networking;
+Keywords=Horizon;horizon;hcs;ad;AD;tool;netowrk;networking;
 StartupNotify=true
 Categories=GTK;;Security;X-GNOME-Settings-Panel;X-GNOME-SystemSettings;X-Unity-Settings-Panel;X-XFCE-SettingsDialog;X-XFCE-SystemSettings;Utility;Networking;
 X-Developer=Brad Heffernan

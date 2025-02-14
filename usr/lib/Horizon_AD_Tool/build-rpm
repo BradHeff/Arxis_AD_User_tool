@@ -2,8 +2,8 @@
 # Stop script on errors
 set -e
 
-APP_NAME="AADT"
-APP_LIB_DIR="Arxis_AD_Tool"
+APP_NAME="HADT"
+APP_LIB_DIR="Horizon_AD_Tool"
 
 # Define source and build directories
 EXEC_DIR=$(pwd)

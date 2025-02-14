@@ -12,12 +12,12 @@ echo "Detected OS: $OS"
 if [[ "$DEBUG" == "true" ]]; then
     if [[ "$OS" == "ubuntu" ]]; then
         echo "Running in debug mode..."
-        ~/.venv/bin/python3 ../../lib/Arxis_AD_Tool/Main.py
+        ~/.venv/bin/python3 ../../lib/Horizon_AD_Tool/Main.py
     else
         echo "Running in debug mode..."
-        python3 ../../lib/Arxis_AD_Tool/Main.py
+        python3 ../../lib/Horizon_AD_Tool/Main.py
     fi
 else
     echo "Running in production mode..."
-    python3 /usr/lib/Arxis_AD_Tool/Main.py
+    python3 /usr/lib/Horizon_AD_Tool/Main.py
 fi

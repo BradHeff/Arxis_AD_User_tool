@@ -9,7 +9,7 @@ import Functions as f
 from Gui import baseGUI
 
 # Constants
-WINDOW_TITLE = "Arxis AD Tool v{}"
+WINDOW_TITLE = "Horizon AD Tool v{}"
 DEFAULT_COMPANY = "Horizon"
 DEFAULT_PASSWORD = "Horizon{}"
 DEBUG_LDAP = "192.168.3.33"
@@ -98,7 +98,7 @@ class ADUnlocker(ttk.Window):
         try:
             self.api_config = f.getStatus(self)
             # self.api_config = f.parseStatus(self, self.dataz)
-            # print(self.api_config)
+            # print(wself.api_config)
             # Use get() method with default values to avoid KeyError
             self.server = (
                 self.api_config.get("server", "") if not f.DEBUG else DEBUG_LDAP
@@ -288,15 +288,31 @@ class ADUnlocker(ttk.Window):
             ]
         )
         if "Year" in var or "Found" in var:
-            self.posOU = self.positionsOU[var + "-Clare"]
+            self.posOU = (
+                self.positionsOU[var.replace(" Clare", "") + "-Clare"]
+                if "Clare" in var
+                else self.positionsOU[var.replace(" Clare", "")]
+            )
             text = "".join([var, " - ", " Clare ", self.date])
         elif "ESO" in var or "Student Support" in var:
-            self.posOU = self.positionsOU["Student Support Clare"]
+            self.posOU = (
+                self.positionsOU["Student Support Clare"]
+                if "Clare" in var
+                else self.positionsOU[var.replace(" Clare", "")]
+            )
             text = "".join([var, " - ", " Clare ", self.date])
         elif "Admin" in var and "Temp" not in var:
-            self.posOU = self.positionsOU[var + " Clare"]
+            self.posOU = (
+                self.positionsOU[var]
+                if "Clare" in var
+                else self.positionsOU[var.replace(" Clare", "")]
+            )
             text = "".join([var, " - ", " Clare ", self.date])
-        self.groups = self.groupPos[var]
+        self.groups = (
+            self.groupPos[var.replace(" Clare", "")]
+            if "Clare" in var
+            else self.groupPos[var]
+        )
         self.dep = "Clare Campus"
         self.org = "Horizon Christian School Clare"
         self.desc.delete(0, "end")
@@ -318,6 +334,16 @@ class ADUnlocker(ttk.Window):
         print(self.posOU)
         self.dep = "Balaklava Campus"
         self.org = "Horizon Christian School Balaklava"
+
+    def _check_posiotion(self, position, value):
+        if value == "E":
+            if "Year" in position or "Found" in position:
+                return True
+            if "ESO" in position or "Student Support" in position:
+                return True
+            if "Admin" in position and "Temp" not in position:
+                return True
+        return False
 
     def _setup_group_checkboxes(self):
         style = Style()
@@ -490,12 +516,17 @@ class ADUnlocker(ttk.Window):
                                 row=row, column=count, padx=10, pady=10
                             )
                         if value == "E" or value == "":
+                            isClarePosition = self._check_posiotion(position, value)
                             edit_position_radio_button = ttk.Radiobutton(
                                 self.lbl_frame9,
-                                text=position,
+                                text=(
+                                    position + " Clare" if isClarePosition else position
+                                ),
                                 variable=self.var3,
                                 command=self.posSelectEdit,
-                                value=position,
+                                value=(
+                                    position + " Clare" if isClarePosition else position
+                                ),
                             )
 
                             edit_position_radio_button.grid(

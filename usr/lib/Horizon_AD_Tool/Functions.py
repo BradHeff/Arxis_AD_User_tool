@@ -4,6 +4,7 @@ import OpenSSL
 from os import mkdir, path, removedirs, system, name, makedirs  # noqa
 import json
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 import tkthread as tkt
 from pathlib import Path
@@ -25,14 +26,14 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
 
 
 DEBUG_SVR = False
-DEBUG = True
-Version = "2.0.21"
+DEBUG = False
+Version = "2.0.13"
 key = b"\xb1]\xdbM\xed\xc9d\x86\xfe\xc9\x97\x15\x93&R\xba\x9a\xb9#\xadh\x83\xc9D\xa6\xba\xdbX$\xb3TJ"
 settings_file = "Settings.dat"
 if DEBUG_SVR:
     api_url = "http://localhost:5000"
 else:
-    api_url = "https://api.trincloud.cc/public/syncer.json"
+    api_url = "http://api.horizon.sa.edu.au/syncer.json"
 creds = "URip96k9xsm8pUaJ6f8fJPjGbTxxSxzQ4udC2kmmZCCcw2d77d.dat"
 UAC = 32 + 65536
 # Use a set for ICT_Admins to optimize membership checks
@@ -50,6 +51,9 @@ exe_dir = str(Path(__file__).parents[2])
 
 settings_dir = path.join(path.expanduser("~"), ".config", "Arxis_AD_Tool")
 temp_dir = "".join([exe_dir, "/lib/Arxis_AD_Tool/Tmp/"])
+
+# Suppress only the single InsecureRequestWarning from urllib3 needed for this case
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def ensure_directory_exists(directory):
@@ -94,21 +98,30 @@ def parseStatus(self, json_data):
 
 
 def getStatus(self):
-    if DEBUG:
-        with open("syncer.json", "r") as file:
-            res = json.load(file)
-    else:
-        res = requests.get(api_url)
-        res.raise_for_status()
-
-    return res["LDAP"]
+    try:
+        if DEBUG:
+            with open("syncer.json", "r") as file:
+                res = json.load(file)
+            return res["LDAP"]
+        else:
+            res = requests.get(api_url, verify=False)
+            res.raise_for_status()
+            print(f"Status: {res.json()}")
+        return res.json()["LDAP"]
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching data: {e}")
+        return None
 
 
 def getUpdate(self):
-    # res = requests.get("http://api.trincloud.cc/api/syncer")
-    res = requests.get("".join([api_url, "/v1/data/Programs"]))
-    res.raise_for_status()
-    return res.json()
+    try:
+        # res = requests.get("http://api.trincloud.cc/api/syncer")
+        res = requests.get("".join([api_url, "/v1/data/Programs"]), verify=False)
+        res.raise_for_status()
+        return res.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching data: {e}")
+        return None
 
 
 def clear_console():
