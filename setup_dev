@@ -7,7 +7,7 @@ pip3 install -r ./requirements.txt
 cp user.py $HOME/.local/lib/python3.13/site-packages/ttkbootstrap/themes/
 
 # install build tools for Fedora
-sudo dnf install -y rpmdevtools rpmlint
+sudo dnf install -y rpmdevtools rpmlint python3-pillow-tk
 
 # Setup build directories for RPM packages
 rpmdev-setuptree
