@@ -1,11 +1,13 @@
 import configparser_crypt as cCrypt
 
+import re
+
 import OpenSSL
 from os import mkdir, path, removedirs, system, name, makedirs  # noqa
 import json
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-
+import threading
 import tkthread as tkt
 from pathlib import Path
 from ttkbootstrap import DISABLED, NORMAL
@@ -24,16 +26,17 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
     ad_remove_members_from_groups as removeUsersInGroups,
 )
 
-
+temp_api = "https://api.horizon.sa.edu.au/v1/data/LDAP"
 DEBUG_SVR = False
-DEBUG = False
+DEBUG = True
 Version = "2.0.13"
 key = b"\xb1]\xdbM\xed\xc9d\x86\xfe\xc9\x97\x15\x93&R\xba\x9a\xb9#\xadh\x83\xc9D\xa6\xba\xdbX$\xb3TJ"
 settings_file = "Settings.dat"
 if DEBUG_SVR:
     api_url = "http://localhost:5000"
 else:
-    api_url = "http://api.horizon.sa.edu.au/syncer.json"
+    api_url = temp_api
+    # api_url = "http://api.horizon.sa.edu.au/syncer.json"
 creds = "URip96k9xsm8pUaJ6f8fJPjGbTxxSxzQ4udC2kmmZCCcw2d77d.dat"
 UAC = 32 + 65536
 # Use a set for ICT_Admins to optimize membership checks
@@ -124,6 +127,18 @@ def getUpdate(self):
         return None
 
 
+def safe_thread(target, *args, **kwargs):
+    def wrapper():
+        try:
+            target(*args, **kwargs)
+        except Exception as e:
+            print(f"Thread error: {e}")
+
+    thread = threading.Thread(target=wrapper)
+    thread.daemon = True
+    thread.start()
+
+
 def clear_console():
     system("cls")
 
@@ -138,6 +153,14 @@ def checkSettings(self, company):
         return True
     else:
         return False
+
+
+def safe_get(dictionary, key, default=""):
+    return dictionary.get(key, default)
+
+
+def clean_string(value):
+    return re.sub(r"[{}\[\]']", "", value).strip()
 
 
 def ldap_connection(self):
@@ -359,6 +382,10 @@ def unlockAll(self, locked):
     self.after(0, lambda: Toast("SUCCESS!!", "Unlock Complete!", "happy"))
 
 
+def normalize_to_string(value):
+    return value[0] if isinstance(value, list) else value
+
+
 def listLocked(self):
     users = {}
     print(self.ou)
@@ -384,8 +411,12 @@ def listLocked(self):
                     sam_account_name = attrs.get("sAMAccountName")
                     if sam_account_name:
                         # Ensure sam_account_name is a string
-                        if isinstance(sam_account_name, list):
-                            sam_account_name = sam_account_name[0]
+
+                        sam_account_name = normalize_to_string(
+                            attrs.get("sAMAccountName")
+                        )
+                        # if isinstance(sam_account_name, list):
+                        #     sam_account_name = sam_account_name[0]
                         users[sam_account_name] = {
                             "name": attrs.get("displayName", [""])[0],
                             "ou": attrs.get("distinguishedName", [""])[0],
@@ -508,7 +539,7 @@ def createUser(self, data):
                 "description": data["description"],
                 "department": data["department"],
                 "company": data["company"],
-                "pwdLastSet": 0,
+                "pwdLastSet": -1,  # Set to -1 to indicate the password is set
             }
             user_dn = "".join(
                 ["CN=", data["first"], " ", data["last"], ",", self.posOU]
@@ -533,7 +564,14 @@ def createUser(self, data):
         c.extend.microsoft.modify_password(
             user=user_dn, new_password=data["password"], old_password=None
         )
-        enable_account = {"userAccountControl": (MODIFY_REPLACE, [UAC])}
+
+        # Set userAccountControl to enable the account and ensure the password does not expire
+        enable_account = {
+            "userAccountControl": (
+                MODIFY_REPLACE,
+                [UAC + 65536],
+            )  # Add DONT_EXPIRE_PASSWORD flag
+        }
         c.modify(user_dn, changes=enable_account)
 
         self.after(

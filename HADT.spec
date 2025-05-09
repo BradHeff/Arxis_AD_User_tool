@@ -1,5 +1,5 @@
 Name:           HADT
-Version:        2.0.11.3
+Version:        2.0.13.3
 Release:        1%{?dist}
 Summary:        Active Directoy Tool for creating and managing Active Directory users
 License: GPLv3+
@@ -48,5 +48,5 @@ chmod +x /usr/local/bin/HADT
 
 
 %changelog
-* Mon Feb 14 2025 Brad Heffernan <brad.heffernan83@outlook.com>
+* Mon May 9 2025 Brad Heffernan <brad.heffernan83@outlook.com>
 - 

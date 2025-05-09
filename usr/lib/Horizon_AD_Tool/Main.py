@@ -1,5 +1,6 @@
 import datetime
-import threading
+
+# import threading
 from signal import SIGINT, signal
 import tkthread as tkt
 import base64
@@ -90,9 +91,7 @@ class ADUnlocker(ttk.Window):
         self.title(WINDOW_TITLE.format(f.Version))
 
     def _load_data(self):
-        t = threading.Thread(target=self.fetchData)
-        t.daemon = True
-        t.start()
+        f.safe_thread(self.fetchData)
 
     def fetchData(self):
         try:
@@ -173,7 +172,7 @@ class ADUnlocker(ttk.Window):
                 self.entDomain["state"] = "normal"
                 domain = str(self.updateList[self.selItem3[0]]["userPrincipalName"])
                 print(domain)
-                domain = domain.split("@")[1].strip().strip("{}").strip("[]").strip("'")
+                domain = f.clean_string(domain.split("@")[1])
                 print(domain)
                 self.entDomain.insert(0, domain)
             except Exception:
@@ -210,8 +209,7 @@ class ADUnlocker(ttk.Window):
                 pass
             self.entDomain["state"] = "readonly"
 
-        thread = threading.Thread(target=thread_function)
-        thread.start()
+        f.safe_thread(thread_function)
 
     def getCheck(self):
         grp = []
@@ -257,9 +255,7 @@ class ADUnlocker(ttk.Window):
             self._setup_clare_position(self.var3.get())
         else:
             self._setup_balaklava_position(self.var3.get())
-        t = threading.Thread(target=self.editOption)
-        t.daemon = True
-        t.start()
+        f.safe_thread(self.editOption)
 
     def posSelect(self):
 
@@ -280,39 +276,20 @@ class ADUnlocker(ttk.Window):
 
     def _setup_clare_position(self, var):
         print(var)
-        text = "".join(
-            [
-                self.date,
-                " - ",
-                " Clare",
-            ]
-        )
+        text = f"{var} - Clare {self.date}"
         if "Year" in var or "Found" in var:
-            self.posOU = (
-                self.positionsOU[var.replace(" Clare", "") + "-Clare"]
-                if "Clare" in var
-                else self.positionsOU[var.replace(" Clare", "")]
-            )
-            text = "".join([var, " - ", " Clare ", self.date])
-        elif "ESO" in var or "Student Support" in var:
-            self.posOU = (
-                self.positionsOU["Student Support Clare"]
-                if "Clare" in var
-                else self.positionsOU[var.replace(" Clare", "")]
-            )
-            text = "".join([var, " - ", " Clare ", self.date])
-        elif "Admin" in var and "Temp" not in var:
-            self.posOU = (
-                self.positionsOU[var]
-                if "Clare" in var
-                else self.positionsOU[var.replace(" Clare", "")]
-            )
-            text = "".join([var, " - ", " Clare ", self.date])
-        self.groups = (
-            self.groupPos[var.replace(" Clare", "")]
-            if "Clare" in var
-            else self.groupPos[var]
-        )
+            key = var.replace(" Clare", "").strip()
+            self.posOU = f.safe_get(self.positionsOU, f"{key}-Clare")
+        else:
+            key = var.replace(" Clare", "").strip()
+            self.posOU = f.safe_get(self.positionsOU, key)
+
+        if not self.posOU:
+            print(f"Error: No matching posOU found for key '{key}'")
+        else:
+            print(f"Updated posOU for Clare: {self.posOU}")
+
+        self.groups = self.groupPos.get(key, [])
         self.dep = "Clare Campus"
         self.org = "Horizon Christian School Clare"
         self.desc.delete(0, "end")
@@ -321,17 +298,22 @@ class ADUnlocker(ttk.Window):
     def _setup_balaklava_position(self, var):
         descDate = self.date
         print(var)
+        key = var.strip()
+
+        if key in self.positionsOU:
+            self.posOU = self.positionsOU[key]
+        else:
+            print(f"Error: No matching posOU found for key '{key}' in Balaklava")
+            self.posOU = ""
+
         if "Year" in var or "Found" in var:
-            self.posOU = self.positionsOU[var]
             self.desc.delete(0, "end")
             self.desc.insert(0, f"{var} - {descDate}")
         else:
-            self.posOU = self.positionsOU[var]
             self.desc.delete(0, "end")
             self.desc.insert(0, descDate)
-        self.groups = self.groupPos[var]
-        print(self.groups)
-        print(self.posOU)
+
+        self.groups = self.groupPos.get(key, [])
         self.dep = "Balaklava Campus"
         self.org = "Horizon Christian School Balaklava"
 
@@ -459,9 +441,7 @@ class ADUnlocker(ttk.Window):
         [widget.destroy() for widget in lbl_positions.grid_slaves()]
 
     def comboSelect(self, value="H"):
-        t = threading.Thread(target=self.comboLoad, args=(value))
-        t.daemon = True
-        t.start()
+        f.safe_thread(self.comboLoad, value)
 
     def comboLoad(self, value):  # noqa
         self.status["text"] = "Loading..."
@@ -584,18 +564,12 @@ class ADUnlocker(ttk.Window):
         f.widgetStatus(self, ttk.DISABLED)
         newPass = self.passBox.get()
 
-        t = threading.Thread(
-            target=f.resetPassword, args=[self, self.selItem[2], newPass]
-        )
-        t.daemon = True
-        t.start()
+        f.safe_thread(f.resetPassword, self, self.selItem[2], newPass)
 
     def loadUsers(self):
         f.widgetStatus(self, ttk.DISABLED)
         self.tree.delete(*self.tree.get_children())
-        t = threading.Thread(target=self.loads, args=[])
-        t.daemon = True
-        t.start()
+        f.safe_thread(self.loads)
 
     def loads(self):
         try:
@@ -648,9 +622,7 @@ class ADUnlocker(ttk.Window):
 
         f.widgetStatus(self, ttk.DISABLED)
         self.status["text"] = "".join(["Unlocking ", self.selItem[1]])
-        t = threading.Thread(target=self._unlock, args=[])
-        t.daemon = True
-        t.start()
+        f.safe_thread(self._unlock)
 
     def _unlock(self):
         f.unlockUser(self, self.selItem[2])
@@ -689,9 +661,7 @@ class ADUnlocker(ttk.Window):
         maxs = len(self.tree.get_children())
         self.progress["maximum"] = float(maxs)
         self.all = maxs
-        t = threading.Thread(target=f.unlockAll, args=[self, self.data])
-        t.daemon = True
-        t.start()
+        f.safe_thread(f.unlockAll, self, self.data)
 
     def _handle_create_user(self):
         if not self._validate_create_user_input():
@@ -699,9 +669,7 @@ class ADUnlocker(ttk.Window):
 
         data = self._prepare_create_user_data()
         try:
-            t = threading.Thread(target=f.createUser, args=(self, data))
-            t.daemon = True
-            t.start()
+            f.safe_thread(f.createUser, self, data)
         except Exception as e:
             print(f"ERROR: {e}")
 
@@ -713,9 +681,7 @@ class ADUnlocker(ttk.Window):
         data = self._prepare_update_user_data()
 
         # print(data)
-        t = threading.Thread(target=f.update_user, args=[self, data])
-        t.daemon = True
-        t.start()
+        f.safe_thread(f.update_user, self, data)
 
     def _validate_create_user_input(self):
         if self.fname.get().__len__() <= 1 and self.lname.get().__len__() <= 1:
