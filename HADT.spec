@@ -1,5 +1,5 @@
 Name:           HADT
-Version:        2.0.13.3
+Version:        2.0.15.1
 Release:        1%{?dist}
 Summary:        Active Directoy Tool for creating and managing Active Directory users
 License: GPLv3+

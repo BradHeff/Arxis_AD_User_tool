@@ -29,7 +29,7 @@ from ldap3.extend.microsoft.removeMembersFromGroups import (
 temp_api = "https://api.horizon.sa.edu.au/v1/data/LDAP"
 DEBUG_SVR = False
 DEBUG = True
-Version = "2.0.13"
+Version = "2.0.17"
 key = b"\xb1]\xdbM\xed\xc9d\x86\xfe\xc9\x97\x15\x93&R\xba\x9a\xb9#\xadh\x83\xc9D\xa6\xba\xdbX$\xb3TJ"
 settings_file = "Settings.dat"
 if DEBUG_SVR:
@@ -102,15 +102,15 @@ def parseStatus(self, json_data):
 
 def getStatus(self):
     try:
-        if DEBUG:
-            with open("syncer.json", "r") as file:
-                res = json.load(file)
-            return res["LDAP"]
-        else:
-            res = requests.get(api_url, verify=False)
-            res.raise_for_status()
-            print(f"Status: {res.json()}")
-        return res.json()["LDAP"]
+        # if DEBUG:
+        #     with open("syncer.json", "r") as file:
+        #         res = json.load(file)
+        #     return res["LDAP"]
+        # else:
+        res = requests.get(api_url, verify=False)
+        res.raise_for_status()
+        print(f"Status: {res.json()}")
+        return res.json()
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data: {e}")
         return None
